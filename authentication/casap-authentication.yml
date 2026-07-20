@@ -1,0 +1,21 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/casap-openapi.json
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - header
+schemes:
+- name: api_key
+  type: apiKey
+  in: header
+  parameter: Authorization
+  sources:
+  - openapi/casap-openapi.json
+- name: user_uuid
+  type: apiKey
+  in: header
+  parameter: x-user-uuid
+  sources:
+  - openapi/casap-openapi.json
