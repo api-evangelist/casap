@@ -1,0 +1,69 @@
+openapi: 3.1.1
+info:
+  title: Casap Auth API
+  version: 0.1.0
+servers:
+- url: http://api.casaphq.com
+security:
+- api_key: []
+  user_uuid: []
+tags:
+- name: Auth
+paths:
+  /v1/authenticate:
+    get:
+      summary: Authenticate
+      operationId: Auth_Authenticate
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticateResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+      tags:
+      - Auth
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+      additionalProperties: {}
+    googlerpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    AuthenticateResponse:
+      type: object
+      properties:
+        sessionToken:
+          type: string
+        expiresAt:
+          type: string
+          format: int64
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
+    user_uuid:
+      type: apiKey
+      name: x-user-uuid
+      in: header
+x-ext-urls: {}
