@@ -1,0 +1,68 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/casap-openapi.json
+# Entity-relationship graph derived from OpenAPI component schemas ($ref links
+# and id-reference fields). Keyed by the schemas in components.schemas.
+entities:
+  - name: Dispute
+    schema: DisputeSummary
+    primary_key: uuid
+    human_key: shortId
+  - name: DisputedTransaction
+    schema: DisputedTransaction
+    primary_key: uuid
+  - name: Customer
+    schema: Customer
+    primary_key: uuid
+  - name: Agent
+    schema: Agent
+    primary_key: uuid
+  - name: DisputeAuditLog
+    schema: DisputeAuditLog
+  - name: TransactionAuditLog
+    schema: TransactionAuditLog
+  - name: Amount
+    schema: Amount
+  - name: Address
+    schema: Address
+relationships:
+  - from: Dispute
+    to: Customer
+    kind: has_one
+    via: customer
+  - from: Dispute
+    to: Agent
+    kind: has_one
+    via: agent
+  - from: Dispute
+    to: DisputedTransaction
+    kind: has_many
+    via: transactions
+  - from: Dispute
+    to: DisputeAuditLog
+    kind: has_many
+    via: auditLog
+  - from: Dispute
+    to: DisputeReason
+    kind: has_one
+    via: reason
+  - from: Dispute
+    to: DisputeStatus
+    kind: has_one
+    via: status
+  - from: DisputedTransaction
+    to: Amount
+    kind: has_one
+    via: amount
+  - from: DisputedTransaction
+    to: TransactionAuditLog
+    kind: has_many
+    via: auditLog
+  - from: Customer
+    to: Address
+    kind: has_one
+    via: address
+notes:
+  - Amount is a value object (amountInCents, currency) reused across provisional,
+    final, and reverse credit fields on DisputedTransaction.
+  - Customer.externalIds holds caller-supplied external identifiers for reconciliation.

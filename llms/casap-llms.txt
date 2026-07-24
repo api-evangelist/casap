@@ -1,0 +1,33 @@
+# Casap
+
+> Casap is an award-winning agentic-AI dispute automation platform for banks, credit unions, and fintechs. The Casap REST API lets financial institutions create payment disputes (chargebacks), check dispute status, list disputes, upload evidence files, and reopen disputes. Auth is via an API key (Authorization header) plus a user UUID (x-user-uuid header). OpenAPI 3.1.1, grpc-gateway generated, google.rpc.Status error envelope.
+
+## APIs
+- [Casap API](https://docs.casaphq.com): Dispute automation REST API (base https://api.casaphq.com, path /v1)
+
+## Specs
+- [OpenAPI 3.1.1](openapi/casap-openapi.json): 6 operations across Disputes and Auth
+
+## Operations
+- Auth_Authenticate — GET /v1/authenticate
+- Disputes_GetDisputes — GET /v1/disputes (page/size paging; customerUuid, shortId filters)
+- Disputes_Create — POST /v1/disputes
+- Disputes_GetDisputeStatus — GET /v1/dispute/status/{disputeUuid}
+- Disputes_UploadFile — POST /v1/disputes/{disputeUuid}/files
+- Disputes_ReopenDispute — POST /v1/disputes/{disputeUuid}/reopen
+
+## Docs
+- [API Reference](https://docs.casaphq.com/casap-api)
+- [Developer Docs](https://docs.casaphq.com)
+- [Status](https://www.casaphq.com/status)
+- [Terms of Service](https://www.casaphq.com/terms-of-service)
+- [Privacy Policy](https://www.casaphq.com/privacy-policy)
+
+## Artifacts
+- [Authentication](authentication/casap-authentication.yml)
+- [Conventions](conventions/casap-conventions.yml)
+- [Error Catalog](errors/casap-problem-types.yml)
+- [Data Model](data-model/casap-data-model.yml)
+- [Agentic Access](agentic-access/casap-agentic-access.yml)
+- [MCP (candidate)](mcp/casap-mcp.yml)
+- [Agent Skills](skills/_index.yml)

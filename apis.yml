@@ -1,8 +1,26 @@
 aid: casap
 name: Casap
-description: 'Casap is a company surfaced as a portfolio company of emergence-capital, lightspeed-venture-partners
-  and added to the API Evangelist network as a stub for enrichment. Sector: fintech. This profile is a
-  lead awaiting the enrichment pipeline.'
+description: 'Casap is an award-winning agentic-AI dispute automation platform for banks,
+  credit unions, and fintechs. It automates payment dispute (chargeback) intake, investigation,
+  and resolution end to end, reducing operational cost and manual work while improving
+  regulatory compliance and consumer satisfaction. The Casap REST API lets financial
+  institutions programmatically create disputes, check dispute status, upload evidence
+  files, and reopen disputes, backed by a hosted disputes dashboard, PCI-DSS and SOC 2
+  (AICPA) controls, and integrations with card networks (Visa, Mastercard) and core
+  banking systems (Symitar/Jack Henry, STAR). Casap won Best of Show at FinovateFall 2025.'
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://cdn.prod.website-files.com/6670a4d559962296d4e052c9/669eb1e52506764a3f5fbef6_Casap%20Website%20Group%2018.webp
 url: https://raw.githubusercontent.com/api-evangelist/casap/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
@@ -13,13 +31,104 @@ x-tier: stub
 x-tier-reason: portfolio-lead
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-18'
 tags:
 - Company
 - Fintech
-apis: []
+- Disputes
+- Chargebacks
+- Fraud
+- Payments
+- Banking
+- Dispute Resolution
+- Agentic AI
+apis:
+- aid: casap:casap-auth-api
+  name: Casap Auth API
+  description: The Auth API from Casap — 1 operation(s) for auth.
+  humanURL: https://docs.casaphq.com
+  baseURL: https://api.casaphq.com
+  tags:
+  - Auth
+  properties:
+  - type: OpenAPI
+    url: openapi/casap-auth-api-openapi.yml
+  - type: Documentation
+    url: https://docs.casaphq.com
+  - type: APIReference
+    url: https://docs.casaphq.com/casap-api
+- aid: casap:casap-disputes-api
+  name: Casap Disputes API
+  description: The Disputes API from Casap — 4 operation(s) for disputes.
+  humanURL: https://docs.casaphq.com
+  baseURL: https://api.casaphq.com
+  tags:
+  - Disputes
+  properties:
+  - type: OpenAPI
+    url: openapi/casap-disputes-api-openapi.yml
+  - type: Documentation
+    url: https://docs.casaphq.com
+  - type: APIReference
+    url: https://docs.casaphq.com/casap-api
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+common:
+- type: WellKnown
+  url: well-known/casap-well-known.yml
+- type: LLMsTxt
+  url: llms/casap-llms.txt
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Lifecycle
+  url: lifecycle/casap-lifecycle.yml
+- type: Overlay
+  url: overlays/casap-openapi-overlay.yaml
+- type: Conformance
+  url: conformance/casap-conformance.yml
+- type: MCPServer
+  url: mcp/casap-mcp.yml
+- type: DataModel
+  url: data-model/casap-data-model.yml
+- type: Conventions
+  url: conventions/casap-conventions.yml
+- type: ErrorCatalog
+  url: errors/casap-problem-types.yml
+- type: DomainSecurity
+  url: security/casap-domain-security.yml
+- type: AgenticAccess
+  url: agentic-access/casap-agentic-access.yml
+- type: Authentication
+  url: authentication/casap-authentication.yml
+- type: Website
+  url: https://www.casaphq.com
+- type: DeveloperPortal
+  url: https://docs.casaphq.com
+- type: Documentation
+  url: https://docs.casaphq.com
+- type: APIReference
+  url: https://docs.casaphq.com/casap-api
+- type: GettingStarted
+  url: https://docs.casaphq.com
+- type: Support
+  url: https://www.casaphq.com/get-in-touch
+- type: Blog
+  url: https://www.casaphq.com/news
+- type: StatusPage
+  url: https://www.casaphq.com/status
+- type: Login
+  url: https://disputes.casaphq.com
+- type: TermsOfService
+  url: https://www.casaphq.com/terms-of-service
+- type: PrivacyPolicy
+  url: https://www.casaphq.com/privacy-policy
+- type: Compliance
+  url: https://www.casaphq.com
+x-enrichment:
+  date: '2026-07-19'
+  status: backfilled
+  pass: local-v1
+  note: backfilled from .gitignore signal + verified work evidence

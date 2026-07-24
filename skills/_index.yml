@@ -1,0 +1,12 @@
+generated: '2026-07-18'
+method: generated
+source: openapi/casap-openapi.json
+skills:
+  - file: casap-create-dispute.md
+    name: Create a payment dispute
+    api: openapi/casap-openapi.json
+    operations: [Auth_Authenticate, Disputes_Create, Disputes_GetDisputeStatus]
+  - file: casap-track-and-manage-dispute.md
+    name: Track and manage a dispute
+    api: openapi/casap-openapi.json
+    operations: [Disputes_GetDisputes, Disputes_GetDisputeStatus, Disputes_UploadFile, Disputes_ReopenDispute]

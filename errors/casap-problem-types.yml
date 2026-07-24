@@ -1,0 +1,62 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/casap-openapi.json
+# The Casap API is grpc-gateway generated: every operation returns a `default`
+# error response whose body is a google.rpc.Status object (not RFC 9457
+# problem+json). The catalog below captures that envelope plus the canonical
+# google.rpc.Code space grpc-gateway maps onto HTTP status codes.
+format: google.rpc.Status
+envelope:
+  media_type: application/json
+  schema: '#/components/schemas/googlerpcStatus'
+  fields:
+    code: integer (int32) — google.rpc.Code enum value
+    message: string — developer-facing error message
+    details: array of google.protobuf.Any — optional structured error details
+  source_operation: openapi/casap-openapi.json#Disputes_Create
+problems:
+- code: 3
+  status: 400
+  name: INVALID_ARGUMENT
+  title: Invalid argument
+  remediation: Client specified an invalid argument; check field constraints in the request body/params.
+- code: 16
+  status: 401
+  name: UNAUTHENTICATED
+  title: Missing or invalid credentials
+  remediation: Provide a valid Authorization API key header and x-user-uuid header.
+- code: 7
+  status: 403
+  name: PERMISSION_DENIED
+  title: Permission denied
+  remediation: The authenticated principal is not permitted to access this dispute/resource.
+- code: 5
+  status: 404
+  name: NOT_FOUND
+  title: Resource not found
+  remediation: The disputeUuid (or other referenced resource) does not exist.
+- code: 6
+  status: 409
+  name: ALREADY_EXISTS
+  title: Resource already exists
+  remediation: A dispute matching this request already exists; fetch it instead of recreating.
+- code: 8
+  status: 429
+  name: RESOURCE_EXHAUSTED
+  title: Rate limit or quota exceeded
+  remediation: Back off and retry with exponential backoff.
+- code: 13
+  status: 500
+  name: INTERNAL
+  title: Internal error
+  remediation: Unexpected server error; retry, and contact support if it persists.
+- code: 14
+  status: 503
+  name: UNAVAILABLE
+  title: Service unavailable
+  remediation: Transient outage; retry with backoff. Check https://www.casaphq.com/status.
+notes:
+  - The OpenAPI declares only `200` and `default` per operation; individual 4xx/5xx
+    codes are not enumerated per-operation. The codes above are the canonical
+    google.rpc.Code -> HTTP mapping grpc-gateway applies, derived from the
+    google.rpc.Status envelope the spec returns.

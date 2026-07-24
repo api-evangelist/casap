@@ -1,0 +1,57 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/casap-openapi.json
+# Cross-cutting request/response semantics for the Casap API, derived from the
+# OpenAPI 3.1.1 description and the published Scalar reference at docs.casaphq.com.
+authentication:
+  style: api-key
+  schemes:
+    - name: api_key
+      in: header
+      parameter: Authorization
+    - name: user_uuid
+      in: header
+      parameter: x-user-uuid
+  note: Both headers are required together (global security requires api_key AND user_uuid).
+  docs: https://docs.casaphq.com
+  ref: authentication/casap-authentication.yml
+versioning:
+  scheme: uri-path
+  current: v1
+  base_path: /v1
+pagination:
+  style: page-number
+  request_params:
+    - name: page
+      in: query
+      description: 1-based page number
+    - name: size
+      in: query
+      description: page size
+  response_fields:
+    - items
+    - totalItems
+    - totalPages
+    - totalInPage
+    - currentPage
+  source_operation: openapi/casap-openapi.json#Disputes_GetDisputes
+filtering:
+  params:
+    - customerUuid
+    - shortId
+  source_operation: openapi/casap-openapi.json#Disputes_GetDisputes
+identifiers:
+  primary_key: uuid
+  human_reference: shortId
+  note: Disputes carry both an opaque `uuid` and a human-friendly `shortId`.
+error_envelope:
+  format: google.rpc.Status
+  fields: [code, message, details]
+  ref: errors/casap-problem-types.yml
+idempotency:
+  supported: false
+  note: No idempotency-key header or parameter is documented in the spec or reference.
+rate_limiting:
+  documented: false
+metadata:
+  customer_external_ids: Customer.externalIds (object) carries caller-supplied external identifiers.

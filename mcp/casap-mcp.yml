@@ -1,0 +1,29 @@
+generated: '2026-07-18'
+method: derived
+status: candidate
+source: openapi/casap-openapi.json
+# No official hosted/remote Casap MCP server was found (docs, npm
+# @modelcontextprotocol, MCP registries). This is a CANDIDATE tool list derived
+# one-to-one from the OpenAPI operations, for a future MCP server.
+server:
+  name: casap
+  transport: http
+tools:
+  - name: authenticate
+    description: Authenticate and establish a Casap API session.
+    source_operation: openapi/casap-openapi.json#Auth_Authenticate
+  - name: get_dispute_status
+    description: Get the status of a single dispute by UUID.
+    source_operation: openapi/casap-openapi.json#Disputes_GetDisputeStatus
+  - name: list_disputes
+    description: List disputes with page/size paging and customerUuid/shortId filters.
+    source_operation: openapi/casap-openapi.json#Disputes_GetDisputes
+  - name: create_dispute
+    description: Create a new payment dispute for one or more transactions.
+    source_operation: openapi/casap-openapi.json#Disputes_Create
+  - name: upload_dispute_file
+    description: Upload a supporting evidence file to an existing dispute.
+    source_operation: openapi/casap-openapi.json#Disputes_UploadFile
+  - name: reopen_dispute
+    description: Reopen a previously closed dispute.
+    source_operation: openapi/casap-openapi.json#Disputes_ReopenDispute

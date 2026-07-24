@@ -1,0 +1,21 @@
+generated: '2026-07-18'
+method: searched
+source: https://www.casaphq.com/status
+versioning:
+  scheme: uri-path
+  current: v1
+  docs: https://docs.casaphq.com
+status_page: https://www.casaphq.com/status
+status_components:
+  - Web Server
+  - API
+  - Database
+deprecation:
+  policy_documented: false
+sla:
+  documented: false
+deprecated_operations: []
+notes:
+  - Status page shows live component health (Web Server / API / Database) but no
+    incident history feed.
+  - No deprecation/sunset policy or SLA is publicly documented; API is at v0.1.0.

@@ -1,0 +1,30 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/casap-openapi.json
+# Standards conformance. Security/compliance claims (PCI-DSS, SOC 2/AICPA) are
+# from the casaphq.com site footer badges; API-shape claims are derived from the
+# OpenAPI description.
+standards:
+  - id: oauth2
+    conforms: false
+    evidence: securitySchemes are apiKey (Authorization + x-user-uuid headers), not oauth2.
+  - id: oidc
+    conforms: false
+  - id: api-key-auth
+    conforms: true
+    evidence: two apiKey header schemes (api_key, user_uuid) required together.
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: error envelope is google.rpc.Status (application/json), not application/problem+json.
+  - id: grpc-status
+    conforms: true
+    evidence: default responses use the google.rpc.Status schema (grpc-gateway generated).
+  - id: pagination
+    conforms: true
+    evidence: page/size query params with totalItems/totalPages/currentPage response fields.
+  - id: pci-dss
+    conforms: true
+    evidence: PCI-DSS certification badge published on casaphq.com.
+  - id: soc2
+    conforms: true
+    evidence: AICPA (SOC 2) certification badge published on casaphq.com.

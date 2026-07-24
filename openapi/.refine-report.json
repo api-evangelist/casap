@@ -1,0 +1,16 @@
+{
+  "provider": "casap",
+  "sources": [
+    "casap-auth-api-openapi.yml",
+    "casap-disputes-api-openapi.yml"
+  ],
+  "outputs": [
+    "casap-auth-api-openapi.yml",
+    "casap-disputes-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}

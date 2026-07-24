@@ -1,0 +1,23 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Casap API
+  version: 1.0.0
+extends: openapi/casap-openapi.json
+actions:
+  - target: $.info
+    update:
+      x-apievangelist-provider: casap
+      x-apievangelist-category: dispute-automation
+      x-apievangelist-error-format: google.rpc.Status
+      x-apievangelist-auth: api-key
+  - target: $.servers[0]
+    update:
+      description: Casap production API (use https://api.casaphq.com)
+  - target: $.paths['/v1/disputes'].get
+    update:
+      x-apievangelist-pagination: page-number
+notes: |
+  This overlay records API Evangelist enhancements over the harvested Casap
+  OpenAPI. The scorer reads the original spec; this improves our derived
+  artifacts, not the provider's raw content score. The original openapi/ file is
+  never mutated. Note the published server uses http:// — production is https://.
