@@ -1,0 +1,137 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Casap Auth Disputes API",
+    "version": "0.1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Disputes",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get dispute status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://api.casaphq.com/v1/dispute/status/:disputeUuid",
+            "params": [
+              {
+                "name": "disputeUuid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get dispute status"
+        },
+        {
+          "info": {
+            "name": "List disputes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://api.casaphq.com/v1/disputes",
+            "params": [
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "customerUuid",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "shortId",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List disputes"
+        },
+        {
+          "info": {
+            "name": "Create a dispute",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://api.casaphq.com/v1/disputes",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a dispute"
+        },
+        {
+          "info": {
+            "name": "Upload a file",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://api.casaphq.com/v1/disputes/:disputeUuid/files",
+            "params": [
+              {
+                "name": "disputeUuid",
+                "value": "",
+                "type": "path",
+                "description": "The dispute UUID from the URL path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Upload a file"
+        },
+        {
+          "info": {
+            "name": "Reopen a dispute",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://api.casaphq.com/v1/disputes/:disputeUuid/reopen",
+            "params": [
+              {
+                "name": "disputeUuid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Reopen a dispute"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

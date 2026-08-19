@@ -1,0 +1,886 @@
+{
+  "item": [
+    {
+      "id": "2737587e-0d77-4ad0-a45f-9e78a3bd6fc8",
+      "name": "Disputes",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "b285ae95-8bab-4636-bec4-327495096954",
+          "name": "Get dispute status",
+          "request": {
+            "name": "Get dispute status",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "dispute",
+                "status",
+                ":disputeUuid"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "disputeUuid",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "8d69827b-3789-45d4-8e46-728622024a83",
+              "name": "A successful response.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "dispute",
+                    "status",
+                    ":disputeUuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "disputeUuid",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"dispute\": {\n    \"uuid\": \"string\",\n    \"customer\": {\n      \"uuid\": \"string\",\n      \"name\": \"string\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"accountUuid\": \"string\",\n      \"address\": {\n        \"line1\": \"string\",\n        \"line2\": \"string\",\n        \"city\": \"string\",\n        \"state\": \"string\",\n        \"postalCode\": \"string\",\n        \"country\": \"string\"\n      },\n      \"externalIds\": {\n        \"key_0\": \"string\",\n        \"key_1\": \"string\"\n      }\n    },\n    \"resolutionDeadline\": \"string\",\n    \"agent\": {\n      \"uuid\": \"string\",\n      \"name\": \"string\",\n      \"email\": \"string\",\n      \"phone\": \"string\"\n    },\n    \"status\": \"DISPUTE_STATUS_UNKNOWN\",\n    \"transactions\": [\n      {\n        \"uuid\": \"string\",\n        \"settledTimestamp\": \"string\",\n        \"amount\": {\n          \"amountInCents\": 8210,\n          \"currency\": \"string\"\n        },\n        \"merchant\": \"string\",\n        \"status\": \"DISPUTED_TRANSACTION_STATUS_UNKNOWN\",\n        \"auditLog\": [\n          {\n            \"timestamp\": \"string\",\n            \"eventType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"agentEmail\": \"string\",\n            \"issueProvisionalCredit\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"recordFinalDecision\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"timestamp\": \"string\",\n            \"eventType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"agentEmail\": \"string\",\n            \"issueProvisionalCredit\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"recordFinalDecision\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ],\n        \"transactionStatus\": \"TRANSACTION_STATUS_UNKNOWN\",\n        \"provisionalCreditAmount\": {\n          \"amountInCents\": 4689,\n          \"currency\": \"string\"\n        },\n        \"finalCreditAmount\": {\n          \"amountInCents\": 9582,\n          \"currency\": \"string\"\n        },\n        \"reverseCreditAmount\": {\n          \"amountInCents\": 2326,\n          \"currency\": \"string\"\n        },\n        \"transactionFinalStatus\": \"RECORD_FINAL_DECISION_TYPE_UNKNOWN\"\n      },\n      {\n        \"uuid\": \"string\",\n        \"settledTimestamp\": \"string\",\n        \"amount\": {\n          \"amountInCents\": 742,\n          \"currency\": \"string\"\n        },\n        \"merchant\": \"string\",\n        \"status\": \"DISPUTED_TRANSACTION_STATUS_UNKNOWN\",\n        \"auditLog\": [\n          {\n            \"timestamp\": \"string\",\n            \"eventType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"agentEmail\": \"string\",\n            \"issueProvisionalCredit\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"recordFinalDecision\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"timestamp\": \"string\",\n            \"eventType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"agentEmail\": \"string\",\n            \"issueProvisionalCredit\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"recordFinalDecision\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ],\n        \"transactionStatus\": \"TRANSACTION_STATUS_UNKNOWN\",\n        \"provisionalCreditAmount\": {\n          \"amountInCents\": 4017,\n          \"currency\": \"string\"\n        },\n        \"finalCreditAmount\": {\n          \"amountInCents\": 9140,\n          \"currency\": \"string\"\n        },\n        \"reverseCreditAmount\": {\n          \"amountInCents\": 8936,\n          \"currency\": \"string\"\n        },\n        \"transactionFinalStatus\": \"RECORD_FINAL_DECISION_TYPE_UNKNOWN\"\n      }\n    ],\n    \"auditLog\": [\n      {\n        \"timestamp\": \"string\",\n        \"eventType\": \"DISPUTE_EVENT_TYPE_UNKNOWN\",\n        \"agentEmail\": \"string\",\n        \"createDispute\": {\n          \"actions\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      },\n      {\n        \"timestamp\": \"string\",\n        \"eventType\": \"DISPUTE_EVENT_TYPE_UNKNOWN\",\n        \"agentEmail\": \"string\",\n        \"createDispute\": {\n          \"actions\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      }\n    ],\n    \"shortId\": \"string\",\n    \"reason\": \"DISPUTE_REASON_UNKNOWN\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5ff1da50-0e5a-4a2d-9f8b-7fe7bef8c1bb",
+              "name": "An unexpected error response.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "dispute",
+                    "status",
+                    ":disputeUuid"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "disputeUuid",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 9335,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"@type\": \"string\",\n      \"key_0\": {},\n      \"key_1\": {}\n    },\n    {\n      \"@type\": \"string\",\n      \"key_0\": {}\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "0ab2b40b-1e24-44e1-af3e-3c57e1f77b38",
+          "name": "List disputes",
+          "request": {
+            "name": "List disputes",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "disputes"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "size",
+                  "value": "<integer>"
+                },
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "<integer>"
+                },
+                {
+                  "disabled": false,
+                  "key": "customerUuid",
+                  "value": "<string>"
+                },
+                {
+                  "disabled": false,
+                  "key": "shortId",
+                  "value": "<string>"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "55225144-0ee7-4d32-881a-d323881d8c40",
+              "name": "A successful response.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "disputes"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "size",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "page",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "customerUuid",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "shortId",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"items\": [\n    {\n      \"uuid\": \"string\",\n      \"customer\": {\n        \"uuid\": \"string\",\n        \"name\": \"string\",\n        \"email\": \"string\",\n        \"phone\": \"string\",\n        \"accountUuid\": \"string\",\n        \"address\": {\n          \"line1\": \"string\",\n          \"line2\": \"string\",\n          \"city\": \"string\",\n          \"state\": \"string\",\n          \"postalCode\": \"string\",\n          \"country\": \"string\"\n        },\n        \"externalIds\": {\n          \"key_0\": \"string\"\n        }\n      },\n      \"resolutionDeadline\": \"string\",\n      \"agent\": {\n        \"uuid\": \"string\",\n        \"name\": \"string\",\n        \"email\": \"string\",\n        \"phone\": \"string\"\n      },\n      \"status\": \"DISPUTE_STATUS_UNKNOWN\",\n      \"transactions\": [\n        {\n          \"uuid\": \"string\",\n          \"settledTimestamp\": \"string\",\n          \"amount\": {\n            \"amountInCents\": 6529,\n            \"currency\": \"string\"\n          },\n          \"merchant\": \"string\",\n          \"status\": \"DISPUTED_TRANSACTION_STATUS_UNKNOWN\",\n          \"auditLog\": [\n            {\n              \"timestamp\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"eventType\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"agentEmail\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"issueProvisionalCredit\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"recordFinalDecision\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"timestamp\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"eventType\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"agentEmail\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"issueProvisionalCredit\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"recordFinalDecision\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ],\n          \"transactionStatus\": \"TRANSACTION_STATUS_UNKNOWN\",\n          \"provisionalCreditAmount\": {\n            \"amountInCents\": 8527,\n            \"currency\": \"string\"\n          },\n          \"finalCreditAmount\": {\n            \"amountInCents\": 7312,\n            \"currency\": \"string\"\n          },\n          \"reverseCreditAmount\": {\n            \"amountInCents\": 3339,\n            \"currency\": \"string\"\n          },\n          \"transactionFinalStatus\": \"RECORD_FINAL_DECISION_TYPE_UNKNOWN\"\n        },\n        {\n          \"uuid\": \"string\",\n          \"settledTimestamp\": \"string\",\n          \"amount\": {\n            \"amountInCents\": 4956,\n            \"currency\": \"string\"\n          },\n          \"merchant\": \"string\",\n          \"status\": \"DISPUTED_TRANSACTION_STATUS_UNKNOWN\",\n          \"auditLog\": [\n            {\n              \"timestamp\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"eventType\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"agentEmail\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"issueProvisionalCredit\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"recordFinalDecision\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"timestamp\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"eventType\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"agentEmail\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"issueProvisionalCredit\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"recordFinalDecision\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ],\n          \"transactionStatus\": \"TRANSACTION_STATUS_UNKNOWN\",\n          \"provisionalCreditAmount\": {\n            \"amountInCents\": 7439,\n            \"currency\": \"string\"\n          },\n          \"finalCreditAmount\": {\n            \"amountInCents\": 2472,\n            \"currency\": \"string\"\n          },\n          \"reverseCreditAmount\": {\n            \"amountInCents\": 5518,\n            \"currency\": \"string\"\n          },\n          \"transactionFinalStatus\": \"RECORD_FINAL_DECISION_TYPE_UNKNOWN\"\n        }\n      ],\n      \"auditLog\": [\n        {\n          \"timestamp\": \"string\",\n          \"eventType\": \"DISPUTE_EVENT_TYPE_UNKNOWN\",\n          \"agentEmail\": \"string\",\n          \"createDispute\": {\n            \"actions\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ]\n          }\n        },\n        {\n          \"timestamp\": \"string\",\n          \"eventType\": \"DISPUTE_EVENT_TYPE_UNKNOWN\",\n          \"agentEmail\": \"string\",\n          \"createDispute\": {\n            \"actions\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ]\n          }\n        }\n      ],\n      \"shortId\": \"string\",\n      \"reason\": \"DISPUTE_REASON_UNKNOWN\"\n    },\n    {\n      \"uuid\": \"string\",\n      \"customer\": {\n        \"uuid\": \"string\",\n        \"name\": \"string\",\n        \"email\": \"string\",\n        \"phone\": \"string\",\n        \"accountUuid\": \"string\",\n        \"address\": {\n          \"line1\": \"string\",\n          \"line2\": \"string\",\n          \"city\": \"string\",\n          \"state\": \"string\",\n          \"postalCode\": \"string\",\n          \"country\": \"string\"\n        },\n        \"externalIds\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\"\n        }\n      },\n      \"resolutionDeadline\": \"string\",\n      \"agent\": {\n        \"uuid\": \"string\",\n        \"name\": \"string\",\n        \"email\": \"string\",\n        \"phone\": \"string\"\n      },\n      \"status\": \"DISPUTE_STATUS_UNKNOWN\",\n      \"transactions\": [\n        {\n          \"uuid\": \"string\",\n          \"settledTimestamp\": \"string\",\n          \"amount\": {\n            \"amountInCents\": 9237,\n            \"currency\": \"string\"\n          },\n          \"merchant\": \"string\",\n          \"status\": \"DISPUTED_TRANSACTION_STATUS_UNKNOWN\",\n          \"auditLog\": [\n            {\n              \"timestamp\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"eventType\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"agentEmail\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"issueProvisionalCredit\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"recordFinalDecision\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"timestamp\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"eventType\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"agentEmail\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"issueProvisionalCredit\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"recordFinalDecision\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ],\n          \"transactionStatus\": \"TRANSACTION_STATUS_UNKNOWN\",\n          \"provisionalCreditAmount\": {\n            \"amountInCents\": 8533,\n            \"currency\": \"string\"\n          },\n          \"finalCreditAmount\": {\n            \"amountInCents\": 1904,\n            \"currency\": \"string\"\n          },\n          \"reverseCreditAmount\": {\n            \"amountInCents\": 7357,\n            \"currency\": \"string\"\n          },\n          \"transactionFinalStatus\": \"RECORD_FINAL_DECISION_TYPE_UNKNOWN\"\n        },\n        {\n          \"uuid\": \"string\",\n          \"settledTimestamp\": \"string\",\n          \"amount\": {\n            \"amountInCents\": 1431,\n            \"currency\": \"string\"\n          },\n          \"merchant\": \"string\",\n          \"status\": \"DISPUTED_TRANSACTION_STATUS_UNKNOWN\",\n          \"auditLog\": [\n            {\n              \"timestamp\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"eventType\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"agentEmail\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"issueProvisionalCredit\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"recordFinalDecision\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"timestamp\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"eventType\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"agentEmail\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"issueProvisionalCredit\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"recordFinalDecision\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ],\n          \"transactionStatus\": \"TRANSACTION_STATUS_UNKNOWN\",\n          \"provisionalCreditAmount\": {\n            \"amountInCents\": 5467,\n            \"currency\": \"string\"\n          },\n          \"finalCreditAmount\": {\n            \"amountInCents\": 2712,\n            \"currency\": \"string\"\n          },\n          \"reverseCreditAmount\": {\n            \"amountInCents\": 603,\n            \"currency\": \"string\"\n          },\n          \"transactionFinalStatus\": \"RECORD_FINAL_DECISION_TYPE_UNKNOWN\"\n        }\n      ],\n      \"auditLog\": [\n        {\n          \"timestamp\": \"string\",\n          \"eventType\": \"DISPUTE_EVENT_TYPE_UNKNOWN\",\n          \"agentEmail\": \"string\",\n          \"createDispute\": {\n            \"actions\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ]\n          }\n        },\n        {\n          \"timestamp\": \"string\",\n          \"eventType\": \"DISPUTE_EVENT_TYPE_UNKNOWN\",\n          \"agentEmail\": \"string\",\n          \"createDispute\": {\n            \"actions\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ]\n          }\n        }\n      ],\n      \"shortId\": \"string\",\n      \"reason\": \"DISPUTE_REASON_UNKNOWN\"\n    }\n  ],\n  \"totalItems\": 7071,\n  \"totalPages\": 7075,\n  \"totalInPage\": 2239,\n  \"currentPage\": 4167\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "88cdc632-4b07-45b6-9d83-19290e1cd06d",
+              "name": "An unexpected error response.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "disputes"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "size",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "page",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "customerUuid",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "shortId",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 9335,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"@type\": \"string\",\n      \"key_0\": {},\n      \"key_1\": {}\n    },\n    {\n      \"@type\": \"string\",\n      \"key_0\": {}\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "b428b747-5591-4983-8303-fffaf5e8f7e5",
+          "name": "Create a dispute",
+          "request": {
+            "name": "Create a dispute",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "disputes"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orgUuid\": \"<string>\",\n  \"transactionDetails\": [\n    {\n      \"uuid\": \"<string>\",\n      \"settledTimestamp\": \"<int64>\",\n      \"authorizedTimestamp\": \"<int64>\",\n      \"amount\": {\n        \"amountInCents\": \"<integer>\",\n        \"currency\": \"<string>\"\n      },\n      \"merchant\": \"<string>\",\n      \"status\": \"TRANSACTION_STATUS_UNKNOWN\",\n      \"type\": \"TRANSACTION_TYPE_UNKNOWN\",\n      \"network\": \"TRANSACTION_NETWORK_UNKNOWN\",\n      \"arn\": \"<string>\",\n      \"location\": \"<string>\",\n      \"cardId\": \"<string>\",\n      \"visaTransactionId\": \"<string>\",\n      \"transactionSettledAmount\": {\n        \"amountInCents\": \"<integer>\",\n        \"currency\": \"<string>\"\n      },\n      \"typeCode\": \"<string>\",\n      \"ica\": \"<string>\",\n      \"cardType\": \"CARD_TYPE_UNKNOWN\"\n    },\n    {\n      \"uuid\": \"<string>\",\n      \"settledTimestamp\": \"<int64>\",\n      \"authorizedTimestamp\": \"<int64>\",\n      \"amount\": {\n        \"amountInCents\": \"<integer>\",\n        \"currency\": \"<string>\"\n      },\n      \"merchant\": \"<string>\",\n      \"status\": \"TRANSACTION_STATUS_UNKNOWN\",\n      \"type\": \"TRANSACTION_TYPE_UNKNOWN\",\n      \"network\": \"TRANSACTION_NETWORK_UNKNOWN\",\n      \"arn\": \"<string>\",\n      \"location\": \"<string>\",\n      \"cardId\": \"<string>\",\n      \"visaTransactionId\": \"<string>\",\n      \"transactionSettledAmount\": {\n        \"amountInCents\": \"<integer>\",\n        \"currency\": \"<string>\"\n      },\n      \"typeCode\": \"<string>\",\n      \"ica\": \"<string>\",\n      \"cardType\": \"CARD_TYPE_UNKNOWN\"\n    }\n  ],\n  \"customer\": {\n    \"uuid\": \"<string>\",\n    \"name\": \"<string>\",\n    \"email\": \"<string>\",\n    \"phone\": \"<string>\",\n    \"accountUuid\": \"<string>\",\n    \"address\": {\n      \"line1\": \"<string>\",\n      \"line2\": \"<string>\",\n      \"city\": \"<string>\",\n      \"state\": \"<string>\",\n      \"postalCode\": \"<string>\",\n      \"country\": \"<string>\"\n    },\n    \"externalIds\": {\n      \"key_0\": \"<string>\",\n      \"key_1\": \"<string>\",\n      \"key_2\": \"<string>\"\n    }\n  },\n  \"reason\": \"DISPUTE_REASON_UNKNOWN\",\n  \"questionnaireAnswers\": [\n    {\n      \"question\": \"<string>\",\n      \"answer\": \"<string>\",\n      \"questionId\": \"<string>\"\n    },\n    {\n      \"question\": \"<string>\",\n      \"answer\": \"<string>\",\n      \"questionId\": \"<string>\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "5a63fd17-1376-4e5e-8dac-ef7c989a49cc",
+              "name": "A successful response.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "disputes"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orgUuid\": \"<string>\",\n  \"transactionDetails\": [\n    {\n      \"uuid\": \"string\",\n      \"settledTimestamp\": \"string\",\n      \"authorizedTimestamp\": \"string\",\n      \"amount\": {\n        \"amountInCents\": 4495,\n        \"currency\": \"string\"\n      },\n      \"merchant\": \"string\",\n      \"status\": \"TRANSACTION_STATUS_UNKNOWN\",\n      \"type\": \"TRANSACTION_TYPE_UNKNOWN\",\n      \"network\": \"TRANSACTION_NETWORK_UNKNOWN\",\n      \"arn\": \"string\",\n      \"location\": \"string\",\n      \"cardId\": \"string\",\n      \"visaTransactionId\": \"string\",\n      \"transactionSettledAmount\": {\n        \"amountInCents\": 3917,\n        \"currency\": \"string\"\n      },\n      \"typeCode\": \"string\",\n      \"ica\": \"string\",\n      \"cardType\": \"CARD_TYPE_UNKNOWN\"\n    },\n    {\n      \"uuid\": \"string\",\n      \"settledTimestamp\": \"string\",\n      \"authorizedTimestamp\": \"string\",\n      \"amount\": {\n        \"amountInCents\": 4901,\n        \"currency\": \"string\"\n      },\n      \"merchant\": \"string\",\n      \"status\": \"TRANSACTION_STATUS_UNKNOWN\",\n      \"type\": \"TRANSACTION_TYPE_UNKNOWN\",\n      \"network\": \"TRANSACTION_NETWORK_UNKNOWN\",\n      \"arn\": \"string\",\n      \"location\": \"string\",\n      \"cardId\": \"string\",\n      \"visaTransactionId\": \"string\",\n      \"transactionSettledAmount\": {\n        \"amountInCents\": 3278,\n        \"currency\": \"string\"\n      },\n      \"typeCode\": \"string\",\n      \"ica\": \"string\",\n      \"cardType\": \"CARD_TYPE_UNKNOWN\"\n    }\n  ],\n  \"customer\": {\n    \"uuid\": \"string\",\n    \"name\": \"string\",\n    \"email\": \"string\",\n    \"phone\": \"string\",\n    \"accountUuid\": \"string\",\n    \"address\": {\n      \"line1\": \"string\",\n      \"line2\": \"string\",\n      \"city\": \"string\",\n      \"state\": \"string\",\n      \"postalCode\": \"string\",\n      \"country\": \"string\"\n    },\n    \"externalIds\": {\n      \"key_0\": \"string\"\n    }\n  },\n  \"reason\": \"DISPUTE_REASON_UNKNOWN\",\n  \"questionnaireAnswers\": [\n    {\n      \"question\": \"string\",\n      \"answer\": \"string\",\n      \"questionId\": \"string\"\n    },\n    {\n      \"question\": \"string\",\n      \"answer\": \"string\",\n      \"questionId\": \"string\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"dispute\": {\n    \"uuid\": \"string\",\n    \"customer\": {\n      \"uuid\": \"string\",\n      \"name\": \"string\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"accountUuid\": \"string\",\n      \"address\": {\n        \"line1\": \"string\",\n        \"line2\": \"string\",\n        \"city\": \"string\",\n        \"state\": \"string\",\n        \"postalCode\": \"string\",\n        \"country\": \"string\"\n      },\n      \"externalIds\": {\n        \"key_0\": \"string\",\n        \"key_1\": \"string\"\n      }\n    },\n    \"resolutionDeadline\": \"string\",\n    \"agent\": {\n      \"uuid\": \"string\",\n      \"name\": \"string\",\n      \"email\": \"string\",\n      \"phone\": \"string\"\n    },\n    \"status\": \"DISPUTE_STATUS_UNKNOWN\",\n    \"transactions\": [\n      {\n        \"uuid\": \"string\",\n        \"settledTimestamp\": \"string\",\n        \"amount\": {\n          \"amountInCents\": 8210,\n          \"currency\": \"string\"\n        },\n        \"merchant\": \"string\",\n        \"status\": \"DISPUTED_TRANSACTION_STATUS_UNKNOWN\",\n        \"auditLog\": [\n          {\n            \"timestamp\": \"string\",\n            \"eventType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"agentEmail\": \"string\",\n            \"issueProvisionalCredit\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"recordFinalDecision\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"timestamp\": \"string\",\n            \"eventType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"agentEmail\": \"string\",\n            \"issueProvisionalCredit\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"recordFinalDecision\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ],\n        \"transactionStatus\": \"TRANSACTION_STATUS_UNKNOWN\",\n        \"provisionalCreditAmount\": {\n          \"amountInCents\": 4689,\n          \"currency\": \"string\"\n        },\n        \"finalCreditAmount\": {\n          \"amountInCents\": 9582,\n          \"currency\": \"string\"\n        },\n        \"reverseCreditAmount\": {\n          \"amountInCents\": 2326,\n          \"currency\": \"string\"\n        },\n        \"transactionFinalStatus\": \"RECORD_FINAL_DECISION_TYPE_UNKNOWN\"\n      },\n      {\n        \"uuid\": \"string\",\n        \"settledTimestamp\": \"string\",\n        \"amount\": {\n          \"amountInCents\": 742,\n          \"currency\": \"string\"\n        },\n        \"merchant\": \"string\",\n        \"status\": \"DISPUTED_TRANSACTION_STATUS_UNKNOWN\",\n        \"auditLog\": [\n          {\n            \"timestamp\": \"string\",\n            \"eventType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"agentEmail\": \"string\",\n            \"issueProvisionalCredit\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"recordFinalDecision\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"timestamp\": \"string\",\n            \"eventType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"agentEmail\": \"string\",\n            \"issueProvisionalCredit\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"recordFinalDecision\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ],\n        \"transactionStatus\": \"TRANSACTION_STATUS_UNKNOWN\",\n        \"provisionalCreditAmount\": {\n          \"amountInCents\": 4017,\n          \"currency\": \"string\"\n        },\n        \"finalCreditAmount\": {\n          \"amountInCents\": 9140,\n          \"currency\": \"string\"\n        },\n        \"reverseCreditAmount\": {\n          \"amountInCents\": 8936,\n          \"currency\": \"string\"\n        },\n        \"transactionFinalStatus\": \"RECORD_FINAL_DECISION_TYPE_UNKNOWN\"\n      }\n    ],\n    \"auditLog\": [\n      {\n        \"timestamp\": \"string\",\n        \"eventType\": \"DISPUTE_EVENT_TYPE_UNKNOWN\",\n        \"agentEmail\": \"string\",\n        \"createDispute\": {\n          \"actions\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      },\n      {\n        \"timestamp\": \"string\",\n        \"eventType\": \"DISPUTE_EVENT_TYPE_UNKNOWN\",\n        \"agentEmail\": \"string\",\n        \"createDispute\": {\n          \"actions\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      }\n    ],\n    \"shortId\": \"string\",\n    \"reason\": \"DISPUTE_REASON_UNKNOWN\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f468e59b-b3c3-498e-85be-3ea2091c4156",
+              "name": "An unexpected error response.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "disputes"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orgUuid\": \"<string>\",\n  \"transactionDetails\": [\n    {\n      \"uuid\": \"string\",\n      \"settledTimestamp\": \"string\",\n      \"authorizedTimestamp\": \"string\",\n      \"amount\": {\n        \"amountInCents\": 4495,\n        \"currency\": \"string\"\n      },\n      \"merchant\": \"string\",\n      \"status\": \"TRANSACTION_STATUS_UNKNOWN\",\n      \"type\": \"TRANSACTION_TYPE_UNKNOWN\",\n      \"network\": \"TRANSACTION_NETWORK_UNKNOWN\",\n      \"arn\": \"string\",\n      \"location\": \"string\",\n      \"cardId\": \"string\",\n      \"visaTransactionId\": \"string\",\n      \"transactionSettledAmount\": {\n        \"amountInCents\": 3917,\n        \"currency\": \"string\"\n      },\n      \"typeCode\": \"string\",\n      \"ica\": \"string\",\n      \"cardType\": \"CARD_TYPE_UNKNOWN\"\n    },\n    {\n      \"uuid\": \"string\",\n      \"settledTimestamp\": \"string\",\n      \"authorizedTimestamp\": \"string\",\n      \"amount\": {\n        \"amountInCents\": 4901,\n        \"currency\": \"string\"\n      },\n      \"merchant\": \"string\",\n      \"status\": \"TRANSACTION_STATUS_UNKNOWN\",\n      \"type\": \"TRANSACTION_TYPE_UNKNOWN\",\n      \"network\": \"TRANSACTION_NETWORK_UNKNOWN\",\n      \"arn\": \"string\",\n      \"location\": \"string\",\n      \"cardId\": \"string\",\n      \"visaTransactionId\": \"string\",\n      \"transactionSettledAmount\": {\n        \"amountInCents\": 3278,\n        \"currency\": \"string\"\n      },\n      \"typeCode\": \"string\",\n      \"ica\": \"string\",\n      \"cardType\": \"CARD_TYPE_UNKNOWN\"\n    }\n  ],\n  \"customer\": {\n    \"uuid\": \"string\",\n    \"name\": \"string\",\n    \"email\": \"string\",\n    \"phone\": \"string\",\n    \"accountUuid\": \"string\",\n    \"address\": {\n      \"line1\": \"string\",\n      \"line2\": \"string\",\n      \"city\": \"string\",\n      \"state\": \"string\",\n      \"postalCode\": \"string\",\n      \"country\": \"string\"\n    },\n    \"externalIds\": {\n      \"key_0\": \"string\"\n    }\n  },\n  \"reason\": \"DISPUTE_REASON_UNKNOWN\",\n  \"questionnaireAnswers\": [\n    {\n      \"question\": \"string\",\n      \"answer\": \"string\",\n      \"questionId\": \"string\"\n    },\n    {\n      \"question\": \"string\",\n      \"answer\": \"string\",\n      \"questionId\": \"string\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 9335,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"@type\": \"string\",\n      \"key_0\": {},\n      \"key_1\": {}\n    },\n    {\n      \"@type\": \"string\",\n      \"key_0\": {}\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "5192f756-2d89-4b57-9cd2-fd8722aed2dc",
+          "name": "Upload a file",
+          "request": {
+            "name": "Upload a file",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "disputes",
+                ":disputeUuid",
+                "files"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "disputeUuid",
+                  "description": "(Required) The dispute UUID from the URL path"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileContent\": \"<string>\",\n  \"filename\": \"<string>\",\n  \"contentType\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "f1bd57c3-f3df-4d54-a3a4-ce082d6d7fc9",
+              "name": "A successful response.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "disputes",
+                    ":disputeUuid",
+                    "files"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "disputeUuid",
+                      "description": "(Required) The dispute UUID from the URL path"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fileContent\": \"<string>\",\n  \"filename\": \"<string>\",\n  \"contentType\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4a887dda-ab4a-4cd4-b91a-8c95dbd9a64c",
+              "name": "An unexpected error response.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "disputes",
+                    ":disputeUuid",
+                    "files"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "disputeUuid",
+                      "description": "(Required) The dispute UUID from the URL path"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fileContent\": \"<string>\",\n  \"filename\": \"<string>\",\n  \"contentType\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 9335,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"@type\": \"string\",\n      \"key_0\": {},\n      \"key_1\": {}\n    },\n    {\n      \"@type\": \"string\",\n      \"key_0\": {}\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "2056a53b-da38-4409-8181-8a452237283e",
+          "name": "Reopen a dispute",
+          "request": {
+            "name": "Reopen a dispute",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "disputes",
+                ":disputeUuid",
+                "reopen"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "disputeUuid",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transactionUuids\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "41bb33b4-0acd-4a6c-aa27-eb52c424638a",
+              "name": "A successful response.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "disputes",
+                    ":disputeUuid",
+                    "reopen"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "disputeUuid",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"transactionUuids\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"dispute\": {\n    \"uuid\": \"string\",\n    \"customer\": {\n      \"uuid\": \"string\",\n      \"name\": \"string\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"accountUuid\": \"string\",\n      \"address\": {\n        \"line1\": \"string\",\n        \"line2\": \"string\",\n        \"city\": \"string\",\n        \"state\": \"string\",\n        \"postalCode\": \"string\",\n        \"country\": \"string\"\n      },\n      \"externalIds\": {\n        \"key_0\": \"string\",\n        \"key_1\": \"string\"\n      }\n    },\n    \"resolutionDeadline\": \"string\",\n    \"agent\": {\n      \"uuid\": \"string\",\n      \"name\": \"string\",\n      \"email\": \"string\",\n      \"phone\": \"string\"\n    },\n    \"status\": \"DISPUTE_STATUS_UNKNOWN\",\n    \"transactions\": [\n      {\n        \"uuid\": \"string\",\n        \"settledTimestamp\": \"string\",\n        \"amount\": {\n          \"amountInCents\": 8210,\n          \"currency\": \"string\"\n        },\n        \"merchant\": \"string\",\n        \"status\": \"DISPUTED_TRANSACTION_STATUS_UNKNOWN\",\n        \"auditLog\": [\n          {\n            \"timestamp\": \"string\",\n            \"eventType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"agentEmail\": \"string\",\n            \"issueProvisionalCredit\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"recordFinalDecision\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"timestamp\": \"string\",\n            \"eventType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"agentEmail\": \"string\",\n            \"issueProvisionalCredit\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"recordFinalDecision\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ],\n        \"transactionStatus\": \"TRANSACTION_STATUS_UNKNOWN\",\n        \"provisionalCreditAmount\": {\n          \"amountInCents\": 4689,\n          \"currency\": \"string\"\n        },\n        \"finalCreditAmount\": {\n          \"amountInCents\": 9582,\n          \"currency\": \"string\"\n        },\n        \"reverseCreditAmount\": {\n          \"amountInCents\": 2326,\n          \"currency\": \"string\"\n        },\n        \"transactionFinalStatus\": \"RECORD_FINAL_DECISION_TYPE_UNKNOWN\"\n      },\n      {\n        \"uuid\": \"string\",\n        \"settledTimestamp\": \"string\",\n        \"amount\": {\n          \"amountInCents\": 742,\n          \"currency\": \"string\"\n        },\n        \"merchant\": \"string\",\n        \"status\": \"DISPUTED_TRANSACTION_STATUS_UNKNOWN\",\n        \"auditLog\": [\n          {\n            \"timestamp\": \"string\",\n            \"eventType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"agentEmail\": \"string\",\n            \"issueProvisionalCredit\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"recordFinalDecision\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"timestamp\": \"string\",\n            \"eventType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"agentEmail\": \"string\",\n            \"issueProvisionalCredit\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"recordFinalDecision\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ],\n        \"transactionStatus\": \"TRANSACTION_STATUS_UNKNOWN\",\n        \"provisionalCreditAmount\": {\n          \"amountInCents\": 4017,\n          \"currency\": \"string\"\n        },\n        \"finalCreditAmount\": {\n          \"amountInCents\": 9140,\n          \"currency\": \"string\"\n        },\n        \"reverseCreditAmount\": {\n          \"amountInCents\": 8936,\n          \"currency\": \"string\"\n        },\n        \"transactionFinalStatus\": \"RECORD_FINAL_DECISION_TYPE_UNKNOWN\"\n      }\n    ],\n    \"auditLog\": [\n      {\n        \"timestamp\": \"string\",\n        \"eventType\": \"DISPUTE_EVENT_TYPE_UNKNOWN\",\n        \"agentEmail\": \"string\",\n        \"createDispute\": {\n          \"actions\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      },\n      {\n        \"timestamp\": \"string\",\n        \"eventType\": \"DISPUTE_EVENT_TYPE_UNKNOWN\",\n        \"agentEmail\": \"string\",\n        \"createDispute\": {\n          \"actions\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      }\n    ],\n    \"shortId\": \"string\",\n    \"reason\": \"DISPUTE_REASON_UNKNOWN\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b4d18308-ac1e-4a43-9d65-577a8c11972c",
+              "name": "An unexpected error response.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "disputes",
+                    ":disputeUuid",
+                    "reopen"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "disputeUuid",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"transactionUuids\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 9335,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"@type\": \"string\",\n      \"key_0\": {},\n      \"key_1\": {}\n    },\n    {\n      \"@type\": \"string\",\n      \"key_0\": {}\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "http://api.casaphq.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "Authorization"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "c824da82-428c-4049-9c49-aeae15ec3364",
+    "name": "Casap Auth Disputes API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "",
+      "type": "text/plain"
+    }
+  }
+}
