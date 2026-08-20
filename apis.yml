@@ -49,6 +49,8 @@ apis:
   humanURL: https://docs.casaphq.com
   baseURL: https://api.casaphq.com
   tags:
+  - Authentication
+  tags_raw:
   - Auth
   properties:
   - type: OpenAPI
