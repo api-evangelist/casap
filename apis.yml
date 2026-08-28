@@ -8,6 +8,18 @@ description: 'Casap is an award-winning agentic-AI dispute automation platform f
   files, and reopen disputes, backed by a hosted disputes dashboard, PCI-DSS and SOC 2
   (AICPA) controls, and integrations with card networks (Visa, Mastercard) and core
   banking systems (Symitar/Jack Henry, STAR). Casap won Best of Show at FinovateFall 2025.'
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: unknown
   onboarding: self-serve
