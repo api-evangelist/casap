@@ -91,6 +91,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: CapabilityMap
+  url: capabilities/casap-capability-edges.yml
+  name: Casap Business Capability Map
 - type: WellKnown
   url: well-known/casap-well-known.yml
 - type: LLMsTxt

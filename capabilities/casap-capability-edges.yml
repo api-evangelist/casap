@@ -1,0 +1,26 @@
+slug: casap
+provider: Casap
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Banking & Capital Markets
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 1
+edges:
+- tag: Disputes
+  spec_file: casap-disputes-api-openapi.yml
+  capability_id: BC-1340.70
+  capability_id_l1: BC-1340
+  capability_name: Card Transaction Processing Management
+  confidence: 0.75
+  evidence: POST /v1/disputes  Disputes_Create  "Create a dispute"; schemas DisputedTransaction, TransactionNetwork,
+    FinalDecisionType, TransactionAuditLogRecordFinalDecisionAcceptedMerchantCredited
+  reason: Operations manage the lifecycle of card payment disputes (chargebacks) — intake, status, reopen,
+    evidence upload, merchant-credit decisions — which sits in card transaction processing / chargeback
+    handling. Some chance the intended fit is complaints or fraud investigation, hence 0.75.
