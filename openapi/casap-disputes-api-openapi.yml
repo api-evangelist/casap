@@ -1,6 +1,6 @@
-openapi: 3.1.1
+openapi: 3.2.0
 info:
-  title: Casap Auth Disputes API
+  title: Casap Disputes API
   version: 0.1.0
 servers:
 - url: http://api.casaphq.com
@@ -166,27 +166,28 @@ paths:
         required: true
 components:
   schemas:
-    TransactionAuditLogRecordFinalDecisionDenied:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionDeniedType'
-    TransactionAuditLogIssueProvisionalCredit:
-      type: object
-      properties:
-        amount:
-          $ref: '#/components/schemas/Amount'
-        actions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Action'
-    TransactionStatus:
+    TransactionAuditLogRecordFinalDecisionCanceledType:
       type: string
       enum:
-      - TRANSACTION_STATUS_UNKNOWN
-      - TRANSACTION_STATUS_PENDING
-      - TRANSACTION_STATUS_SETTLED
-      default: TRANSACTION_STATUS_UNKNOWN
+      - CANCELED_TYPE_UNKNOWN
+      - CANCELED_TYPE_CUSTOMER_REQUESTED
+      - CANCELED_TYPE_MERCHANT_CREDITED
+      - CANCELED_TYPE_AGENT_ERROR
+      - CANCELED_TYPE_OTHER
+      default: CANCELED_TYPE_UNKNOWN
+    CreateDisputeResponse:
+      type: object
+      properties:
+        dispute:
+          $ref: '#/components/schemas/DisputeSummary'
+    FinalDecisionType:
+      type: string
+      enum:
+      - RECORD_FINAL_DECISION_TYPE_UNKNOWN
+      - RECORD_FINAL_DECISION_TYPE_ACCEPTED
+      - RECORD_FINAL_DECISION_TYPE_DENIED
+      - RECORD_FINAL_DECISION_TYPE_CANCELED
+      default: RECORD_FINAL_DECISION_TYPE_UNKNOWN
     DisputeEventType:
       type: string
       enum:
@@ -205,76 +206,6 @@ components:
       - DISPUTE_EVENT_TYPE_UPLOAD_FILE
       - DISPUTE_EVENT_TYPE_COMMUNICATION
       default: DISPUTE_EVENT_TYPE_UNKNOWN
-    protobufAny:
-      type: object
-      properties:
-        '@type':
-          type: string
-      additionalProperties: {}
-    TransactionNetwork:
-      type: string
-      enum:
-      - TRANSACTION_NETWORK_UNKNOWN
-      - TRANSACTION_NETWORK_VISA
-      - TRANSACTION_NETWORK_MASTERCARD
-      - TRANSACTION_NETWORK_AMEX
-      default: TRANSACTION_NETWORK_UNKNOWN
-    DisputeAuditLogCreateDispute:
-      type: object
-      properties:
-        actions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Action'
-    TransactionAuditLogRecordFinalDecisionAcceptedMerchantCredited:
-      type: object
-      properties:
-        amount:
-          $ref: '#/components/schemas/Amount'
-        date:
-          type: string
-          format: int64
-    TransactionAuditLogRecordFinalDecisionCanceled:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionCanceledType'
-    TransactionAuditLog:
-      type: object
-      properties:
-        timestamp:
-          type: string
-          format: int64
-        eventType:
-          $ref: '#/components/schemas/TransactionEventType'
-        agentEmail:
-          type: string
-        issueProvisionalCredit:
-          $ref: '#/components/schemas/TransactionAuditLogIssueProvisionalCredit'
-        recordFinalDecision:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecision'
-    TransactionAuditLogRecordFinalDecisionDeniedType:
-      type: string
-      enum:
-      - DENIED_TYPE_UNKNOWN
-      - DENIED_TYPE_CHARGEBACK_LOST
-      - DENIED_TYPE_FRIENDLY_FRAUD
-      - DENIED_TYPE_INSUFFICIENT_EVIDENCE
-      - DENIED_TYPE_WSUD_REJECTED
-      - DENIED_TYPE_OTHER
-      - DENIED_TYPE_FIRST_PARTY_FRAUD
-      default: DENIED_TYPE_UNKNOWN
-    TransactionAuditLogRecordFinalDecisionAcceptedType:
-      type: string
-      enum:
-      - ACCEPTED_TYPE_UNKNOWN
-      - ACCEPTED_TYPE_ACCOUNT_TAKEOVER
-      - ACCEPTED_TYPE_CHARGEBACK_WON
-      - ACCEPTED_TYPE_MERCHANT_CREDITED
-      - ACCEPTED_TYPE_WRITE_OFF
-      - ACCEPTED_TYPE_WSUD_ACCEPTED
-      - ACCEPTED_TYPE_OTHER
-      default: ACCEPTED_TYPE_UNKNOWN
     TransactionType:
       type: string
       enum:
@@ -288,100 +219,6 @@ components:
       - TRANSACTION_TYPE_CREDIT_ACH
       - TRANSACTION_TYPE_CREDIT_TRANSFER
       default: TRANSACTION_TYPE_UNKNOWN
-    TransactionAuditLogRecordFinalDecisionAccepted:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionAcceptedType'
-        merchantCredited:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionAcceptedMerchantCredited'
-    Customer:
-      type: object
-      properties:
-        uuid:
-          type: string
-        name:
-          type: string
-        email:
-          type: string
-        phone:
-          type: string
-        accountUuid:
-          type: string
-        address:
-          $ref: '#/components/schemas/Address'
-        externalIds:
-          type: object
-          additionalProperties:
-            type: string
-    CreateDisputeRequest:
-      type: object
-      properties:
-        orgUuid:
-          type: string
-        transactionDetails:
-          type: array
-          items:
-            $ref: '#/components/schemas/TransactionDetail'
-        customer:
-          $ref: '#/components/schemas/Customer'
-        reason:
-          $ref: '#/components/schemas/DisputeReason'
-        questionnaireAnswers:
-          type: array
-          items:
-            $ref: '#/components/schemas/CreateDisputeRequestQuestionnaireAnswer'
-    TransactionEventType:
-      type: string
-      enum:
-      - TRANSACTION_EVENT_TYPE_UNKNOWN
-      - TRANSACTION_EVENT_TYPE_ISSUE_PROVISIONAL_CREDIT
-      - TRANSACTION_EVENT_TYPE_START_CHARGEBACK
-      - TRANSACTION_EVENT_TYPE_RECORD_REPRESENTMENT
-      - TRANSACTION_EVENT_TYPE_CHALLENGE_REPRESENTMENT
-      - TRANSACTION_EVENT_TYPE_FILE_PRE_ARB
-      - TRANSACTION_EVENT_TYPE_RECORD_PRE_ARB_RESPONSE
-      - TRANSACTION_EVENT_TYPE_CHALLENGE_PRE_ARB_RESPONSE
-      - TRANSACTION_EVENT_TYPE_FILE_ARB
-      - TRANSACTION_EVENT_TYPE_RECORD_ARB_RESPONSE
-      - TRANSACTION_EVENT_TYPE_CLOSE_CHARGEBACK
-      - TRANSACTION_EVENT_TYPE_RECORD_FINAL_DECISION
-      - TRANSACTION_EVENT_TYPE_REVERSE_PROVISIONAL_CREDIT
-      - TRANSACTION_EVENT_TYPE_SUBMIT_PC_FORM
-      - TRANSACTION_EVENT_TYPE_APPROVE_WSUD_REVIEW
-      - TRANSACTION_EVENT_TYPE_CLOSE_CHARGBACK
-      - TRANSACTION_EVENT_TYPE_SUBMIT_WSUD
-      - TRANSACTION_EVENT_TYPE_UPLOAD_WSUD_FILE
-      - TRANSACTION_EVENT_TYPE_RECORD_ODFI_RESPONSE
-      - TRANSACTION_EVENT_TYPE_CHECK_CHARGEBACK
-      - TRANSACTION_EVENT_TYPE_SUBMIT_FRAUD_REPORT
-      default: TRANSACTION_EVENT_TYPE_UNKNOWN
-    GetDisputesResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/DisputeSummary'
-        totalItems:
-          type: integer
-          format: int32
-        totalPages:
-          type: integer
-          format: int32
-        totalInPage:
-          type: integer
-          format: int32
-        currentPage:
-          type: integer
-          format: int32
-    DisputeStatus:
-      type: string
-      enum:
-      - DISPUTE_STATUS_UNKNOWN
-      - DISPUTE_STATUS_OPEN
-      - DISPUTE_STATUS_CLOSED
-      default: DISPUTE_STATUS_UNKNOWN
     DisputeAuditLog:
       type: object
       properties:
@@ -394,129 +231,6 @@ components:
           type: string
         createDispute:
           $ref: '#/components/schemas/DisputeAuditLogCreateDispute'
-    googlerpcStatus:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/protobufAny'
-    Action:
-      type: string
-      enum:
-      - ACTION_NONE
-      - ACTION_ISSUE_PROVISIONAL_CREDIT
-      - ACTION_ISSUE_FINAL_CREDIT
-      - ACTION_REVERSE_PROVISIONAL_CREDIT
-      - ACTION_REPLACE_CARD
-      default: ACTION_NONE
-    ReopenDisputeResponse:
-      type: object
-      properties:
-        dispute:
-          $ref: '#/components/schemas/DisputeSummary'
-    Amount:
-      type: object
-      properties:
-        amountInCents:
-          type: integer
-          format: int32
-        currency:
-          type: string
-    TransactionAuditLogRecordFinalDecision:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionType'
-        actions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Action'
-        accepted:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionAccepted'
-        denied:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionDenied'
-        canceled:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionCanceled'
-    GetDisputeStatusResponse:
-      type: object
-      properties:
-        dispute:
-          $ref: '#/components/schemas/DisputeSummary'
-    UploadFileResponse:
-      type: object
-    FinalDecisionType:
-      type: string
-      enum:
-      - RECORD_FINAL_DECISION_TYPE_UNKNOWN
-      - RECORD_FINAL_DECISION_TYPE_ACCEPTED
-      - RECORD_FINAL_DECISION_TYPE_DENIED
-      - RECORD_FINAL_DECISION_TYPE_CANCELED
-      default: RECORD_FINAL_DECISION_TYPE_UNKNOWN
-    TransactionDetail:
-      type: object
-      properties:
-        uuid:
-          type: string
-        settledTimestamp:
-          type: string
-          format: int64
-        authorizedTimestamp:
-          type: string
-          format: int64
-        amount:
-          $ref: '#/components/schemas/Amount'
-        merchant:
-          type: string
-        status:
-          $ref: '#/components/schemas/TransactionStatus'
-        type:
-          $ref: '#/components/schemas/TransactionType'
-        network:
-          $ref: '#/components/schemas/TransactionNetwork'
-        arn:
-          type: string
-        location:
-          type: string
-        cardId:
-          type: string
-        visaTransactionId:
-          type: string
-        transactionSettledAmount:
-          $ref: '#/components/schemas/Amount'
-        typeCode:
-          type: string
-        ica:
-          type: string
-        cardType:
-          $ref: '#/components/schemas/CardType'
-    CreateDisputeResponse:
-      type: object
-      properties:
-        dispute:
-          $ref: '#/components/schemas/DisputeSummary'
-    TransactionAuditLogRecordFinalDecisionCanceledType:
-      type: string
-      enum:
-      - CANCELED_TYPE_UNKNOWN
-      - CANCELED_TYPE_CUSTOMER_REQUESTED
-      - CANCELED_TYPE_MERCHANT_CREDITED
-      - CANCELED_TYPE_AGENT_ERROR
-      - CANCELED_TYPE_OTHER
-      default: CANCELED_TYPE_UNKNOWN
-    TransactionAuditLogRecordFinalDecisionType:
-      type: string
-      enum:
-      - RECORD_FINAL_DECISION_TYPE_UNKNOWN
-      - RECORD_FINAL_DECISION_TYPE_ACCEPTED
-      - RECORD_FINAL_DECISION_TYPE_DENIED
-      - RECORD_FINAL_DECISION_TYPE_CANCELED
-      default: RECORD_FINAL_DECISION_TYPE_UNKNOWN
     DisputedTransactionStatus:
       type: string
       enum:
@@ -553,19 +267,52 @@ components:
           type: string
         reason:
           $ref: '#/components/schemas/DisputeReason'
-    DisputesUploadFileBody:
+    TransactionAuditLog:
       type: object
       properties:
-        fileContent:
+        timestamp:
           type: string
-          title: The file content as raw bytes
-          contentEncoding: base64
-        filename:
+          format: int64
+        eventType:
+          $ref: '#/components/schemas/TransactionEventType'
+        agentEmail:
           type: string
-          title: 'Optional: original filename'
-        contentType:
+        issueProvisionalCredit:
+          $ref: '#/components/schemas/TransactionAuditLogIssueProvisionalCredit'
+        recordFinalDecision:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecision'
+    protobufAny:
+      type: object
+      properties:
+        '@type':
           type: string
-          title: 'Optional: MIME type of the file'
+      additionalProperties: {}
+    TransactionAuditLogRecordFinalDecisionAcceptedType:
+      type: string
+      enum:
+      - ACCEPTED_TYPE_UNKNOWN
+      - ACCEPTED_TYPE_ACCOUNT_TAKEOVER
+      - ACCEPTED_TYPE_CHARGEBACK_WON
+      - ACCEPTED_TYPE_MERCHANT_CREDITED
+      - ACCEPTED_TYPE_WRITE_OFF
+      - ACCEPTED_TYPE_WSUD_ACCEPTED
+      - ACCEPTED_TYPE_OTHER
+      default: ACCEPTED_TYPE_UNKNOWN
+    Address:
+      type: object
+      properties:
+        line1:
+          type: string
+        line2:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
     DisputeReason:
       type: string
       enum:
@@ -621,6 +368,73 @@ components:
           $ref: '#/components/schemas/Amount'
         transactionFinalStatus:
           $ref: '#/components/schemas/FinalDecisionType'
+    TransactionAuditLogRecordFinalDecisionDeniedType:
+      type: string
+      enum:
+      - DENIED_TYPE_UNKNOWN
+      - DENIED_TYPE_CHARGEBACK_LOST
+      - DENIED_TYPE_FRIENDLY_FRAUD
+      - DENIED_TYPE_INSUFFICIENT_EVIDENCE
+      - DENIED_TYPE_WSUD_REJECTED
+      - DENIED_TYPE_OTHER
+      - DENIED_TYPE_FIRST_PARTY_FRAUD
+      default: DENIED_TYPE_UNKNOWN
+    TransactionEventType:
+      type: string
+      enum:
+      - TRANSACTION_EVENT_TYPE_UNKNOWN
+      - TRANSACTION_EVENT_TYPE_ISSUE_PROVISIONAL_CREDIT
+      - TRANSACTION_EVENT_TYPE_START_CHARGEBACK
+      - TRANSACTION_EVENT_TYPE_RECORD_REPRESENTMENT
+      - TRANSACTION_EVENT_TYPE_CHALLENGE_REPRESENTMENT
+      - TRANSACTION_EVENT_TYPE_FILE_PRE_ARB
+      - TRANSACTION_EVENT_TYPE_RECORD_PRE_ARB_RESPONSE
+      - TRANSACTION_EVENT_TYPE_CHALLENGE_PRE_ARB_RESPONSE
+      - TRANSACTION_EVENT_TYPE_FILE_ARB
+      - TRANSACTION_EVENT_TYPE_RECORD_ARB_RESPONSE
+      - TRANSACTION_EVENT_TYPE_CLOSE_CHARGEBACK
+      - TRANSACTION_EVENT_TYPE_RECORD_FINAL_DECISION
+      - TRANSACTION_EVENT_TYPE_REVERSE_PROVISIONAL_CREDIT
+      - TRANSACTION_EVENT_TYPE_SUBMIT_PC_FORM
+      - TRANSACTION_EVENT_TYPE_APPROVE_WSUD_REVIEW
+      - TRANSACTION_EVENT_TYPE_CLOSE_CHARGBACK
+      - TRANSACTION_EVENT_TYPE_SUBMIT_WSUD
+      - TRANSACTION_EVENT_TYPE_UPLOAD_WSUD_FILE
+      - TRANSACTION_EVENT_TYPE_RECORD_ODFI_RESPONSE
+      - TRANSACTION_EVENT_TYPE_CHECK_CHARGEBACK
+      - TRANSACTION_EVENT_TYPE_SUBMIT_FRAUD_REPORT
+      default: TRANSACTION_EVENT_TYPE_UNKNOWN
+    UploadFileResponse:
+      type: object
+    DisputesReopenDisputeBody:
+      type: object
+      properties:
+        transactionUuids:
+          type: array
+          items:
+            type: string
+    TransactionAuditLogRecordFinalDecisionType:
+      type: string
+      enum:
+      - RECORD_FINAL_DECISION_TYPE_UNKNOWN
+      - RECORD_FINAL_DECISION_TYPE_ACCEPTED
+      - RECORD_FINAL_DECISION_TYPE_DENIED
+      - RECORD_FINAL_DECISION_TYPE_CANCELED
+      default: RECORD_FINAL_DECISION_TYPE_UNKNOWN
+    TransactionAuditLogRecordFinalDecisionAccepted:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionAcceptedType'
+        merchantCredited:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionAcceptedMerchantCredited'
+    TransactionStatus:
+      type: string
+      enum:
+      - TRANSACTION_STATUS_UNKNOWN
+      - TRANSACTION_STATUS_PENDING
+      - TRANSACTION_STATUS_SETTLED
+      default: TRANSACTION_STATUS_UNKNOWN
     CreateDisputeRequestQuestionnaireAnswer:
       type: object
       properties:
@@ -630,35 +444,87 @@ components:
           type: string
         questionId:
           type: string
-    DisputesReopenDisputeBody:
+    TransactionAuditLogRecordFinalDecisionCanceled:
       type: object
       properties:
-        transactionUuids:
-          type: array
-          items:
-            type: string
-    CardType:
+        type:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionCanceledType'
+    TransactionNetwork:
       type: string
       enum:
-      - CARD_TYPE_UNKNOWN
-      - CARD_TYPE_PHYSICAL
-      - CARD_TYPE_VIRTUAL
-      default: CARD_TYPE_UNKNOWN
-    Address:
+      - TRANSACTION_NETWORK_UNKNOWN
+      - TRANSACTION_NETWORK_VISA
+      - TRANSACTION_NETWORK_MASTERCARD
+      - TRANSACTION_NETWORK_AMEX
+      default: TRANSACTION_NETWORK_UNKNOWN
+    TransactionDetail:
       type: object
       properties:
-        line1:
+        uuid:
           type: string
-        line2:
+        settledTimestamp:
           type: string
-        city:
+          format: int64
+        authorizedTimestamp:
           type: string
-        state:
+          format: int64
+        amount:
+          $ref: '#/components/schemas/Amount'
+        merchant:
           type: string
-        postalCode:
+        status:
+          $ref: '#/components/schemas/TransactionStatus'
+        type:
+          $ref: '#/components/schemas/TransactionType'
+        network:
+          $ref: '#/components/schemas/TransactionNetwork'
+        arn:
           type: string
-        country:
+        location:
           type: string
+        cardId:
+          type: string
+        visaTransactionId:
+          type: string
+        transactionSettledAmount:
+          $ref: '#/components/schemas/Amount'
+        typeCode:
+          type: string
+        ica:
+          type: string
+        cardType:
+          $ref: '#/components/schemas/CardType'
+    TransactionAuditLogIssueProvisionalCredit:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/Amount'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Action'
+    DisputeStatus:
+      type: string
+      enum:
+      - DISPUTE_STATUS_UNKNOWN
+      - DISPUTE_STATUS_OPEN
+      - DISPUTE_STATUS_CLOSED
+      default: DISPUTE_STATUS_UNKNOWN
+    TransactionAuditLogRecordFinalDecision:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionType'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Action'
+        accepted:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionAccepted'
+        denied:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionDenied'
+        canceled:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionCanceled'
     Agent:
       type: object
       properties:
@@ -670,6 +536,140 @@ components:
           type: string
         phone:
           type: string
+    DisputeAuditLogCreateDispute:
+      type: object
+      properties:
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Action'
+    Amount:
+      type: object
+      properties:
+        amountInCents:
+          type: integer
+          format: int32
+        currency:
+          type: string
+    TransactionAuditLogRecordFinalDecisionDenied:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionDeniedType'
+    TransactionAuditLogRecordFinalDecisionAcceptedMerchantCredited:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/Amount'
+        date:
+          type: string
+          format: int64
+    CreateDisputeRequest:
+      type: object
+      properties:
+        orgUuid:
+          type: string
+        transactionDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionDetail'
+        customer:
+          $ref: '#/components/schemas/Customer'
+        reason:
+          $ref: '#/components/schemas/DisputeReason'
+        questionnaireAnswers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateDisputeRequestQuestionnaireAnswer'
+    DisputesUploadFileBody:
+      type: object
+      properties:
+        fileContent:
+          type: string
+          title: The file content as raw bytes
+          contentEncoding: base64
+        filename:
+          type: string
+          title: 'Optional: original filename'
+        contentType:
+          type: string
+          title: 'Optional: MIME type of the file'
+    GetDisputeStatusResponse:
+      type: object
+      properties:
+        dispute:
+          $ref: '#/components/schemas/DisputeSummary'
+    ReopenDisputeResponse:
+      type: object
+      properties:
+        dispute:
+          $ref: '#/components/schemas/DisputeSummary'
+    GetDisputesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DisputeSummary'
+        totalItems:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        totalInPage:
+          type: integer
+          format: int32
+        currentPage:
+          type: integer
+          format: int32
+    CardType:
+      type: string
+      enum:
+      - CARD_TYPE_UNKNOWN
+      - CARD_TYPE_PHYSICAL
+      - CARD_TYPE_VIRTUAL
+      default: CARD_TYPE_UNKNOWN
+    googlerpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+    Action:
+      type: string
+      enum:
+      - ACTION_NONE
+      - ACTION_ISSUE_PROVISIONAL_CREDIT
+      - ACTION_ISSUE_FINAL_CREDIT
+      - ACTION_REVERSE_PROVISIONAL_CREDIT
+      - ACTION_REPLACE_CARD
+      default: ACTION_NONE
+    Customer:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        accountUuid:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+        externalIds:
+          type: object
+          additionalProperties:
+            type: string
   securitySchemes:
     api_key:
       type: apiKey

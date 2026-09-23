@@ -16,7 +16,7 @@ actions:
   - target: $.paths['/v1/disputes'].get
     update:
       x-apievangelist-pagination: page-number
-notes: |
+x-notes: |
   This overlay records API Evangelist enhancements over the harvested Casap
   OpenAPI. The scorer reads the original spec; this improves our derived
   artifacts, not the provider's raw content score. The original openapi/ file is

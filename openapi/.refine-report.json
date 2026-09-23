@@ -1,8 +1,7 @@
 {
   "provider": "casap",
   "sources": [
-    "casap-auth-api-openapi.yml",
-    "casap-disputes-api-openapi.yml"
+    "_original/casap-openapi.json"
   ],
   "outputs": [
     "casap-auth-api-openapi.yml",
@@ -11,6 +10,13 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "casap-openapi.json: upgraded openapi 3.1.1 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "casap-auth-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "casap-disputes-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

@@ -1,4 +1,4 @@
-openapi: 3.1.1
+openapi: 3.2.0
 info:
   title: Casap Auth API
   version: 0.1.0
@@ -31,12 +31,6 @@ paths:
       - Auth
 components:
   schemas:
-    protobufAny:
-      type: object
-      properties:
-        '@type':
-          type: string
-      additionalProperties: {}
     googlerpcStatus:
       type: object
       properties:
@@ -57,6 +51,12 @@ components:
         expiresAt:
           type: string
           format: int64
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+      additionalProperties: {}
   securitySchemes:
     api_key:
       type: apiKey
