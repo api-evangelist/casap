@@ -31,6 +31,14 @@ paths:
       - Auth
 components:
   schemas:
+    AuthenticateResponse:
+      type: object
+      properties:
+        sessionToken:
+          type: string
+        expiresAt:
+          type: string
+          format: int64
     googlerpcStatus:
       type: object
       properties:
@@ -43,14 +51,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/protobufAny'
-    AuthenticateResponse:
-      type: object
-      properties:
-        sessionToken:
-          type: string
-        expiresAt:
-          type: string
-          format: int64
     protobufAny:
       type: object
       properties:
