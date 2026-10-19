@@ -1,0 +1,4046 @@
+openapi: 3.2.0
+info:
+  title: Casap Organizations API
+  description: 'Public API for dispute creation and management. Recommended flow: List Accounts -> List Disputable Transactions -> Eligibility Check -> Get Dispute Reasons -> Get Questionnaire -> Create Dispute -> Upload Files (optional). List Member Disputes and Get Dispute Status power the member''s dispute screens.'
+  version: '1.0'
+security:
+- api_key: []
+tags:
+- name: Organizations
+paths:
+  /v1/organizations/{organizationUuid}/config:
+    get:
+      summary: buf:lint:ignore RPC_REQUEST_STANDARD_NAME buf:lint:ignore…
+      operationId: Organizations_GetConfig
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetOrganizationConfigResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+      parameters:
+      - name: organizationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - Organizations
+  /v1/organizations/{organizationUuid}/questionnaires/{disputeReason}/{transactionType}:
+    get:
+      summary: buf:lint:ignore RPC_REQUEST_STANDARD_NAME buf:lint:ignore…
+      operationId: Organizations_GetQuestionnaire
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetOrganizationQuestionnaireResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+      parameters:
+      - name: organizationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: disputeReason
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - DISPUTE_REASON_UNKNOWN
+          - DISPUTE_REASON_UNAUTH
+          - DISPUTE_REASON_MERCHANT_ISSUE
+          - DISPUTE_REASON_ATM_ISSUE
+          - DISPUTE_REASON_ACH_ISSUE
+          - DISPUTE_REASON_TRANSFER_ISSUE
+          - DISPUTE_REASON_ATM_ISSUE_CASH_NOT_DISPENSED
+          - DISPUTE_REASON_MERCHANT_ISSUE_GOODS_OR_SERVICES_NOT_RECEIVED
+          - DISPUTE_REASON_MERCHANT_ISSUE_GOODS_OR_SERVICES_NOT_AS_DESCRIBED
+          - DISPUTE_REASON_MERCHANT_ISSUE_RETURNED
+          - DISPUTE_REASON_MERCHANT_ISSUE_CANCELED_SUBSCRIPTION
+          - DISPUTE_REASON_MERCHANT_ISSUE_REFUND_NOT_RECEIVED
+          - DISPUTE_REASON_MERCHANT_ISSUE_CHARGED_INCORRECT_AMOUNT
+          - DISPUTE_REASON_MERCHANT_ISSUE_PAID_BY_OTHER_MEANS
+          - DISPUTE_REASON_TRANSFER_ISSUE_NOT_RECEIVED
+          - DISPUTE_REASON_TRANSFER_ISSUE_INCORRECT_RECIPIENT
+          - DISPUTE_REASON_TRANSFER_ISSUE_INCORRECT_AMOUNT
+          - DISPUTE_REASON_TRANSFER_ISSUE_DUPLICATE_CHARGE
+          - DISPUTE_REASON_ATM_ISSUE_PARTIAL_CASH
+          - DISPUTE_REASON_MERCHANT_ISSUE_DUPLICATE_CHARGE
+          - DISPUTE_REASON_ATM_ISSUE_CASH_NOT_DEPOSITED
+          - DISPUTE_REASON_TRANSFER_ISSUE_FAILED_CANCELLATION
+          - DISPUTE_REASON_ACH_ISSUE_REVOKED
+          - DISPUTE_REASON_ACH_ISSUE_GOODS_OR_SERVICES
+          - DISPUTE_REASON_ACH_ISSUE_INCOMPLETE_TRANSACTION
+          - DISPUTE_REASON_ACH_ISSUE_IMPROPER_CHECK_PROCESSED
+          - DISPUTE_REASON_ACH_ISSUE_INCORRECT_AMOUNT
+          - DISPUTE_REASON_ACH_ISSUE_INCORRECT_DATE
+          - DISPUTE_REASON_ACH_ISSUE_DEBITED_MORE_THAN_ONCE
+          - DISPUTE_REASON_ACH_ISSUE_UNPROMPTED_DEBIT
+          - DISPUTE_REASON_ATM_ISSUE_DEPOSIT_NOT_POSTED
+          - DISPUTE_REASON_IN_STORE_CASH_NOT_DEPOSITED
+          - DISPUTE_REASON_CHECK_ISSUE
+          - DISPUTE_REASON_CHECK_ISSUE_FORGED_DRAWER
+          - DISPUTE_REASON_CHECK_ISSUE_ENDORSEMENT_FORGED
+          - DISPUTE_REASON_CHECK_ISSUE_PAYEE_NAME_ALTERED
+          - DISPUTE_REASON_CHECK_ISSUE_NOT_ENDORSED_BY_PAYEE
+          - DISPUTE_REASON_CHECK_ISSUE_ALTERED_AMOUNT
+          - DISPUTE_REASON_CHECK_ISSUE_COUNTERFEIT_CHECK
+          - DISPUTE_REASON_CHECK_ISSUE_UNAUTHORIZED_DRAFT
+          - DISPUTE_REASON_ACH_CREDIT_ISSUE
+          - DISPUTE_REASON_CREDIT_NOT_PROCESSED
+          - DISPUTE_REASON_CANCELLED_TRANSACTION
+          - DISPUTE_REASON_MERCHANDISE_RETURNED
+          - DISPUTE_REASON_MERCHANT_ISSUE_SERVICES_CANCELLED
+      - name: transactionType
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - TRANSACTION_TYPE_UNKNOWN
+          - TRANSACTION_TYPE_DEBIT_CARD
+          - TRANSACTION_TYPE_CREDIT_CARD
+          - TRANSACTION_TYPE_ATM
+          - TRANSACTION_TYPE_ACH
+          - TRANSACTION_TYPE_TRANSFER
+          - TRANSACTION_TYPE_CREDIT_ATM
+          - TRANSACTION_TYPE_CREDIT_ACH
+          - TRANSACTION_TYPE_CREDIT_TRANSFER
+      tags:
+      - Organizations
+  /v1/organizations/{organizationUuid}/register-aba:
+    post:
+      operationId: Organizations_RegisterABA
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1RegisterABAResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+      parameters:
+      - name: organizationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - Organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationsRegisterABABody'
+        required: true
+      summary: Organizations register ABA
+      x-summary-source: derived
+components:
+  schemas:
+    commonCustomer:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        accountUuid:
+          type: string
+        uuid:
+          type: string
+    eventsResendCommunication:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+        transactionUuid:
+          type: string
+        eventUuid:
+          type: string
+    actionsGetSECCodeModalAction:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+        transactionUuid:
+          type: string
+        extendedNachaEnabled:
+          type: boolean
+    eventsReplaceCard:
+      type: object
+    sharedStyledTextWithIconKey:
+      type: object
+      properties:
+        icon:
+          $ref: '#/components/schemas/sharedIcon'
+        text:
+          $ref: '#/components/schemas/sharedStyledText'
+    commonMastercardReasonCategory:
+      type: string
+      enum:
+      - MASTERCARD_REASON_CATEGORY_UNKNOWN
+      - MASTERCARD_REASON_CATEGORY_FRAUD
+      - MASTERCARD_REASON_CATEGORY_AUTHORIZAION
+      - MASTERCARD_REASON_CATEGORY_POINT_OF_INTERACTION_ERROR
+      - MASTERCARD_REASON_CATEGORY_CARDHOLDER_DISPUTES
+      default: MASTERCARD_REASON_CATEGORY_UNKNOWN
+    eventsRecordRepresentment:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        resolution:
+          $ref: '#/components/schemas/eventsRecordRepresentmentResolution'
+    sharedComponent:
+      type: object
+      properties:
+        name:
+          type: string
+        isDisabled:
+          type: boolean
+        isReadonly:
+          type: boolean
+        isHidden:
+          type: boolean
+        alignment:
+          $ref: '#/components/schemas/sharedComponentAlignment'
+        layout:
+          $ref: '#/components/schemas/sharedComponentLayout'
+        type:
+          $ref: '#/components/schemas/sharedComponentType'
+        label:
+          $ref: '#/components/schemas/sharedLabel'
+        badge:
+          $ref: '#/components/schemas/sharedBadge'
+        image:
+          $ref: '#/components/schemas/sharedImage'
+        button:
+          $ref: '#/components/schemas/sharedButton'
+        link:
+          $ref: '#/components/schemas/sharedLink'
+        icon:
+          $ref: '#/components/schemas/sharedIcon'
+        dropdown:
+          $ref: '#/components/schemas/sharedDropdown'
+        radioGroup:
+          $ref: '#/components/schemas/sharedRadioGroup'
+        checkboxGroup:
+          $ref: '#/components/schemas/sharedCheckboxGroup'
+        textInput:
+          $ref: '#/components/schemas/sharedTextInput'
+        radioList:
+          $ref: '#/components/schemas/sharedRadioList'
+        dateTime:
+          $ref: '#/components/schemas/sharedDateTime'
+        files:
+          $ref: '#/components/schemas/sharedFiles'
+        file:
+          $ref: '#/components/schemas/sharedFile'
+        styledTextWithIconKey:
+          $ref: '#/components/schemas/sharedStyledTextWithIconKey'
+        actionButton:
+          $ref: '#/components/schemas/sharedActionButton'
+        phoneInput:
+          $ref: '#/components/schemas/sharedPhoneInput'
+        checkbox:
+          $ref: '#/components/schemas/sharedCheckbox'
+        cardInput:
+          $ref: '#/components/schemas/sharedCardInput'
+        filePreSigned:
+          $ref: '#/components/schemas/sharedFilePreSigned'
+        searchModal:
+          $ref: '#/components/schemas/sharedSearchModalButton'
+        buttonGroup:
+          $ref: '#/components/schemas/sharedButtonGroup'
+        markdown:
+          $ref: '#/components/schemas/sharedMarkdown'
+        speechBubble:
+          $ref: '#/components/schemas/sharedSpeechBubble'
+    DeniedAuthorizedTransaction:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/DeniedAuthorizedTransactionType'
+    eventsUpdateAccountNumber:
+      type: object
+      properties:
+        accountNumber:
+          type: string
+    eventsRecordArbResponseResolution:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/eventsRecordArbResponseResolutionType'
+    actionsMarkAsReadAction:
+      type: object
+      properties:
+        tableType:
+          $ref: '#/components/schemas/MarkAsReadActionTableType'
+        key:
+          type: string
+    eventsUpdateNetworkDetails:
+      type: object
+      properties:
+        network:
+          $ref: '#/components/schemas/commonNetworkType'
+        visa:
+          $ref: '#/components/schemas/UpdateNetworkDetailsUpdateNetworkDetailsVisa'
+        mastercard:
+          $ref: '#/components/schemas/UpdateNetworkDetailsUpdateNetworkDetailsMastercard'
+      description: 'UpdateNetworkDetails sets the network and network-specific identifiers on a
+
+        transaction. Used by automation job actions (e.g. before filing a chargeback)
+
+        to record the VROL transaction ID from the network response, and by the
+
+        dispute details UI to submit user-provided network identifiers.'
+    v1Questionnaire:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/v1QuestionnaireType'
+        steps:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/v1FormStep'
+    eventsReversalPostmarkTimeout:
+      type: object
+    IssueProvisionalCreditinfo:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/commonAmount'
+        issuedDate:
+          type: string
+          format: date-time
+        issuedType:
+          $ref: '#/components/schemas/infoissuedType'
+      title: buf:lint:ignore MESSAGE_PASCAL_CASE
+    commonUser:
+      type: object
+      properties:
+        uuid:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+    actionsRefreshLocalAddressAction:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+    v1TransactionTypeMatch:
+      type: object
+      properties:
+        type:
+          type: string
+        text:
+          type: string
+    sharedFile:
+      type: object
+      properties:
+        name:
+          type: string
+        data:
+          type: string
+          format: byte
+        uuid:
+          type: string
+        url:
+          type: string
+        size:
+          type: string
+        uploadedAt:
+          type: string
+        creatorTypePicker:
+          $ref: '#/components/schemas/sharedFileMetadataPicker'
+        stagePicker:
+          $ref: '#/components/schemas/sharedFileMetadataPicker'
+        transactionIds:
+          type: array
+          items:
+            type: string
+        renderOnDemand:
+          type: boolean
+    actionsGetWarrantyModalAction:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+        transactionUuid:
+          type: string
+    sharedComponentType:
+      type: string
+      enum:
+      - COMPONENT_TYPE_UNKNOWN
+      - COMPONENT_TYPE_LABEL
+      - COMPONENT_TYPE_BADGE
+      - COMPONENT_TYPE_IMAGE
+      - COMPONENT_TYPE_BUTTON
+      - COMPONENT_TYPE_LINK
+      - COMPONENT_TYPE_ICON
+      - COMPONENT_TYPE_DROPDOWN
+      - COMPONENT_TYPE_RADIOGROUP
+      - COMPONENT_TYPE_CHECKBOXGROUP
+      - COMPONENT_TYPE_TEXTINPUT
+      - COMPONENT_TYPE_RADIOLIST
+      - COMPONENT_TYPE_DATE_TIME
+      - COMPONENT_TYPE_FILES
+      - COMPONENT_TYPE_FILE
+      - COMPONENT_TYPE_STYLED_TEXT_WITH_ICON_KEY
+      - COMPONENT_TYPE_ACTION_BUTTON
+      - COMPONENT_TYPE_PHONE_INPUT
+      - COMPONENT_TYPE_CARD_INPUT
+      - COMPONENT_TYPE_CARD_DETAILS
+      - COMPONENT_TYPE_CHECKBOX
+      - COMPONENT_TYPE_FILE_PRE_SIGNED
+      - COMPONENT_TYPE_SEARCH_MODAL
+      - COMPONENT_TYPE_BUTTON_GROUP
+      - COMPONENT_TYPE_MARKDOWN
+      - COMPONENT_TYPE_SPEECH_BUBBLE
+      default: COMPONENT_TYPE_UNKNOWN
+    eventsRecordOdfiResponseResolutionType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_ACCEPTED
+      - TYPE_REJECTED
+      default: TYPE_UNKNOWN
+    eventsCheckNetworkChargebackData:
+      type: object
+      properties:
+        network:
+          $ref: '#/components/schemas/commonNetworkType'
+    commonMastercardReason:
+      type: object
+      properties:
+        category:
+          $ref: '#/components/schemas/commonMastercardReasonCategory'
+        type:
+          $ref: '#/components/schemas/commonMastercardReasonType'
+        subreason:
+          $ref: '#/components/schemas/commonMastercardSubreason'
+        subreasonEvidence:
+          type: string
+        chargebackJustification:
+          type: string
+        files:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/commonFile'
+        info:
+          $ref: '#/components/schemas/commonMastercardReasonInfo'
+        fraudStatementFile:
+          $ref: '#/components/schemas/commonFile'
+    eventsSubmitFraudReport:
+      type: object
+      properties:
+        network:
+          $ref: '#/components/schemas/commonNetworkType'
+          description: 'Deprecated: network is derived from the transaction; use form instead.'
+        visa:
+          $ref: '#/components/schemas/SubmitFraudReportVisaInfo'
+          description: 'Deprecated: use form instead.'
+        form:
+          type: object
+          description: 'Generic key-value form payload submitted by the user.
+
+            Keys: fraudType, issuerGenAuth, rolTransactionId, arn.'
+    AcceptedWriteOff:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/AcceptedWriteOffType'
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: 'Identifies the type of the serialized Protobuf message with a URI reference
+
+            consisting of a prefix ending in a slash and the fully-qualified type name.
+
+
+            Example: type.googleapis.com/google.protobuf.StringValue
+
+
+            This string must contain at least one `/` character, and the content after
+
+            the last `/` must be the fully-qualified name of the type in canonical
+
+            form, without a leading dot. Do not write a scheme on these URI references
+
+            so that clients do not attempt to contact them.
+
+
+            The prefix is arbitrary and Protobuf implementations are expected to
+
+            simply strip off everything up to and including the last `/` to identify
+
+            the type. `type.googleapis.com/` is a common default prefix that some
+
+            legacy implementations require. This prefix does not indicate the origin of
+
+            the type, and URIs containing it are not expected to respond to any
+
+            requests.
+
+
+            All type URL strings must be legal URI references with the additional
+
+            restriction (for the text format) that the content of the reference
+
+            must consist only of alphanumeric characters, percent-encoded escapes, and
+
+            characters in the following set (not including the outer backticks):
+
+            `/-.~_!$&()*+,;=`. Despite our allowing percent encodings, implementations
+
+            should not unescape them to prevent confusion with existing parsers. For
+
+            example, `type.googleapis.com%2FFoo` should be rejected.
+
+
+            In the original design of `Any`, the possibility of launching a type
+
+            resolution service at these type URLs was considered but Protobuf never
+
+            implemented one and considers contacting these URLs to be problematic and
+
+            a potential security issue. Do not attempt to contact type URLs.'
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nIn its binary encoding, an `Any` is an ordinary message; but in other wire\nforms like JSON, it has a special encoding. The format of the type URL is\ndescribed on the `type_url` field.\n\nProtobuf APIs provide utilities to interact with `Any` values:\n\n- A 'pack' operation accepts a message and constructs a generic `Any` wrapper\n  around it.\n- An 'unpack' operation reads the content of an `Any` message, either into an\n  existing message or a new one. Unpack operations must check the type of the\n  value they unpack against the declared `type_url`.\n- An 'is' operation decides whether an `Any` contains a message of the given\n  type, i.e. whether it can 'unpack' that type.\n\nThe JSON format representation of an `Any` follows one of these cases:\n\n- For types without special-cased JSON encodings, the JSON format\n  representation of the `Any` is the same as that of the message, with an\n  additional `@type` field which contains the type URL.\n- For types with special-cased JSON encodings (typically called 'well-known'\n  types, listed in https://protobuf.dev/programming-guides/json/#any), the\n  JSON format representation has a key `@type` which contains the type URL\n  and a key `value` which contains the JSON-serialized value.\n\nThe text format representation of an `Any` is like a message with one field\nwhose name is the type URL in brackets. For example, an `Any` containing a\n`foo.Bar` message may be written `[type.googleapis.com/foo.Bar] { a: 2 }`."
+    sharedCommonAction:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/sharedCommonActionType'
+        callback:
+          $ref: '#/components/schemas/actionsCallbackAction'
+        common:
+          $ref: '#/components/schemas/actionsAction'
+    eventsRecordArbResponseResolutionType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_ACCEPTED
+      - TYPE_REJECTED
+      default: TYPE_UNKNOWN
+    commonVisaChargebackReasonType:
+      type: string
+      enum:
+      - VISA_CHARGEBACK_REASON_TYPE_UNKNOWN
+      - VISA_CHARGEBACK_REASON_TYPE_FRAUD
+      - VISA_CHARGEBACK_REASON_TYPE_AUTHORIZATION
+      - VISA_CHARGEBACK_REASON_TYPE_PROCESSING_ERROR
+      - VISA_CHARGEBACK_REASON_TYPE_CONSUMER_DISPUTE
+      default: VISA_CHARGEBACK_REASON_TYPE_UNKNOWN
+    AppendAlignments:
+      type: string
+      enum:
+      - ALIGNMENT_END
+      default: ALIGNMENT_END
+      description: '- ALIGNMENT_END: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+      title: buf:lint:ignore ENUM_VALUE_PREFIX
+    v1Flags:
+      type: object
+      properties:
+        disputesEnabled:
+          type: boolean
+        unauthDisputesEnabled:
+          type: boolean
+        fileUploadsEnabled:
+          type: boolean
+        iframeEnabled:
+          type: boolean
+        fullAccountMatchersEnabled:
+          type: boolean
+        nameMatcherEnabled:
+          type: boolean
+    ResolutionDeniedATMData:
+      type: object
+      properties:
+        number:
+          type: string
+        location:
+          type: string
+    sharedRadioListSize:
+      type: string
+      enum:
+      - SIZE_BASE
+      - SIZE_SM
+      - SIZE_LG
+      default: SIZE_BASE
+      title: '- SIZE_BASE: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    actionsDisputeEventAction:
+      type: object
+      properties:
+        version:
+          $ref: '#/components/schemas/actionsDisputeEventActionProtocolVersion'
+        v1:
+          $ref: '#/components/schemas/actionsDisputeEventActionV1'
+    DeniedCustom:
+      type: object
+      properties:
+        message:
+          type: string
+    sharedSelectMenu:
+      type: object
+      properties:
+        selectMenuData:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/SelectMenuSelectMenuData'
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        selectMenuName:
+          type: string
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        selectedKeyValue:
+          type: string
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        nullValue:
+          type: string
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        color:
+          $ref: '#/components/schemas/sharedColor'
+        disputeAction:
+          $ref: '#/components/schemas/sharedDisputeAction'
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+    UpdateNetworkDetailsUpdateNetworkDetailsMastercard:
+      type: object
+      properties:
+        clearingTransactionId:
+          type: string
+    eventsUnassignAgent:
+      type: object
+    sharedDecoration:
+      type: string
+      enum:
+      - NONE
+      - UNDERLINE
+      - OVERLINE
+      - LINE_THROUGH
+      default: NONE
+      description: '- NONE: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+      title: buf:lint:ignore ENUM_VALUE_PREFIX
+    ResolutionAcceptedOther:
+      type: object
+      properties:
+        reason:
+          type: string
+    RadioGroupRadioItem:
+      type: object
+      properties:
+        keyValue:
+          type: string
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        displayValue:
+          type: string
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        isDisabled:
+          type: boolean
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        append:
+          $ref: '#/components/schemas/RadioGroupRadioItemAppend'
+    RadioGroupRadioGroupChangeAction:
+      type: string
+      enum:
+      - ON_CHANGE_ACTION_UNKNOWN
+      - ON_CHANGE_ACTION_SUBMIT_PC_FORM
+      default: ON_CHANGE_ACTION_UNKNOWN
+      title: buf:lint:ignore ENUM_VALUE_PREFIX
+    eventsAnswerIntakeQuestionnaire:
+      type: object
+      properties:
+        answers:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/AnswerIntakeQuestionnaireAnswer'
+    sharedSearchModalButton:
+      type: object
+      properties:
+        button:
+          $ref: '#/components/schemas/sharedButton'
+        query:
+          $ref: '#/components/schemas/sharedSearchModalQuery'
+    sharedButtonGroupSize:
+      type: string
+      enum:
+      - SIZE_BASE
+      - SIZE_SM
+      - SIZE_LG
+      default: SIZE_BASE
+      title: '- SIZE_BASE: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    actionsNavigationAction:
+      type: object
+      properties:
+        version:
+          $ref: '#/components/schemas/actionsNavigationActionProtocolVersion'
+        v1:
+          $ref: '#/components/schemas/actionsNavigationActionV1'
+    actionsMarkAsPrintedAction:
+      type: object
+      properties:
+        key:
+          type: string
+    eventsExtendAffidavitWindow:
+      type: object
+      properties:
+        newDeadline:
+          type: string
+          format: int64
+    commonVisaChargebackReason:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/commonVisaChargebackReasonType'
+        code:
+          $ref: '#/components/schemas/commonVisaReasonCode'
+        questionnaire:
+          type: object
+          description: 'TODO: Quick hack to get questionnaire out sooner. Needs type safety.'
+    DeniedMerchantIssues:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/DeniedMerchantIssuesType'
+        cancellationDate:
+          type: string
+          format: int64
+    commonAmount:
+      type: object
+      properties:
+        cents:
+          type: integer
+          format: int32
+        currency:
+          type: string
+    eventsUnassignAndEscalateToChargeback:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+    infoissuedType:
+      type: string
+      enum:
+      - ISSUED_TYPE_UNKNOWN
+      - ISSUED_TYPE_AS_PROVISIONAL_CREDIT
+      - ISSUED_TYPE_AS_APPEASEMENT
+      default: ISSUED_TYPE_UNKNOWN
+      title: buf:lint:ignore ENUM_PASCAL_CASE
+    eventsSubmitPcForm:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        timestamp:
+          type: string
+          format: int64
+        status:
+          $ref: '#/components/schemas/eventsSubmitPcFormStatus'
+    AnswertextInput:
+      type: object
+      properties:
+        answer:
+          type: string
+      title: buf:lint:ignore MESSAGE_PASCAL_CASE
+    sharedDropdownCommonActionType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_CALLBACK
+      - TYPE_COMMON
+      default: TYPE_UNKNOWN
+    eventsUpdateChargebackEligibility:
+      type: object
+      properties:
+        eligibility:
+          $ref: '#/components/schemas/commonChargebackEligibility'
+        previousEligibility:
+          $ref: '#/components/schemas/commonChargebackEligibility'
+      description: 'UpdateChargebackEligibility records a change in a transaction''s chargeback
+
+        eligibility. The producer stamps previous_eligibility from the value it read,
+
+        so replaying the stream reconstructs the full transition rather than only the
+
+        latest verdict.'
+    sharedSize:
+      type: string
+      enum:
+      - SIZE_TEXT_XS
+      - SIZE_TEXT_SM
+      - SIZE_TEXT_BASE
+      - SIZE_TEXT_LG
+      - SIZE_TEXT_XL
+      - SIZE_TEXT_2XL
+      - SIZE_TEXT_3XL
+      - SIZE_TEXT_4XL
+      - SIZE_TEXT_5XL
+      - SIZE_TEXT_6XL
+      - SIZE_TEXT_7XL
+      - SIZE_TEXT_8XL
+      - SIZE_TEXT_9XL
+      default: SIZE_TEXT_XS
+      title: '- SIZE_TEXT_XS: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    ColorsBackground:
+      type: object
+      properties:
+        primary:
+          type: string
+        secondary:
+          type: string
+    DeniedMerchantBankDenial:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/DeniedMerchantBankDenialType'
+    sharedIcon:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/sharedIconType'
+        color:
+          $ref: '#/components/schemas/sharedTextColor'
+        width:
+          type: integer
+          format: int32
+        height:
+          type: integer
+          format: int32
+        withBackground:
+          type: boolean
+    eventsRequestLateReturn:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        dateRequested:
+          type: string
+          format: int64
+    actionsAction:
+      type: object
+      properties:
+        navigation:
+          $ref: '#/components/schemas/actionsNavigationAction'
+        refreshArn:
+          $ref: '#/components/schemas/actionsRefreshARNAction'
+        getMcomDetails:
+          $ref: '#/components/schemas/actionsGetMcomDetailsAction'
+        markAsRead:
+          $ref: '#/components/schemas/actionsMarkAsReadAction'
+        refreshLocalAddress:
+          $ref: '#/components/schemas/actionsRefreshLocalAddressAction'
+        markAsPrinted:
+          $ref: '#/components/schemas/actionsMarkAsPrintedAction'
+        downloadPdf:
+          $ref: '#/components/schemas/actionsDownloadPDFAction'
+        getArnModal:
+          $ref: '#/components/schemas/actionsGetArnModalAction'
+        resetNetworkDetails:
+          $ref: '#/components/schemas/actionsResetNetworkDetailsAction'
+        getParModal:
+          $ref: '#/components/schemas/actionsGetParModalAction'
+        getSecCodeModal:
+          $ref: '#/components/schemas/actionsGetSECCodeModalAction'
+        getCustomerTypeModal:
+          $ref: '#/components/schemas/actionsGetCustomerTypeModalAction'
+        getAccountNumberModal:
+          $ref: '#/components/schemas/actionsGetAccountNumberModalAction'
+        getWarrantyModal:
+          $ref: '#/components/schemas/actionsGetWarrantyModalAction'
+    AnswercheckboxGroup:
+      type: object
+      properties:
+        answerKeys:
+          type: array
+          items:
+            type: string
+      title: buf:lint:ignore MESSAGE_PASCAL_CASE
+    sharedFilePreSigned:
+      type: object
+      properties:
+        name:
+          type: string
+        multiple:
+          type: boolean
+    sharedColor:
+      type: string
+      enum:
+      - COLOR_PRIMARY
+      - COLOR_SECONDARY
+      - COLOR_WARNING
+      - COLOR_ERROR
+      - COLOR_SUCCESS
+      - COLOR_INHERIT
+      - COLOR_DARK
+      - COLOR_PURPLE_PRIMARY
+      - COLOR_SANDBOX
+      - COLOR_WARNING_STRIPED
+      default: COLOR_PRIMARY
+      title: '- COLOR_PRIMARY: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    v1MobileConfig:
+      type: object
+      properties:
+        breakpoint:
+          type: string
+    DeniedMerchantIssuesType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_CASH_EXCHANGE
+      - TYPE_MERCHANDISE_DELIVERED
+      - TYPE_STORE_CREDIT
+      - TYPE_RECEIVED_SERVICE
+      - TYPE_PREVIOUSLY_AUTHORIZED_MERCHANT
+      - TYPE_CANCELLATION_DATE_LATER_THAN_TRANSACTION_DATE
+      default: TYPE_UNKNOWN
+    eventsReverseProvisionalCredit:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        amount:
+          $ref: '#/components/schemas/commonAmount'
+        reversedDate:
+          type: string
+          format: date-time
+        isReversedOutsideOfCasap:
+          type: boolean
+    sharedSpeechBubbleSummaryComponent:
+      type: object
+      properties:
+        icon:
+          $ref: '#/components/schemas/sharedIcon'
+        title:
+          $ref: '#/components/schemas/sharedStyledText'
+        summary:
+          $ref: '#/components/schemas/sharedStyledText'
+    eventsUpdateCustomerName:
+      type: object
+      properties:
+        fullName:
+          type: string
+    DynamicSubComponentconditionType:
+      type: string
+      enum:
+      - CONDITION_TYPE_UNKNOWN
+      - CONDITION_TYPE_EQUAL
+      - CONDITION_TYPE_NOT_EQUAL
+      default: CONDITION_TYPE_UNKNOWN
+      description: '- CONDITION_TYPE_NOT_EQUAL: Matches if answer key value is not equal'
+      title: buf:lint:ignore ENUM_PASCAL_CASE
+    sharedFiles:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/sharedFile'
+        title:
+          $ref: '#/components/schemas/sharedStyledText'
+    eventsUpdateDisputeReason:
+      type: object
+      properties:
+        reason:
+          $ref: '#/components/schemas/commonDisputeReason'
+    sharedCardInput:
+      type: object
+      properties:
+        token:
+          type: string
+    eventsUpdateScheduledPcReversal:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        previousScheduledDate:
+          type: string
+          format: int64
+        newScheduledDate:
+          type: string
+          format: int64
+        reason:
+          type: string
+    sharedSpeechBubbleHeader:
+      type: object
+      properties:
+        icon:
+          $ref: '#/components/schemas/sharedIcon'
+        title:
+          $ref: '#/components/schemas/sharedStyledText'
+    commonChargebackEligibility:
+      type: string
+      enum:
+      - CHARGEBACK_ELIGIBILITY_UNKNOWN
+      - CHARGEBACK_ELIGIBILITY_ELIGIBLE
+      - CHARGEBACK_ELIGIBILITY_NOT_ELIGIBLE
+      default: CHARGEBACK_ELIGIBILITY_UNKNOWN
+      description: 'ChargebackEligibility reports whether a chargeback can be filed for a
+
+        transaction. UNKNOWN is the default and means no verdict has been reached —
+
+        the inputs were incomplete, or the rules produced no definitive answer. It is
+
+        distinct from NOT_ELIGIBLE, which is a decision that no rights exist.'
+    ColorsText:
+      type: object
+      properties:
+        primary:
+          type: string
+        secondary:
+          type: string
+    commonMastercardReasonInfo:
+      type: object
+      properties:
+        goodsAndServicesNotAsDescribedDeliveryDate:
+          type: string
+        goodsOrServicesNotReceivedExpectedDate:
+          type: string
+        creditNotProcessedReturnCancellationDate:
+          type: string
+        recurringTransactionCancellationDate:
+          type: string
+        alternateMeansPaymentDetails:
+          type: string
+    actionsGetCustomerTypeModalAction:
+      type: object
+      properties:
+        currentCustomerType:
+          $ref: '#/components/schemas/commonCustomerAccountType'
+    sharedFileMetadataPicker:
+      type: object
+      properties:
+        fileUuid:
+          type: string
+        items:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/sharedFileMetadataPickerItem'
+        selectedKeyValue:
+          type: string
+    v1RegisterABAResponse:
+      type: object
+    NavigationActionV1customerTransactionsPage:
+      type: object
+      properties:
+        customerUuid:
+          type: string
+        accountUuid:
+          type: string
+        accountCreationTimestamp:
+          type: string
+          format: int64
+        priorDisputeCount:
+          type: string
+          format: int64
+        priorDisputedAmount:
+          type: string
+          format: int64
+        cardToken:
+          type: string
+        cardId:
+          type: string
+        partyId:
+          type: string
+        subOrgUuid:
+          type: string
+      title: buf:lint:ignore MESSAGE_PASCAL_CASE
+    eventsUpdateChargebackLockStatus:
+      type: object
+    eventsDisputeEventMessage:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/eventsDisputeEventType'
+        createDispute:
+          $ref: '#/components/schemas/eventsCreateDispute'
+        assignAgent:
+          $ref: '#/components/schemas/eventsAssignAgent'
+        issueProvisionalCredit:
+          $ref: '#/components/schemas/eventsIssueProvisionalCredit'
+        startChargeback:
+          $ref: '#/components/schemas/eventsStartChargeback'
+        recordRepresentment:
+          $ref: '#/components/schemas/eventsRecordRepresentment'
+        challengeRepresentment:
+          $ref: '#/components/schemas/eventsChallengeRepresentment'
+        filePreArb:
+          $ref: '#/components/schemas/eventsFilePreArb'
+        recordPreArbResponse:
+          $ref: '#/components/schemas/eventsRecordPreArbResponse'
+        challengePreArbResponse:
+          $ref: '#/components/schemas/eventsChallengePreArbResponse'
+        fileArb:
+          $ref: '#/components/schemas/eventsFileArb'
+        recordArbResponse:
+          $ref: '#/components/schemas/eventsRecordArbResponse'
+        closeChargeback:
+          $ref: '#/components/schemas/eventsCloseChargeback'
+        recordFinalDecision:
+          $ref: '#/components/schemas/eventsRecordFinalDecision'
+        unassignAndEscalateToChargeback:
+          $ref: '#/components/schemas/eventsUnassignAndEscalateToChargeback'
+        addComment:
+          $ref: '#/components/schemas/eventsAddComment'
+        unassignAgent:
+          $ref: '#/components/schemas/eventsUnassignAgent'
+        uploadPanToken:
+          $ref: '#/components/schemas/eventsUploadPanToken'
+        createProvisionalDispute:
+          $ref: '#/components/schemas/eventsCreateProvisionalDispute'
+        answerIntakeQuestionnaire:
+          $ref: '#/components/schemas/eventsAnswerIntakeQuestionnaire'
+        uploadFiles:
+          $ref: '#/components/schemas/eventsUploadFiles'
+        updatePriority:
+          $ref: '#/components/schemas/eventsUpdatePriority'
+        approveWsudReview:
+          $ref: '#/components/schemas/eventsApproveWsudReview'
+        submitWsud:
+          $ref: '#/components/schemas/eventsSubmitWsud'
+        reverseProvisionalCredit:
+          $ref: '#/components/schemas/eventsReverseProvisionalCredit'
+        submitPcForm:
+          $ref: '#/components/schemas/eventsSubmitPcForm'
+        reopen:
+          $ref: '#/components/schemas/eventsReopen'
+        replaceCard:
+          $ref: '#/components/schemas/eventsReplaceCard'
+        uploadWsud:
+          $ref: '#/components/schemas/eventsUploadWsud'
+        recordOdfiResponse:
+          $ref: '#/components/schemas/eventsRecordOdfiResponse'
+        updateDisputeReason:
+          $ref: '#/components/schemas/eventsUpdateDisputeReason'
+        removeFile:
+          $ref: '#/components/schemas/eventsRemoveFile'
+        resendCommunication:
+          $ref: '#/components/schemas/eventsResendCommunication'
+        updateFee:
+          $ref: '#/components/schemas/eventsUpdateFee'
+        updateCreationDate:
+          $ref: '#/components/schemas/eventsUpdateCreationDate'
+        updatePendingTxn:
+          $ref: '#/components/schemas/eventsUpdatePendingTxn'
+        updateColorLabel:
+          $ref: '#/components/schemas/eventsUpdateColorLabel'
+        updatePanNumber:
+          $ref: '#/components/schemas/eventsUpdatePanNumber'
+        updateAmount:
+          $ref: '#/components/schemas/eventsUpdateAmount'
+        updateCard:
+          $ref: '#/components/schemas/eventsUpdateCard'
+        updateCustomerName:
+          $ref: '#/components/schemas/eventsUpdateCustomerName'
+        appendComment:
+          $ref: '#/components/schemas/eventsAppendComment'
+        pinComment:
+          $ref: '#/components/schemas/eventsPinComment'
+        unpinComment:
+          $ref: '#/components/schemas/eventsUnpinComment'
+        updateAudience:
+          $ref: '#/components/schemas/eventsUpdateAudience'
+        updateProvisionalCreditLockStatus:
+          $ref: '#/components/schemas/eventsUpdateProvisionalCreditLockStatus'
+        updateChargebackLockStatus:
+          $ref: '#/components/schemas/eventsUpdateChargebackLockStatus'
+        updateNetwork:
+          $ref: '#/components/schemas/eventsUpdateNetwork'
+        checkNetworkChargebackData:
+          $ref: '#/components/schemas/eventsCheckNetworkChargebackData'
+        submitFraudReport:
+          $ref: '#/components/schemas/eventsSubmitFraudReport'
+        updateCustomerEmail:
+          $ref: '#/components/schemas/eventsUpdateCustomerEmail'
+        submitChargeback:
+          $ref: '#/components/schemas/eventsSubmitChargeback'
+        recordMailedCommunication:
+          $ref: '#/components/schemas/eventsRecordMailedCommunication'
+        requestMoreInfoCommunication:
+          $ref: '#/components/schemas/eventsRequestMoreInfoCommunication'
+        updateArn:
+          $ref: '#/components/schemas/eventsUpdateArn'
+        uploadRequestMoreInfoFile:
+          $ref: '#/components/schemas/eventsUploadRequestMoreInfoFile'
+        updateScheduledPcReversal:
+          $ref: '#/components/schemas/eventsUpdateScheduledPcReversal'
+        updateFileMetadata:
+          $ref: '#/components/schemas/eventsUpdateFileMetadata'
+        updateNetworkDetails:
+          $ref: '#/components/schemas/eventsUpdateNetworkDetails'
+        updateMerchantCredit:
+          $ref: '#/components/schemas/eventsUpdateMerchantCredit'
+        updatePar:
+          $ref: '#/components/schemas/eventsUpdatePAR'
+        updateSecCode:
+          $ref: '#/components/schemas/eventsUpdateSECCode'
+        recordWsudReceivedDirect:
+          $ref: '#/components/schemas/eventsRecordWsudReceivedDirect'
+        requestLateReturn:
+          $ref: '#/components/schemas/eventsRequestLateReturn'
+        recordLateReturnDecision:
+          $ref: '#/components/schemas/eventsRecordLateReturnDecision'
+        fileAchReturnDirect:
+          $ref: '#/components/schemas/eventsFileACHReturnDirect'
+        updateCustomerType:
+          $ref: '#/components/schemas/eventsUpdateCustomerType'
+        cancelScheduledPcReversal:
+          $ref: '#/components/schemas/eventsCancelScheduledPcReversal'
+        resetNetworkDetails:
+          $ref: '#/components/schemas/eventsResetNetworkDetails'
+        updateMerchantCreditAmount:
+          $ref: '#/components/schemas/eventsUpdateMerchantCreditAmount'
+        docusignCheck:
+          $ref: '#/components/schemas/eventsDocusignCheck'
+        updateAccountNumber:
+          $ref: '#/components/schemas/eventsUpdateAccountNumber'
+        finalDecisionLetterPostmarked:
+          $ref: '#/components/schemas/eventsFinalDecisionLetterPostmarked'
+        reversalPostmarkTimeout:
+          $ref: '#/components/schemas/eventsReversalPostmarkTimeout'
+        addTransactions:
+          $ref: '#/components/schemas/eventsAddTransactions'
+        updateVerifiCase:
+          $ref: '#/components/schemas/eventsUpdateVerifiCase'
+        updateWarranty:
+          $ref: '#/components/schemas/eventsUpdateWarranty'
+        updateChargebackEligibility:
+          $ref: '#/components/schemas/eventsUpdateChargebackEligibility'
+        recordAffidavitReceivedDirect:
+          $ref: '#/components/schemas/eventsRecordAffidavitReceivedDirect'
+        extendAffidavitWindow:
+          $ref: '#/components/schemas/eventsExtendAffidavitWindow'
+        fileCheckReturnDirect:
+          $ref: '#/components/schemas/eventsFileCheckReturnDirect'
+        recordLetterSent:
+          $ref: '#/components/schemas/eventsRecordLetterSent'
+        recordLetterOutcome:
+          $ref: '#/components/schemas/eventsRecordLetterOutcome'
+        makeAgenticPreArbRecommendation:
+          $ref: '#/components/schemas/eventsMakeAgenticPreArbRecommendation'
+        retryCommunication:
+          $ref: '#/components/schemas/eventsRetryCommunication'
+        updateTransactionDate:
+          $ref: '#/components/schemas/eventsUpdateTransactionDate'
+    v1TransactionNamesMatch:
+      type: object
+      properties:
+        type:
+          type: string
+          title: Type of account (e.g. "C" for credit, "D" for debit, "ALL" for no discrimination)
+        names:
+          type: string
+          title: Names of the txn to match (e.g. "Withdrawal by ATM") - comma separated
+        exactMatch:
+          type: boolean
+        exceptionWords:
+          type: string
+          title: 'Words that should not be matched (e.g. "Withdrawal") - comma separated
+
+            (e.g. "Withdrawal by ATM" will not be matched even if "ATM" is in the names)'
+    commonColorLabel:
+      type: string
+      enum:
+      - COLOR_LABEL_WHITE
+      - COLOR_LABEL_GREEN
+      - COLOR_LABEL_YELLOW
+      - COLOR_LABEL_RED
+      - COLOR_LABEL_BLUE
+      - COLOR_LABEL_PURPLE
+      - COLOR_LABEL_WHITE_YELLOW
+      - COLOR_LABEL_WHITE_RED
+      - COLOR_LABEL_RED_YELLOW
+      default: COLOR_LABEL_WHITE
+      title: '- COLOR_LABEL_WHITE: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    sharedBadgeType:
+      type: string
+      enum:
+      - BADGE_TYPE_UNKNOWN
+      - BADGE_TYPE_SECONDARY
+      - BADGE_TYPE_WARNING
+      - BADGE_TYPE_ERROR
+      - BADGE_TYPE_SUCCESS
+      - BADGE_TYPE_INHERIT
+      - BADGE_TYPE_DARK
+      - BADGE_TYPE_PRIMARY
+      - BADGE_TYPE_DOCUSIGN_RECEIVED
+      - BADGE_TYPE_DOCUSIGN_NOT_RECEIVED
+      - BADGE_TYPE_PRIMARY_DARK
+      - BADGE_TYPE_PRIMARY_DARK_FILL
+      default: BADGE_TYPE_UNKNOWN
+      title: buf:lint:ignore ENUM_VALUE_PREFIX
+    eventsUpdatePriority:
+      type: object
+      properties:
+        priority:
+          $ref: '#/components/schemas/commonPriority'
+    FormStepConditionGroup:
+      type: object
+      properties:
+        operator:
+          $ref: '#/components/schemas/v1Operator'
+        conditions:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/v1FormStepCondition'
+    UpdateWarrantyWarranty:
+      type: string
+      enum:
+      - WARRANTY_UNSET
+      - WARRANTY_BREACHED
+      - WARRANTY_NOT_BREACHED
+      - WARRANTY_INDEMNITY
+      default: WARRANTY_UNSET
+    v1QuestionnaireType:
+      type: string
+      enum:
+      - QUESTIONNAIRE_TYPE_UNKNOWN
+      - QUESTIONNAIRE_TYPE_MERCHANT_ISSUE
+      - QUESTIONNAIRE_TYPE_UNAUTH
+      default: QUESTIONNAIRE_TYPE_UNKNOWN
+    eventsCloseChargeback:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        outcome:
+          $ref: '#/components/schemas/CloseChargebackOutcome'
+    eventsAddTransactions:
+      type: object
+      properties:
+        transactionDetails:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/commonTransactionDetail'
+      description: 'AddTransactions appends one or more transactions to an already-created dispute.
+
+        Reuses TransactionDetail so callers (including fee pickers) can submit any txn shape.'
+    sharedDropdown:
+      type: object
+      properties:
+        dropdownData:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/DropdownDropdownData'
+        dropdownName:
+          type: string
+        selectedKeyValue:
+          type: string
+        color:
+          $ref: '#/components/schemas/sharedColor'
+        alignment:
+          $ref: '#/components/schemas/sharedDropdownAlignment'
+        side:
+          $ref: '#/components/schemas/sharedDropdownSide'
+        allowUnselect:
+          type: boolean
+        placeholder:
+          type: string
+        badge:
+          $ref: '#/components/schemas/sharedBadge'
+          description: Shown on the closed trigger, e.g. a total across the options.
+    eventsChallengePreArbResponse:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        isChallenged:
+          type: boolean
+    eventsRetryCommunication:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+        eventUuid:
+          type: string
+    sharedButtonVariant:
+      type: string
+      enum:
+      - BUTTON_VARIANT_UNKNOWN
+      - BUTTON_VARIANT_LINK
+      - BUTTON_VARIANT_OUTLINE
+      default: BUTTON_VARIANT_UNKNOWN
+      title: buf:lint:ignore ENUM_VALUE_PREFIX
+    sharedImage:
+      type: object
+      properties:
+        imageUrl:
+          type: string
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        width:
+          type: integer
+          format: int32
+        height:
+          type: integer
+          format: int32
+    ButtonGroupButtonItem:
+      type: object
+      properties:
+        keyValue:
+          type: string
+        displayValue:
+          type: string
+        isDisabled:
+          type: boolean
+        variant:
+          $ref: '#/components/schemas/ButtonGroupButtonItemVariant'
+    eventsFinalDecisionLetterPostmarked:
+      type: object
+      properties:
+        postmarkedAt:
+          type: string
+          format: int64
+    actionsGetArnModalAction:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+        transactionUuid:
+          type: string
+    actionsCallbackAction:
+      type: object
+      properties:
+        disputeEvent:
+          $ref: '#/components/schemas/actionsDisputeEventAction'
+    ButtonGroupButtonItemVariant:
+      type: string
+      enum:
+      - VARIANT_UNKNOWN
+      - VARIANT_PRIMARY
+      - VARIANT_ERROR
+      default: VARIANT_UNKNOWN
+    commonCustomerAccountType:
+      type: string
+      enum:
+      - CUSTOMER_ACCOUNT_TYPE_UNKNOWN
+      - CUSTOMER_ACCOUNT_TYPE_INDIVIDUAL
+      - CUSTOMER_ACCOUNT_TYPE_BUSINESS
+      default: CUSTOMER_ACCOUNT_TYPE_UNKNOWN
+    sharedDynamicSubComponent:
+      type: object
+      properties:
+        condition:
+          $ref: '#/components/schemas/DynamicSubComponentconditionType'
+        conditionEqual:
+          $ref: '#/components/schemas/DynamicSubComponentconditionEqual'
+        components:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/sharedDynamicComponent'
+    RecordFinalDecisionResolutionDeniedType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_CHARGEBACK_LOST
+      - TYPE_FRIENDLY_FRAUD
+      - TYPE_INSUFFICIENT_EVIDENCE
+      - TYPE_WSUD_REJECTED
+      - TYPE_OTHER
+      - TYPE_CARDHOLDER_LIABILITY
+      - TYPE_CARD_REPORTED_LOST_OR_LATE
+      - TYPE_ATM_VIDEO_FOOTAGE
+      - TYPE_NO_ALLEGED_DEPOSIT
+      - TYPE_REFUND_ALREADY_ISSUED
+      - TYPE_CARD_PRESENT
+      - TYPE_MERCHANT_ISSUED_REFUND
+      - TYPE_PRIOR_AUTHORIZATION_PROVIDED
+      - TYPE_GAMBLING
+      - TYPE_AFTER_NINETY_DAYS
+      - TYPE_NO_UNAUTHORIZED_TRANSFER
+      - TYPE_AUTHORIZED_TRANSACTOR
+      - TYPE_MERCHANT_ISSUES
+      - TYPE_DEPOSIT_NOT_FOUND
+      - TYPE_CUSTOM
+      - TYPE_TRANSACTION_DID_NOT_POST
+      - TYPE_REPRESENTMENT_OTHER_FI
+      - TYPE_TOKEN_TRANSACTION
+      - TYPE_PARTIAL_MERCHANT_REFUND
+      - TYPE_FULL_MERCHANT_REFUND
+      - TYPE_GOODS_AND_SERVICES_DENIAL
+      - TYPE_OUTSIDE_TIMEFRAME
+      - TYPE_CASH_TRANSFER_SERVICE
+      - TYPE_STOPPED_AND_RETURNED
+      - TYPE_INVALID_BILLING_ERROR
+      - TYPE_MERCHANT_PROOF
+      - TYPE_RECURRING_TRANSACTION
+      - TYPE_MERCHANT_REBUTTAL
+      - TYPE_ALLOW_THIRTY_DAYS_ARRIVAL
+      - TYPE_SERVICES_RENDERED
+      - TYPE_AUTHORIZED_CARD_USE
+      - TYPE_MERCHANT_OFFERED_RESOLUTION
+      - TYPE_MERCHANDISE_IN_POSSESSION
+      - TYPE_MERCHANT_PROOF_OF_DELIVERY
+      - TYPE_TERMS_AGREEMENT_DENIAL
+      - TYPE_RECEIVING_PARTY_DISPUTE
+      - TYPE_TOKENIZED_NUMBER_MATCHES_MEMBER_DEVICE
+      - TYPE_SERVICE_BEING_UTILIZED
+      - TYPE_ATM_WITHDRAW_ACCURATE
+      - TYPE_AUTHORIZED_CREDENTIAL_USE
+      - TYPE_EMV_CHIP_AUTH
+      - TYPE_TIMELINE_MISMATCH
+      - TYPE_FULL_MEMBER_LIABILITY
+      - TYPE_CARDHOLDER_PARTICIPATION_NON_COERCION
+      - TYPE_NO_RESPONSE
+      - TYPE_PAST_TIME_FRAME_CONSUMER
+      - TYPE_PAST_TIME_FRAME_BUSINESS
+      - TYPE_NO_RESPONSE_TO_REBUTTAL
+      - TYPE_NO_REFUND_AVAILABLE
+      - TYPE_NO_PROOF_PROVIDED
+      - TYPE_CARD_HOLDER_RESPONSIBLE
+      - TYPE_SERVICE_NOT_CANCELLED_TIMELY
+      - TYPE_INVALID_PROOF
+      - TYPE_VERBAL_AGREEMENT
+      - TYPE_AUTHORIZED_TRANSACTION
+      - TYPE_AFTER_DEADLINE
+      - TYPE_VISA_RULES
+      - TYPE_GIFT_CARD
+      - TYPE_ATM_AUTHORIZED
+      - TYPE_MISSING_CHECK
+      - TYPE_CHECK_CORRECTED
+      - TYPE_NO_HW_ERROR_WITHDRAWAL
+      - TYPE_NO_HW_ERROR_DEPOSIT
+      - TYPE_INCORRECT_AMOUNT
+      - TYPE_EMV_CHIP_CONTACTLESS
+      - TYPE_MAPS_ATM_DENIAL
+      - TYPE_NO_ERROR
+      - TYPE_PAST_TIME_FRAME_CREDIT
+      - TYPE_CHECK_UNTIMELY_DISPUTE
+      - TYPE_NO_RESPONSE_NON_SUFFICIENT_NMI
+      - TYPE_ATM_DEPOSIT_ACCURATE
+      - TYPE_IN_PERSON_PURCHASE_CH_RESPONSIBLE
+      - TYPE_OLB_NO_FRAUD_AUTHORIZED_USE_OF_CREDENTIALS
+      - TYPE_CONSUMER_OLB_PAST_TIMEFRAMES
+      - TYPE_BUSINESS_OLB_PAST_TIMEFRAMES
+      - TYPE_FUNDS_TRANSFERRED_TO_EXTERNAL_MEMBER_ACCOUNT
+      - TYPE_ACH_OUTSIDE_TIMEFRAME
+      - TYPE_ACH_AUTHORIZED_MERCHANT_PROVIDED_PROOF
+      - TYPE_ACH_AUTHORIZED_RECURRING_TRANSACTION
+      - TYPE_CASH_TRANSFER_SERVICE_P2P
+      - TYPE_ACH_GOODS_AND_SERVICES
+      - TYPE_DEBIT_PAST_TIMEFRAMES
+      - TYPE_MEMBER_REQUEST_CANCEL_DISPUTE
+      - TYPE_PRIOR_PATTERN_OF_USE
+      - TYPE_CONSUMER_CH_PARTICIPATED_NON_COERCION_NON_P2P
+      - TYPE_MEMBER_PARTICIPATED
+      - TYPE_PAST_TIMEFRAME
+      - TYPE_FIRST_PARTY_FRAUD
+      - TYPE_MERCHANT_BANK_DENIAL
+      - TYPE_DELIVERED_TO_MEMBER_ADDRESS
+      - TYPE_DISPENSARY_MERCHANT
+      - TYPE_PREVIOUS_RELATIONSHIP
+      - TYPE_INCONSISTENCY
+      - TYPE_PROOF_OF_DELIVERY
+      - TYPE_NO_EVIDENCE_OF_FRAUD
+      - TYPE_PARTIAL_DENIAL_UCC_NRS_104
+      - TYPE_VALID_MERCHANT_REBUTTAL_RECEIVED
+      - TYPE_INVALID_PROOF_PAID_BY_OTHER_MEANS
+      default: TYPE_UNKNOWN
+    sharedDropdownAlignment:
+      type: string
+      enum:
+      - ALIGNMENT_START
+      - ALIGNMENT_CENTER
+      - ALIGNMENT_END
+      default: ALIGNMENT_START
+      title: '- ALIGNMENT_START: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    sharedButtonGroup:
+      type: object
+      properties:
+        buttonItems:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/ButtonGroupButtonItem'
+        buttonGroupName:
+          type: string
+        size:
+          $ref: '#/components/schemas/sharedButtonGroupSize'
+        alignment:
+          $ref: '#/components/schemas/sharedComponentAlignmentType'
+        color:
+          $ref: '#/components/schemas/sharedColor'
+        selectedKeyValue:
+          type: string
+    sharedMarkdown:
+      type: object
+      properties:
+        text:
+          type: string
+        wrapperClassname:
+          type: string
+    sharedCommonActionType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_CALLBACK
+      - TYPE_COMMON
+      default: TYPE_UNKNOWN
+    AnswerIntakeQuestionnaireAnswerType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_RADIO_GROUP
+      - TYPE_CHECKBOX_GROUP
+      - TYPE_TEXT_INPUT
+      - TYPE_DROPDOWN
+      default: TYPE_UNKNOWN
+    TransactionProvisionalCreditInfoEligibility:
+      type: string
+      enum:
+      - ELIGIBILITY_UNKNOWN
+      - ELIGIBILITY_ELIGIBLE
+      - ELIGIBILITY_OPTIONAL
+      - ELIGIBILITY_NOT_ELIGIBLE
+      default: ELIGIBILITY_UNKNOWN
+    CloseChargebackOutcome:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/CloseChargebackOutcomeType'
+    RadioListitemAppend:
+      type: object
+      properties:
+        label:
+          type: string
+        type:
+          $ref: '#/components/schemas/RadioListitemAppendType'
+        alignment:
+          $ref: '#/components/schemas/AppendAlignments'
+    AcceptedPartialApproval:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/commonAmount'
+      description: 'PartialApproval carries the amount an agent approved when approving for less
+
+        than the disputed total. It is the amount the member keeps, not the amount
+
+        debited back.'
+    SearchModalQueryvrolTransactions:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+        transactionUuid:
+          type: string
+        selectByVisaTransactionId:
+          type: boolean
+        amountDeltaCents:
+          type: integer
+          format: int32
+        timeDeltaDays:
+          type: string
+          format: int64
+      title: buf:lint:ignore MESSAGE_PASCAL_CASE
+    sharedPhoneInput:
+      type: object
+      properties:
+        country:
+          type: string
+        value:
+          type: string
+        placeholder:
+          type: string
+        international:
+          type: boolean
+          title: Whether to format as international number
+    AnswerradioGroup:
+      type: object
+      properties:
+        answerKey:
+          type: string
+      title: buf:lint:ignore MESSAGE_PASCAL_CASE
+    actionsRefreshARNAction:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+    v1TransactionMerchant:
+      type: object
+      properties:
+        type:
+          type: string
+        trimStart:
+          type: string
+        trimEnd:
+          type: string
+    sharedDisputeAction:
+      type: string
+      enum:
+      - DISPUTE_ACTION_UNKNOWN
+      - DISPUTE_ACTION_ASSIGN_AGENT
+      - DISPUTE_ACTION_UPDATE_PRIORITY
+      - DISPUTE_ACTION_UPDATE_CUSTOMER_EMAIL
+      default: DISPUTE_ACTION_UNKNOWN
+    commonMastercardPreArbInfo:
+      type: object
+      properties:
+        reason:
+          $ref: '#/components/schemas/commonMastercardPreArbReason'
+        evidence:
+          type: string
+    sharedFileMetadataPickerItem:
+      type: object
+      properties:
+        keyValue:
+          type: string
+        displayValue:
+          $ref: '#/components/schemas/sharedStyledText'
+        isDisabled:
+          type: boolean
+    v1Colors:
+      type: object
+      properties:
+        text:
+          $ref: '#/components/schemas/ColorsText'
+        background:
+          $ref: '#/components/schemas/ColorsBackground'
+    RecordFinalDecisionResolutionAcceptedMerchantCredited:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/commonAmount'
+        date:
+          type: string
+          format: int64
+    Answerdropdown:
+      type: object
+      properties:
+        answerKey:
+          type: string
+      title: buf:lint:ignore MESSAGE_PASCAL_CASE
+    eventsUpdateFee:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/commonAmount'
+      title: 'TODO (andrew): can deprecate and consolidate to UpdateAmount so the terminology is consistent'
+    eventsUploadPanToken:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        tokenId:
+          type: string
+    eventsReopen:
+      type: object
+      properties:
+        transactionUuids:
+          type: array
+          items:
+            type: string
+        evidence:
+          type: string
+    eventsIssueProvisionalCredit:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        provisionalCreditInfo:
+          $ref: '#/components/schemas/IssueProvisionalCreditinfo'
+        formReceivedTs:
+          type: string
+          format: date-time
+        overrideLiability:
+          type: boolean
+        glCode:
+          type: string
+        accountId:
+          type: string
+        isPartial:
+          type: boolean
+        skipEmail:
+          type: boolean
+        isIssuedOutsideOfCasap:
+          type: boolean
+        glAccount:
+          type: string
+    RadioGroupRadioItemAppendType:
+      type: string
+      enum:
+      - TYPE_WARNING
+      default: TYPE_WARNING
+      title: '- TYPE_WARNING: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    commonTransactionDetailStatus:
+      type: string
+      enum:
+      - TRANSACTION_STATUS_UNKNOWN
+      - TRANSACTION_STATUS_PENDING
+      - TRANSACTION_STATUS_SETTLED
+      default: TRANSACTION_STATUS_UNKNOWN
+      title: buf:lint:ignore ENUM_VALUE_PREFIX
+    sharedCheckbox:
+      type: object
+      properties:
+        state:
+          type: boolean
+    eventsDisputeEventType:
+      type: string
+      enum:
+      - DISPUTE_EVENT_TYPE_UNKNOWN
+      - DISPUTE_EVENT_TYPE_CREATE
+      - DISPUTE_EVENT_TYPE_ASSIGN_AGENT
+      - DISPUTE_EVENT_TYPE_ISSUE_PROVISIONAL_CREDIT
+      - DISPUTE_EVENT_TYPE_START_CHARGEBACK
+      - DISPUTE_EVENT_TYPE_RECORD_REPRESENTMENT
+      - DISPUTE_EVENT_TYPE_CHALLENGE_REPRESENTMENT
+      - DISPUTE_EVENT_TYPE_FILE_PRE_ARB
+      - DISPUTE_EVENT_TYPE_RECORD_PRE_ARB_RESPONSE
+      - DISPUTE_EVENT_TYPE_CHALLENGE_PRE_ARB_RESPONSE
+      - DISPUTE_EVENT_TYPE_FILE_ARB
+      - DISPUTE_EVENT_TYPE_RECORD_ARB_RESPONSE
+      - DISPUTE_EVENT_TYPE_CLOSE_CHARGEBACK
+      - DISPUTE_EVENT_TYPE_RECORD_FINAL_DECISION
+      - DISPUTE_EVENT_TYPE_UNASSIGN_AND_ESCALATE_TO_CHARGEBACK
+      - DISPUTE_EVENT_TYPE_ADD_COMMENT
+      - DISPUTE_EVENT_TYPE_UNASSIGN_AGENT
+      - DISPUTE_EVENT_TYPE_UPLOAD_PAN_TOKEN
+      - DISPUTE_EVENT_TYPE_CREATE_PROVISIONAL_DISPUTE
+      - DISPUTE_EVENT_TYPE_ANSWER_INTAKE_QUESTIONNAIRE
+      - DISPUTE_EVENT_TYPE_UPLOAD_FILES
+      - DISPUTE_EVENT_TYPE_UPDATE_PRIORITY
+      - DISPUTE_EVENT_TYPE_APPROVE_WSUD_REVIEW
+      - DISPUTE_EVENT_TYPE_SUBMIT_WSUD
+      - DISPUTE_EVENT_TYPE_REVERSE_PROVISIONAL_CREDIT
+      - DISPUTE_EVENT_TYPE_SUBMIT_PC_FORM
+      - DISPUTE_EVENT_TYPE_REOPEN
+      - DISPUTE_EVENT_TYPE_REPLACE_CARD
+      - DISPUTE_EVENT_TYPE_UPLOAD_WSUD
+      - DISPUTE_EVENT_TYPE_RECORD_ODFI_RESPONSE
+      - DISPUTE_EVENT_TYPE_UPDATE_DISPUTE_REASON
+      - DISPUTE_EVENT_TYPE_UPDATE_CUSTOMER_EMAIL
+      - DISPUTE_EVENT_TYPE_REMOVE_FILE
+      - DISPUTE_EVENT_TYPE_RESEND_COMMUNICATION
+      - DISPUTE_EVENT_TYPE_RESEND_TRANSACTION_COMMUNICATION
+      - DISPUTE_EVENT_TYPE_UPDATE_FEE
+      - DISPUTE_EVENT_TYPE_UPDATE_CREATION_DATE
+      - DISPUTE_EVENT_TYPE_UPDATE_PENDING_TXN
+      - DISPUTE_EVENT_TYPE_UPDATE_COLOR_LABEL
+      - DISPUTE_EVENT_TYPE_UPDATE_PAN_NUMBER
+      - DISPUTE_EVENT_TYPE_UPDATE_AMOUNT
+      - DISPUTE_EVENT_TYPE_UPDATE_CARD
+      - DISPUTE_EVENT_TYPE_UPDATE_CUSTOMER_NAME
+      - DISPUTE_EVENT_TYPE_APPEND_COMMENT
+      - DISPUTE_EVENT_TYPE_PIN_COMMENT
+      - DISPUTE_EVENT_TYPE_UNPIN_COMMENT
+      - DISPUTE_EVENT_TYPE_UPDATE_AUDIENCE
+      - DISPUTE_EVENT_TYPE_UPDATE_PROVISIONAL_CREDIT_LOCK_STATUS
+      - DISPUTE_EVENT_TYPE_UPDATE_CHARGEBACK_LOCK_STATUS
+      - DISPUTE_EVENT_TYPE_UPDATE_NETWORK
+      - DISPUTE_EVENT_TYPE_CHECK_NETWORK_CHARGEBACK_DATA
+      - DISPUTE_EVENT_TYPE_SUBMIT_FRAUD_REPORT
+      - DISPUTE_EVENT_TYPE_SUBMIT_DYNAMIC_FORM
+      - DISPUTE_EVENT_TYPE_SUBMIT_CHARGEBACK
+      - DISPUTE_EVENT_TYPE_RECORD_MAILED_COMMUNICATION
+      - DISPUTE_EVENT_TYPE_RECORD_MAILED_TRANSACTION_COMMUNICATION
+      - DISPUTE_EVENT_TYPE_REQUEST_MORE_INFO_COMMUNICATION
+      - DISPUTE_EVENT_TYPE_UPDATE_ARN
+      - DISPUTE_EVENT_TYPE_UPLOAD_REQUEST_MORE_INFO_FILE
+      - DISPUTE_EVENT_TYPE_UPDATE_SCHEDULED_PC_REVERSAL
+      - DISPUTE_EVENT_TYPE_UPDATE_FILE_METADATA
+      - DISPUTE_EVENT_TYPE_UPDATE_NETWORK_DETAILS
+      - DISPUTE_EVENT_TYPE_UPDATE_MERCHANT_CREDIT
+      - DISPUTE_EVENT_TYPE_UPDATE_PAR
+      - DISPUTE_EVENT_TYPE_UPDATE_SEC_CODE
+      - DISPUTE_EVENT_TYPE_RECORD_WSUD_RECEIVED_DIRECT
+      - DISPUTE_EVENT_TYPE_REQUEST_LATE_RETURN
+      - DISPUTE_EVENT_TYPE_RECORD_LATE_RETURN_DECISION
+      - DISPUTE_EVENT_TYPE_FILE_ACH_RETURN_DIRECT
+      - DISPUTE_EVENT_TYPE_UPDATE_CUSTOMER_TYPE
+      - DISPUTE_EVENT_TYPE_CANCEL_SCHEDULED_PC_REVERSAL
+      - DISPUTE_EVENT_TYPE_RESET_NETWORK_DETAILS
+      - DISPUTE_EVENT_TYPE_UPDATE_MERCHANT_CREDIT_AMOUNT
+      - DISPUTE_EVENT_TYPE_CUSTOM_EMAIL
+      - DISPUTE_EVENT_TYPE_DOCUSIGN_CHECK
+      - DISPUTE_EVENT_TYPE_UPDATE_ACCOUNT_NUMBER
+      - DISPUTE_EVENT_TYPE_FINAL_DECISION_LETTER_POSTMARKED
+      - DISPUTE_EVENT_TYPE_REVERSAL_POSTMARK_TIMEOUT
+      - DISPUTE_EVENT_TYPE_ADD_TRANSACTIONS
+      - DISPUTE_EVENT_TYPE_UPDATE_VERIFI_CASE
+      - DISPUTE_EVENT_TYPE_UPDATE_WARRANTY
+      - DISPUTE_EVENT_TYPE_UPDATE_CHARGEBACK_ELIGIBILITY
+      - DISPUTE_EVENT_TYPE_RECORD_AFFIDAVIT_RECEIVED_DIRECT
+      - DISPUTE_EVENT_TYPE_EXTEND_AFFIDAVIT_WINDOW
+      - DISPUTE_EVENT_TYPE_FILE_CHECK_RETURN_DIRECT
+      - DISPUTE_EVENT_TYPE_RECORD_LETTER_SENT
+      - DISPUTE_EVENT_TYPE_RECORD_LETTER_OUTCOME
+      - DISPUTE_EVENT_TYPE_MAKE_AGENTIC_PRE_ARB_RECOMMENDATION
+      - DISPUTE_EVENT_TYPE_RETRY_COMMUNICATION
+      - DISPUTE_EVENT_TYPE_RETRY_TRANSACTION_COMMUNICATION
+      - DISPUTE_EVENT_TYPE_UPDATE_TRANSACTION_DATE
+      default: DISPUTE_EVENT_TYPE_UNKNOWN
+    DeniedVisaRulesType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_NOT_TRAVEL_OR_TRANSPORTATION
+      - TYPE_TRAVEL_OR_TRANSPORTATION
+      default: TYPE_UNKNOWN
+    CheckboxGroupCheckboxItem:
+      type: object
+      properties:
+        keyValue:
+          type: string
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        displayValue:
+          type: string
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+    sharedLabel:
+      type: object
+      properties:
+        text:
+          $ref: '#/components/schemas/sharedStyledText'
+        value:
+          type: string
+    eventsTransactionFilter:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        merchant:
+          type: string
+        matchAll:
+          type: boolean
+        transactions:
+          type: array
+          items:
+            type: string
+        merchants:
+          type: array
+          items:
+            type: string
+        matchPending:
+          type: boolean
+        matchSettled:
+          type: boolean
+        isBulkAction:
+          type: boolean
+    DeniedAfterDeadline:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/DeniedAfterDeadlineType'
+    actionsNavigationActionV1:
+      type: object
+      properties:
+        isNewTab:
+          type: boolean
+        dispute:
+          $ref: '#/components/schemas/NavigationActionV1disputePage'
+        customer:
+          $ref: '#/components/schemas/NavigationActionV1customerPage'
+        customerTransactions:
+          $ref: '#/components/schemas/NavigationActionV1customerTransactionsPage'
+    googlerpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/protobufAny'
+    sharedTextInput:
+      type: object
+      properties:
+        text:
+          $ref: '#/components/schemas/sharedStyledText'
+        numRows:
+          type: integer
+          format: int32
+        placeholderText:
+          type: string
+        format:
+          $ref: '#/components/schemas/TextInputinputFormat'
+    DeniedVisaRules:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/DeniedVisaRulesType'
+    eventsUpdateMerchantCreditAmount:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/commonAmount'
+    eventsUploadFiles:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/commonFile'
+        fileStage:
+          type: integer
+          format: int32
+          description: 'Optional: default file stage to apply to uploaded files.'
+    eventsPinComment:
+      type: object
+      properties:
+        commentUuid:
+          type: string
+    eventsUpdateVerifiCase:
+      type: object
+      properties:
+        caseId:
+          type: string
+        verifiCase:
+          type: object
+      description: 'UpdateVerifiCase records a Verifi case-status transition detected by the
+
+        verifi-sync poller. verifi_case carries the case exactly as the poller
+
+        fetched it, so the handling spec writes the case facet without a second
+
+        vendor call. It is transport only: the recorded dispute event is the status
+
+        transition, not the case payload.'
+    actionsGetAccountNumberModalAction:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+      description: 'GetAccountNumberModalAction opens the account-number edit modal. The edit fans
+
+        out to every transaction in the dispute, so the modal is scoped to the dispute
+
+        rather than any individual transaction.'
+    eventsRecordFinalDecisionResolution:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/eventsRecordFinalDecisionResolutionType'
+        accepted:
+          $ref: '#/components/schemas/RecordFinalDecisionResolutionAccepted'
+        denied:
+          $ref: '#/components/schemas/RecordFinalDecisionResolutionDenied'
+        canceled:
+          $ref: '#/components/schemas/RecordFinalDecisionResolutionCanceled'
+        resolvedExternally:
+          type: boolean
+    v1FormStep:
+      type: object
+      properties:
+        stepId:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        component:
+          $ref: '#/components/schemas/sharedDynamicComponent'
+        conditionGroups:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/FormStepConditionGroup'
+        isLast:
+          type: boolean
+    eventsRecordOdfiResponse:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        resolution:
+          $ref: '#/components/schemas/eventsRecordOdfiResponseResolution'
+    NavigationActionV1customerPage:
+      type: object
+      properties:
+        customerUuid:
+          type: string
+        accountUuid:
+          type: string
+        taxId:
+          type: string
+      title: buf:lint:ignore MESSAGE_PASCAL_CASE
+    eventsUpdateCustomerType:
+      type: object
+      properties:
+        customerType:
+          $ref: '#/components/schemas/commonCustomerAccountType'
+    eventsUpdateNetwork:
+      type: object
+      properties:
+        network:
+          $ref: '#/components/schemas/commonNetworkType'
+    eventsUpdateFileMetadata:
+      type: object
+      properties:
+        fileUuid:
+          type: string
+        creatorType:
+          type: string
+        stage:
+          type: string
+    RecordFinalDecisionResolutionCanceled:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/RecordFinalDecisionResolutionCanceledType'
+        other:
+          $ref: '#/components/schemas/ResolutionCanceledOther'
+        reversePcImmediately:
+          type: boolean
+        reversalType:
+          $ref: '#/components/schemas/ResolutionReversalType'
+        reversalScheduledDate:
+          type: string
+          format: int64
+        reasonOptionKey:
+          type: string
+          description: 'reason_option_key stores the dropdown/config option key selected for the
+
+            standardized final-decision email flow. It intentionally remains a
+
+            string because it is a template-config lookup key, not a closed domain enum.'
+    eventsMastercardPreArbRecommendation:
+      type: object
+      properties:
+        evidence:
+          type: string
+    sharedDropdownActionButton:
+      type: object
+      properties:
+        commonAction:
+          $ref: '#/components/schemas/sharedDropdownCommonAction'
+        button:
+          $ref: '#/components/schemas/sharedButton'
+    eventsAppendComment:
+      type: object
+      properties:
+        commentUuid:
+          type: string
+        comment:
+          type: string
+    ResolutionCanceledOther:
+      type: object
+      properties:
+        reason:
+          type: string
+    sharedLink:
+      type: object
+      properties:
+        text:
+          $ref: '#/components/schemas/sharedStyledText'
+        url:
+          type: string
+        icon:
+          $ref: '#/components/schemas/sharedIcon'
+        openInNewTab:
+          type: boolean
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+    sharedButtonIconAlignment:
+      type: string
+      enum:
+      - BUTTON_ICON_ALIGNMENT_LEFT
+      - BUTTON_ICON_ALIGNMENT_RIGHT
+      default: BUTTON_ICON_ALIGNMENT_LEFT
+      description: '- BUTTON_ICON_ALIGNMENT_LEFT: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+      title: buf:lint:ignore ENUM_VALUE_PREFIX
+    sharedWhiteSpace:
+      type: string
+      enum:
+      - WHITESPACE_NORMAL
+      - WHITESPACE_NOWRAP
+      - WHITESPACE_PRE
+      - WHITESPACE_PRE_LINE
+      - WHITESPACE_PRE_WRAP
+      default: WHITESPACE_NORMAL
+      description: '- WHITESPACE_NORMAL: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+      title: buf:lint:ignore ENUM_VALUE_PREFIX
+    UpdateNetworkDetailsUpdateNetworkDetailsVisa:
+      type: object
+      properties:
+        vrolTransactionId:
+          type: string
+          format: int64
+        associatedTransactionsGroupId:
+          type: string
+          format: int64
+    eventsRequestMoreInfoCommunication:
+      type: object
+      properties:
+        communicationUuid:
+          type: string
+        communicationPurpose:
+          type: string
+        status:
+          $ref: '#/components/schemas/eventsRequestMoreInfoCommunicationStatus'
+    sharedDropdownSide:
+      type: string
+      enum:
+      - SIDE_TOP
+      - SIDE_RIGHT
+      - SIDE_BOTTOM
+      - SIDE_LEFT
+      default: SIDE_TOP
+      title: '- SIDE_TOP: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    eventsFileArb:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        reason:
+          type: string
+    eventsRecordPreArbResponseResolutionType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_ACCEPTED
+      - TYPE_REJECTED
+      default: TYPE_UNKNOWN
+    RecordFinalDecisionResolutionAcceptedType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_ACCOUNT_TAKEOVER
+      - TYPE_CHARGEBACK_WON
+      - TYPE_MERCHANT_CREDITED
+      - TYPE_WRITE_OFF
+      - TYPE_WSUD_ACCEPTED
+      - TYPE_OTHER
+      - TYPE_CLOSED_BY_PROCESSOR
+      - TYPE_LIABILITY_FIFTY
+      - TYPE_LIABILITY_FIVE_HUNDRED
+      - TYPE_GENERAL_APPROVE
+      - TYPE_PRE_ARB_DECLINE_SUCCESSFUL
+      - TYPE_PARTIAL_MERCHANT_CREDITED
+      - TYPE_FULL_MERCHANT_CREDITED
+      - TYPE_PARTIAL_APPROVE
+      default: TYPE_UNKNOWN
+    RadioItemAppendAlignment:
+      type: string
+      enum:
+      - ALIGNMENT_END
+      default: ALIGNMENT_END
+      title: '- ALIGNMENT_END: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    DeniedAfterDeadlineType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_AFTER_SIXTY_DAYS
+      - TYPE_AFTER_CHARGEBACK_WINDOW
+      default: TYPE_UNKNOWN
+    ResolutionDeniedMerchantCredited:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/commonAmount'
+        date:
+          type: string
+          format: int64
+    sharedSpeechBubble:
+      type: object
+      properties:
+        header:
+          $ref: '#/components/schemas/sharedSpeechBubbleHeader'
+        subHeader:
+          $ref: '#/components/schemas/sharedSpeechBubbleHeader'
+        outlineColor:
+          $ref: '#/components/schemas/sharedColor'
+        summary:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/sharedSpeechBubbleSummaryComponent'
+    NavigationActionV1disputePage:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+        transactionUuid:
+          type: string
+      title: buf:lint:ignore MESSAGE_PASCAL_CASE
+    eventsUpdateMerchantCredit:
+      type: object
+      properties:
+        merchantCreditKey:
+          type: string
+      description: 'UpdateMerchantCredit records the key of a matching merchant-issued credit
+
+        on the dispute transaction. Used by the agentic pre-resolution node.'
+    actionsNavigationActionProtocolVersion:
+      type: string
+      enum:
+      - NAVIGATION_ACTION_PROTOCOL_VERSION_UNKNOWN
+      - NAVIGATION_ACTION_PROTOCOL_VERSION_V1
+      default: NAVIGATION_ACTION_PROTOCOL_VERSION_UNKNOWN
+    eventsUpdateWarranty:
+      type: object
+      properties:
+        warranty:
+          $ref: '#/components/schemas/UpdateWarrantyWarranty'
+      description: UpdateWarranty carries a dev-user override of a check transaction's warranty.
+    eventsCreateProvisionalDispute:
+      type: object
+      properties:
+        orgUuid:
+          type: string
+        transactionDetails:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/commonTransactionDetail'
+        customer:
+          $ref: '#/components/schemas/commonCustomer'
+    eventsDocusignCheck:
+      type: object
+      properties:
+        orgUuid:
+          type: string
+        envelopeId:
+          type: string
+        docusignSentEventUuid:
+          type: string
+    RadioListitem:
+      type: object
+      properties:
+        keyValue:
+          type: string
+        title:
+          $ref: '#/components/schemas/sharedStyledText'
+        subtitle:
+          $ref: '#/components/schemas/sharedStyledText'
+        displayValueToShowOnSelect:
+          type: string
+        extension:
+          $ref: '#/components/schemas/protobufAny'
+        append:
+          $ref: '#/components/schemas/RadioListitemAppend'
+        disabled:
+          type: boolean
+      title: buf:lint:ignore MESSAGE_PASCAL_CASE
+    eventsChallengeRepresentment:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        isChallenged:
+          type: boolean
+    sharedComponentAlignment:
+      type: string
+      enum:
+      - ALIGNMENT_LEFT
+      - ALIGNMENT_STRETCH
+      - ALIGNMENT_RIGHT
+      default: ALIGNMENT_LEFT
+      title: '- ALIGNMENT_LEFT: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    CloseChargebackOutcomeType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_WON
+      - TYPE_LOST
+      - TYPE_CANCELLED
+      - TYPE_INVALID
+      default: TYPE_UNKNOWN
+    v1GetOrganizationConfigResponse:
+      type: object
+      properties:
+        branding:
+          $ref: '#/components/schemas/v1Branding'
+        flags:
+          $ref: '#/components/schemas/v1Flags'
+        disputes:
+          $ref: '#/components/schemas/v1DisputesConfig'
+        accounts:
+          $ref: '#/components/schemas/v1AccountsConfig'
+        mobile:
+          $ref: '#/components/schemas/v1MobileConfig'
+        currency:
+          $ref: '#/components/schemas/v1CurrencyConfig'
+    eventsSubmitPcFormStatus:
+      type: string
+      enum:
+      - STATUS_UNKNOWN
+      - STATUS_SUBMITTED
+      - STATUS_NOT_SUBMITTED
+      default: STATUS_UNKNOWN
+    RecordFinalDecisionResolutionCanceledType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_MERCHANT_CREDITED
+      - TYPE_CUSTOMER_REQUESTED
+      - TYPE_OTHER
+      - TYPE_AGENT_ERROR
+      - TYPE_TRANSACTION_DID_NOT_POST
+      - TYPE_PAST_TIMEFRAME
+      default: TYPE_UNKNOWN
+    eventsVisaPreArbRecommendation:
+      type: object
+      properties:
+        liabilityNotAcceptedReason:
+          type: string
+        cardholderContinuesDisputeReason:
+          type: string
+    OrganizationsRegisterABABody:
+      type: object
+      properties:
+        aba:
+          type: string
+    RecordFinalDecisionResolutionDenied:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/RecordFinalDecisionResolutionDeniedType'
+        other:
+          $ref: '#/components/schemas/ResolutionDeniedOther'
+        merchantIssues:
+          $ref: '#/components/schemas/DeniedMerchantIssues'
+        reversePcImmediately:
+          type: boolean
+        custom:
+          $ref: '#/components/schemas/DeniedCustom'
+        authorizedTransaction:
+          $ref: '#/components/schemas/DeniedAuthorizedTransaction'
+        afterDeadline:
+          $ref: '#/components/schemas/DeniedAfterDeadline'
+        visaRules:
+          $ref: '#/components/schemas/DeniedVisaRules'
+        atmData:
+          $ref: '#/components/schemas/ResolutionDeniedATMData'
+        merchantBankDenial:
+          $ref: '#/components/schemas/DeniedMerchantBankDenial'
+        reasonOptionKey:
+          type: string
+          description: 'reason_option_key stores the dropdown/config option key selected for the
+
+            standardized final-decision email flow. It intentionally remains a
+
+            string because it is a template-config lookup key, not a closed domain enum.'
+        checkCorrectionDate:
+          type: string
+          format: int64
+        correctAmount:
+          $ref: '#/components/schemas/commonAmount'
+        reversalType:
+          $ref: '#/components/schemas/ResolutionReversalType'
+        reversalScheduledDate:
+          type: string
+          format: int64
+        attachments:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/commonFile'
+        merchantCredited:
+          $ref: '#/components/schemas/ResolutionDeniedMerchantCredited'
+        daysToRespond:
+          type: integer
+          format: int32
+        dispensaryMerchant:
+          $ref: '#/components/schemas/DeniedDispensaryMerchant'
+        transactionPostedDate:
+          type: string
+          format: int64
+          description: 'transaction_posted_date is the date the analyst indicates the
+
+            transaction actually posted, for denial reasons that describe a
+
+            delay between the transaction date and its posting.'
+    eventsDisputeEvent:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/eventsDisputeEventMetadata'
+        message:
+          $ref: '#/components/schemas/eventsDisputeEventMessage'
+        transactionFilter:
+          $ref: '#/components/schemas/eventsTransactionFilter'
+    commonMastercardSubreason:
+      type: string
+      enum:
+      - MASTERCARD_SUBREASON_UNKNOWN
+      - MASTERCARD_SUBREASON_ELECTRONIC_WARNING_BULLETIN
+      - MASTERCARD_SUBREASON_LOCAL_STOPLIST
+      - MASTERCARD_SUBREASON_EUROPE_CARD_WITH_X2X_SERVICE_CODE
+      - MASTERCARD_SUBREASON_CAT3
+      - MASTERCARD_SUBREASON_FRR_INELIGIBLE
+      - MASTERCARD_SUBREASON_NOT_CLAIMABLE
+      - MASTERCARD_SUBREASON_FRR_CRITERIA_NOT_FULFILLED
+      - MASTERCARD_SUBREASON_FRR_LIMIT_EXCEEDED
+      - MASTERCARD_SUBREASON_ALREADY_CLAIMED
+      - MASTERCARD_SUBREASON_SWEDISH_DOMESTIC_TRAVEL
+      - MASTERCARD_SUBREASON_CARDHOLDER_DID_NOT_RECEIVE_REIMBURSEMENT_EUROPEAN_TRAVEL
+      - MASTERCARD_SUBREASON_CARDHOLDER_SHOULD_CONTACT_ISSUER_FOR_REIMBURSEMENT_EUROPEAN_TRAVEL
+      - MASTERCARD_SUBREASON_CARDHOLDER_BOND_INSUFFICIENT
+      - MASTERCARD_SUBREASON_TRAVEL_SERVICE_NOT_COVERED_EUROPEAN_TRAVEL
+      - MASTERCARD_SUBREASON_CANNOT_DETERMINE_IF_TRAVEL_SERVICE_COVERED_EUROPEAN_TRAVEL
+      - MASTERCARD_SUBREASON_CREDIT_NOT_PROCESSED_MERCHANT_FAILED_TO_DISCLOSE_CANCELLATION_POLICY
+      - MASTERCARD_SUBREASON_CREDIT_NOT_PROCESSED_OTHER
+      - MASTERCARD_SUBREASON_CREDIT_NOT_PROCESSED_PARTIAL_CREDIT_IMPROPERLY_PROCESSED
+      - MASTERCARD_SUBREASON_CREDIT_NOT_PROCESSED_NO_CREDIT_RECEIVED
+      - MASTERCARD_SUBREASON_TRAVEL_ENTERTAINMENT_MERCHANT_FAILED_TO_DISCLOSE_CANCELLATION_POLICY
+      - MASTERCARD_SUBREASON_TRAVEL_ENTERTAINMENT_OTHER
+      - MASTERCARD_SUBREASON_TRAVEL_ENTERTAINMENT_PARTIAL_CREDIT_IMPROPERLY_PROCESSED
+      - MASTERCARD_SUBREASON_TRAVEL_ENTERTAINMENT_NO_CREDIT_RECEIVED
+      - MASTERCARD_SUBREASON_ACCOUNT_HAS_BEEN_LISTED_IN_PCS
+      - MASTERCARD_SUBREASON_PREVIOUS_DISPUTE_CHARGED_BACK
+      - MASTERCARD_SUBREASON_MERCHANT_NOTIFIED_TO_CANCEL_RECURRING_TRANSACTION
+      - MASTERCARD_SUBREASON_HOTEL_CARDHOLDER_CANCELED_RESERVATION
+      - MASTERCARD_SUBREASON_HOTEL_CARDHOLDER_USED_ACCOMMODATION
+      - MASTERCARD_SUBREASON_HOTEL_CARDHOLDER_USED_ACCOMMODATION_NON_MASTERCARD
+      - MASTERCARD_SUBREASON_HOTEL_CARDHOLDER_MERCHANT_PROVIDED_ALTERNATIVE_ACCOMMODATION
+      - MASTERCARD_SUBREASON_HOTEL_CARDHOLDER_NO_SHOW_CHARGE_DIFFERED
+      - MASTERCARD_SUBREASON_HOTEL_CARDHOLDER_MERCHANT_DID_NOT_DISCLOSE
+      - MASTERCARD_SUBREASON_DUAL_CHARGE_DUAL_MASTERCARD_PAYMENT
+      - MASTERCARD_SUBREASON_DUAL_CHARGE_SINGLE_MASTERCARD_PAYMENT
+      - MASTERCARD_SUBREASON_CURRENCY_CONVERSION_OCCURRED_WITHOUT_CONSENT
+      - MASTERCARD_SUBREASON_OTHER_CURRENCY_CONVERSION_ERROR
+      default: MASTERCARD_SUBREASON_UNKNOWN
+      title: "- MASTERCARD_SUBREASON_ELECTRONIC_WARNING_BULLETIN: Cat 3 Reason Subreasons\n - MASTERCARD_SUBREASON_FRR_INELIGIBLE: Transit First Ride Claims Subreasons\n - MASTERCARD_SUBREASON_SWEDISH_DOMESTIC_TRAVEL: Cardholder Subreasons Reason\nFailed Travel Merchant EEA\n - MASTERCARD_SUBREASON_CREDIT_NOT_PROCESSED_MERCHANT_FAILED_TO_DISCLOSE_CANCELLATION_POLICY: Credit Not Processed\n - MASTERCARD_SUBREASON_TRAVEL_ENTERTAINMENT_MERCHANT_FAILED_TO_DISCLOSE_CANCELLATION_POLICY: Travel Entertainment Services\n - MASTERCARD_SUBREASON_ACCOUNT_HAS_BEEN_LISTED_IN_PCS: Issuer Dispute of a Recurring Transaction\n - MASTERCARD_SUBREASON_HOTEL_CARDHOLDER_CANCELED_RESERVATION: No Show Hotel Charge\n - MASTERCARD_SUBREASON_DUAL_CHARGE_DUAL_MASTERCARD_PAYMENT: Point of Interaction\nCardholder Debited More Than Once\n - MASTERCARD_SUBREASON_CURRENCY_CONVERSION_OCCURRED_WITHOUT_CONSENT: Currency Errors"
+    eventsRecordPreArbResponseResolution:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/eventsRecordPreArbResponseResolutionType'
+    commonPriority:
+      type: string
+      enum:
+      - PRIORITY_UNKNOWN
+      - PRIORITY_LOW
+      - PRIORITY_MEDIUM
+      - PRIORITY_HIGH
+      default: PRIORITY_UNKNOWN
+    commonPreArbInfo:
+      type: object
+      properties:
+        network:
+          $ref: '#/components/schemas/commonNetworkType'
+        mastercard:
+          $ref: '#/components/schemas/commonMastercardPreArbInfo'
+        visa:
+          $ref: '#/components/schemas/commonPreArbInfoVisa'
+    actionsResetNetworkDetailsAction:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+        transactionUuid:
+          type: string
+    eventsUpdateCustomerEmail:
+      type: object
+      properties:
+        email:
+          type: string
+    eventsUpdateCreationDate:
+      type: object
+      properties:
+        createdTimestamp:
+          type: string
+          format: int64
+        previousCreatedTimestamp:
+          type: string
+          format: int64
+          description: 'The value being replaced, so the audit row can render the correction rather
+
+            than only its result.'
+    sharedActionButton:
+      type: object
+      properties:
+        commonAction:
+          $ref: '#/components/schemas/sharedCommonAction'
+        button:
+          $ref: '#/components/schemas/sharedButton'
+    sharedComponentLayout:
+      type: string
+      enum:
+      - LAYOUT_UNKNOWN
+      - LAYOUT_MULTILINE
+      default: LAYOUT_UNKNOWN
+    eventsSubmitWsud:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+    DynamicSubComponentconditionEqual:
+      type: object
+      properties:
+        answerKeyValue:
+          type: string
+      title: buf:lint:ignore MESSAGE_PASCAL_CASE
+    DeniedMerchantBankDenialType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_MERCHANT_DID_NOT_VIOLATE
+      - TYPE_MERCHANT_PROVIDED_PROOF
+      default: TYPE_UNKNOWN
+    sharedDynamicComponent:
+      type: object
+      properties:
+        label:
+          $ref: '#/components/schemas/sharedStyledText'
+        component:
+          $ref: '#/components/schemas/sharedComponent'
+        subComponents:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/sharedDynamicSubComponent'
+        validations:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/DynamicComponentvalidation'
+    eventsSubmitChargeback:
+      type: object
+      properties:
+        questionnaire:
+          type: object
+    DeniedDispensaryMerchant:
+      type: object
+      properties:
+        name:
+          type: string
+    sharedDateTime:
+      type: object
+      properties:
+        epoch:
+          type: string
+          format: int64
+        allowFutureDates:
+          type: boolean
+    AcceptedWriteOffType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_WRITEOFF_THRESHOLD
+      - TYPE_CUSTOMER_GOODWILL
+      - TYPE_COMPELLING_EVIDENCE
+      - TYPE_MISSED_CHARGEBACK_WINDOW
+      - TYPE_MISSED_REGEREGZ_WINDOW
+      - TYPE_LIABILITY_SHIFT
+      - TYPE_ECI_5
+      - TYPE_TOKENIZED
+      - TYPE_FALLBACK
+      - TYPE_STOLEN_CARD
+      default: TYPE_UNKNOWN
+    eventsRecordLetterOutcome:
+      type: object
+      properties:
+        approved:
+          type: boolean
+        dateDecided:
+          type: string
+          format: int64
+    RecordFinalDecisionResolutionAccepted:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/RecordFinalDecisionResolutionAcceptedType'
+        merchantCredited:
+          $ref: '#/components/schemas/RecordFinalDecisionResolutionAcceptedMerchantCredited'
+        writeOff:
+          $ref: '#/components/schemas/AcceptedWriteOff'
+        other:
+          $ref: '#/components/schemas/ResolutionAcceptedOther'
+        overrideLiability:
+          type: boolean
+        accountTakeover:
+          $ref: '#/components/schemas/AcceptedAccountTakeover'
+        reasonOptionKey:
+          type: string
+          description: 'reason_option_key stores the dropdown/config option key selected for the
+
+            standardized final-decision email flow. It intentionally remains a
+
+            string because it is a template-config lookup key, not a closed domain enum.'
+        partialMerchantCreditMakeWhole:
+          type: boolean
+        partialApproval:
+          $ref: '#/components/schemas/AcceptedPartialApproval'
+        reversalType:
+          $ref: '#/components/schemas/ResolutionReversalType'
+          description: 'reversal_type/reversal_scheduled_date carry the agent''s chosen PC
+
+            reversal timing for merchant-credited approvals, mirroring Denied/Canceled.'
+        reversalScheduledDate:
+          type: string
+          format: int64
+          description: 'Unix timestamp (seconds, UTC) of the scheduled reversal; only read when
+
+            reversal_type is REVERSAL_TYPE_SCHEDULED_CUSTOM.'
+    commonTransactionProvisionalCreditInfo:
+      type: object
+      properties:
+        eligibility:
+          $ref: '#/components/schemas/TransactionProvisionalCreditInfoEligibility'
+        status:
+          $ref: '#/components/schemas/commonTransactionProvisionalCreditInfoStatus'
+    commonTransactionType:
+      type: string
+      enum:
+      - TRANSACTION_TYPE_UNKNOWN
+      - TRANSACTION_TYPE_DEBIT
+      - TRANSACTION_TYPE_CREDIT
+      - TRANSACTION_TYPE_ACH
+      - TRANSACTION_TYPE_ATM
+      - TRANSACTION_TYPE_P2P
+      - TRANSACTION_TYPE_CHECK
+      - TRANSACTION_TYPE_BILL_PAY
+      - TRANSACTION_TYPE_WIRE
+      default: TRANSACTION_TYPE_UNKNOWN
+    SearchModalQuerymastercardTransactions:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+        transactionUuid:
+          type: string
+        amountDeltaCents:
+          type: integer
+          format: int32
+        timeDeltaDays:
+          type: string
+          format: int64
+      title: buf:lint:ignore MESSAGE_PASCAL_CASE
+    sharedRadioGroup:
+      type: object
+      properties:
+        radiogroup:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/RadioGroupRadioItem'
+        radioGroupName:
+          type: string
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        size:
+          $ref: '#/components/schemas/sharedRadioGroupSize'
+        alignment:
+          $ref: '#/components/schemas/sharedComponentAlignmentType'
+        color:
+          $ref: '#/components/schemas/sharedColor'
+        selectedKeyValue:
+          type: string
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        onChangeAction:
+          $ref: '#/components/schemas/RadioGroupRadioGroupChangeAction'
+        hideSelectionToggle:
+          type: boolean
+    commonVisaReasonCode:
+      type: string
+      enum:
+      - VISA_REASON_CODE_UNKNOWN
+      - VISA_REASON_CODE_EMV_LIABILITY_SHIFT_COUNTERFEIT_FRAUD
+      - VISA_REASON_CODE_EMV_LIABILITY_SHIFT_NON_COUNTERFEIT_FRAUD
+      - VISA_REASON_CODE_OTHER_FRAUD_CARD_PRESENT
+      - VISA_REASON_CODE_OTHER_FRAUD_CARD_NOT_PRESENT
+      - VISA_REASON_CODE_OTHER_FRAUD_CARD_ABSENT_ENVIRONMENT
+      - VISA_REASON_CODE_FRAUD_MONITORING_PROGRAM
+      - VISA_REASON_CODE_CARD_RECOVERY_BULLETIN_OR_EXCEPTION_FILE
+      - VISA_REASON_CODE_DECLINED_AUTHORIZATION
+      - VISA_REASON_CODE_NO_AUTHORIZATION
+      - VISA_REASON_CODE_LATE_PRESENTMENT
+      - VISA_REASON_CODE_INCORRECT_TRANSACTION_CODE
+      - VISA_REASON_CODE_INCORRECT_CURRENCY
+      - VISA_REASON_CODE_INCORRECT_ACCOUNT_NUMBER
+      - VISA_REASON_CODE_INCORRECT_AMOUNT
+      - VISA_REASON_CODE_DUPLICATE_PROCESSING
+      - VISA_REASON_CODE_INVALID_DATA
+      - VISA_REASON_CODE_SERVICES_NOT_PROVIDED_OR_MERCHANDISE_NOT_RECEIVED
+      - VISA_REASON_CODE_CANCELLED_RECURRING_TRANSACTION
+      - VISA_REASON_CODE_NOT_AS_DESCRIBED_OR_DEFECTIVE_MERCHANDISE
+      - VISA_REASON_CODE_COUNTERFEIT
+      - VISA_REASON_CODE_MISREPRESENTATION
+      - VISA_REASON_CODE_CREDIT_NOT_PROCESSED
+      - VISA_REASON_CODE_CANCELED_RESERVATION_OR_NO_SHOW
+      - VISA_REASON_CODE_ORIGINAL_CREDIT_TRANSACTION_NOT_ACCEPTED
+      - VISA_REASON_CODE_NON_RECEIPT_OF_CASH_OR_LOAD_TRANSACTION_VALUE
+      - VISA_REASON_CODE_PAID_BY_OTHER_MEANS
+      default: VISA_REASON_CODE_UNKNOWN
+    SubmitFraudReportVisaInfo:
+      type: object
+      properties:
+        rolTransactionId:
+          type: string
+          format: int64
+        fraudType:
+          type: string
+        issuerGenAuth:
+          type: string
+        arn:
+          type: string
+    eventsCancelScheduledPcReversal:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        previousScheduledDate:
+          type: string
+          format: int64
+        reason:
+          type: string
+        skipEmail:
+          type: boolean
+    MarkAsReadActionTableType:
+      type: string
+      enum:
+      - TABLE_TYPE_UNKNOWN
+      - TABLE_TYPE_ACTION_COMPLIANCE
+      - TABLE_TYPE_ACTION_NOTIFICATION
+      default: TABLE_TYPE_UNKNOWN
+    eventsTriggerRunType:
+      type: string
+      enum:
+      - TRIGGER_RUN_TYPE_UNKNOWN
+      - TRIGGER_RUN_TYPE_PROCEED_ON_ERROR
+      - TRIGGER_RUN_TYPE_FAIL_ON_ERROR
+      - TRIGGER_RUN_TYPE_SKIP
+      default: TRIGGER_RUN_TYPE_UNKNOWN
+    sharedTextColor:
+      type: string
+      enum:
+      - TEXT_COLOR_PRIMARY
+      - TEXT_COLOR_SECONDARY
+      - TEXT_COLOR_WARNING
+      - TEXT_COLOR_ERROR
+      - TEXT_COLOR_SUCCESS
+      - TEXT_COLOR_INHERIT
+      - TEXT_COLOR_DARK
+      - TEXT_COLOR_LIGHT
+      - TEXT_COLOR_PRIMARY_DARK
+      - TEXT_COLOR_PRIMARY_LIGHT
+      default: TEXT_COLOR_PRIMARY
+      title: '- TEXT_COLOR_PRIMARY: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    v1Branding:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+        colors:
+          $ref: '#/components/schemas/v1Colors'
+        copies:
+          $ref: '#/components/schemas/v1Copies'
+    sharedBadgeIconAlignment:
+      type: string
+      enum:
+      - BUTTON_ICON_ALIGNMENT_LEFT
+      - BUTTON_ICON_ALIGNMENT_RIGHT
+      default: BUTTON_ICON_ALIGNMENT_LEFT
+      description: '- BUTTON_ICON_ALIGNMENT_LEFT: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+      title: buf:lint:ignore ENUM_VALUE_PREFIX
+    v1FormStepCondition:
+      type: object
+      properties:
+        field:
+          type: string
+        operator:
+          $ref: '#/components/schemas/v1Operator'
+        value:
+          type: string
+    eventsFileACHReturnDirect:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        returnCode:
+          type: string
+        dateSubmitted:
+          type: string
+          format: int64
+    eventsRecordRepresentmentResolution:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/eventsRecordRepresentmentResolutionType'
+    eventsUploadRequestMoreInfoFile:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/commonFile'
+        communicationUuid:
+          type: string
+    eventsUnpinComment:
+      type: object
+      properties:
+        commentUuid:
+          type: string
+    DynamicComponentvalidation:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/DynamicComponentvalidationType'
+        message:
+          type: string
+        pattern:
+          type: string
+        custom:
+          type: string
+          title: function name we can call in the client?
+        minLength:
+          type: integer
+          format: int32
+          title: 'Deprecated: use WithMinLengthValidation instead'
+        maxLength:
+          type: integer
+          format: int32
+          title: 'Deprecated: implement similar custom validation'
+        minValue:
+          type: number
+          format: double
+        maxValue:
+          type: number
+          format: double
+        customValue:
+          $ref: '#/components/schemas/protobufAny'
+        shouldUnregister:
+          type: boolean
+      title: buf:lint:ignore MESSAGE_PASCAL_CASE
+    sharedRadioList:
+      type: object
+      properties:
+        radiogroup:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/RadioListitem'
+        radioGroupName:
+          type: string
+        size:
+          $ref: '#/components/schemas/sharedRadioListSize'
+        hideSelectionToggle:
+          type: boolean
+        allowMultipleSelection:
+          type: boolean
+        alignment:
+          $ref: '#/components/schemas/sharedComponentAlignmentType'
+        color:
+          $ref: '#/components/schemas/sharedColor'
+        selectedKeyValues:
+          type: array
+          items:
+            type: string
+    eventsFilePreArb:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        reason:
+          type: string
+        preArbInfo:
+          $ref: '#/components/schemas/commonPreArbInfo'
+    v1GetOrganizationQuestionnaireResponse:
+      type: object
+      properties:
+        questionnaires:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/v1Questionnaire'
+    sharedSearchModalQuery:
+      type: object
+      properties:
+        vrolTransactions:
+          $ref: '#/components/schemas/SearchModalQueryvrolTransactions'
+        mastercardTransactions:
+          $ref: '#/components/schemas/SearchModalQuerymastercardTransactions'
+        defaultValue:
+          type: array
+          items:
+            type: string
+    actionsDownloadPDFAction:
+      type: object
+      properties:
+        key:
+          type: string
+    eventsUpdatePanNumber:
+      type: object
+      properties:
+        cardLastDigits:
+          type: string
+        cardToken:
+          type: string
+    eventsRecordFinalDecision:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        resolution:
+          $ref: '#/components/schemas/eventsRecordFinalDecisionResolution'
+        glCode:
+          type: string
+        accountId:
+          type: string
+        skipEmail:
+          type: boolean
+        glAccount:
+          type: string
+    sharedWeight:
+      type: string
+      enum:
+      - WEIGHT_FONT_THIN
+      - WEIGHT_FONT_EXTRALIGHT
+      - WEIGHT_FONT_LIGHT
+      - WEIGHT_FONT_NORMAL
+      - WEIGHT_FONT_MEDIUM
+      - WEIGHT_FONT_SEMIBOLD
+      - WEIGHT_FONT_BOLD
+      - WEIGHT_FONT_EXTRABOLD
+      - WEIGHT_FONT_BLACK
+      default: WEIGHT_FONT_THIN
+      title: '- WEIGHT_FONT_THIN: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    commonATMData:
+      type: object
+      properties:
+        switchTerminalId:
+          type: string
+        localTerminalId:
+          type: string
+        terminalId:
+          type: string
+    sharedButton:
+      type: object
+      properties:
+        text:
+          $ref: '#/components/schemas/sharedStyledText'
+        type:
+          $ref: '#/components/schemas/sharedButtonType'
+        isDisabled:
+          type: boolean
+        icon:
+          $ref: '#/components/schemas/sharedIcon'
+        buttonVariant:
+          $ref: '#/components/schemas/sharedButtonVariant'
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        isFullWidth:
+          type: boolean
+        iconAlignment:
+          $ref: '#/components/schemas/sharedButtonIconAlignment'
+    eventsRequestMoreInfoCommunicationStatus:
+      type: string
+      enum:
+      - STATUS_UNKNOWN
+      - STATUS_PENDING
+      - STATUS_FAILED
+      - STATUS_SUCCESS
+      - STATUS_COMPLETED
+      - STATUS_FAILED_NO_EMAIL
+      - STATUS_PRINTED
+      - STATUS_SKIPPED
+      - STATUS_MANUAL_EMAIL
+      - STATUS_RESOLVED
+      default: STATUS_UNKNOWN
+    eventsUpdateArn:
+      type: object
+      properties:
+        arn:
+          type: string
+    commonTransactionDetail:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        timestamp:
+          type: string
+          format: int64
+        amount:
+          $ref: '#/components/schemas/commonAmount'
+        merchant:
+          type: string
+        status:
+          $ref: '#/components/schemas/commonTransactionDetailStatus'
+        type:
+          $ref: '#/components/schemas/commonTransactionType'
+        provisionalCreditInfo:
+          $ref: '#/components/schemas/commonTransactionProvisionalCreditInfo'
+        network:
+          $ref: '#/components/schemas/commonNetworkType'
+        userUuid:
+          type: string
+        location:
+          type: string
+        arn:
+          type: string
+        ica:
+          type: string
+        colorLabel:
+          $ref: '#/components/schemas/commonColorLabel'
+        authTimestamp:
+          type: string
+          format: int64
+        atmData:
+          $ref: '#/components/schemas/commonATMData'
+        typeCode:
+          type: string
+        sequenceNumber:
+          type: string
+        prn:
+          type: string
+        mcc:
+          type: string
+        isPossibleDisputeInProgress:
+          type: boolean
+        par:
+          type: string
+        secCode:
+          type: string
+        traceNumber:
+          type: string
+        isFee:
+          type: boolean
+          description: is_fee marks a fee-shaped transaction (standalone core fee or embedded fee row).
+        rrn:
+          type: string
+        feeId:
+          type: string
+          description: fee_id is the processor fee identifier used to reverse the fee (e.g. Galileo fee_id).
+    sharedIconType:
+      type: string
+      enum:
+      - ICON_TYPE_UNKNOWN
+      - ICON_TYPE_TIMER
+      - ICON_TYPE_FILE_UPLOAD
+      - ICON_TYPE_FILE
+      - ICON_TYPE_CREATION_SUCCESS
+      - ICON_TYPE_LOW_PRIORITY
+      - ICON_TYPE_MEDIUM_PRIORITY
+      - ICON_TYPE_HIGH_PRIORITY
+      - ICON_TYPE_URGENT_PRIORITY
+      - ICON_TYPE_CALENDAR
+      - ICON_TYPE_USER
+      - ICON_TYPE_FLASH
+      - ICON_TYPE_ARROW_UP_DEFAULT
+      - ICON_TYPE_STAR
+      - ICON_TYPE_CLOCK
+      - ICON_TYPE_NAVIGATION
+      - ICON_TYPE_WARNING
+      - ICON_TYPE_VISA
+      - ICON_TYPE_MASTERCARD
+      - ICON_TYPE_AMEX
+      - ICON_TYPE_INTERLINK
+      - ICON_TYPE_PULSE
+      - ICON_TYPE_FILE_QUESTION
+      - ICON_TYPE_CHEVRON_DOWN
+      - ICON_TYPE_WARNING_THIN
+      - ICON_TYPE_FRAUD
+      - ICON_TYPE_AUTHORIZATION
+      - ICON_TYPE_GOODS_SERVICES_BILLING_ISSUE
+      - ICON_TYPE_WARNING_SIGN
+      - ICON_TYPE_FORBIDDEN_SIGN
+      - ICON_TYPE_EXPLORE_SIGN
+      - ICON_TYPE_DELETE
+      - ICON_TYPE_CLOSE
+      - ICON_TYPE_CLOSE_CIRCLE
+      - ICON_TYPE_PROHIBITED
+      - ICON_TYPE_ARROW_SQUARE_RIGHT
+      - ICON_TYPE_ARROW_REVERSE_RIGHT
+      - ICON_TYPE_DOWNLOAD
+      - ICON_TYPE_FOLDER_DOWNLOAD
+      - ICON_TYPE_ARROW_REFRESH
+      - ICON_TYPE_SPACING_WIDTH
+      - ICON_TYPE_WARNING_SQUARE
+      - ICON_TYPE_REFRESH
+      - ICON_TYPE_PENCIL
+      - ICON_TYPE_CREDIT_CARD
+      - ICON_TYPE_RESEND
+      - ICON_TYPE_SEARCH_LG
+      - ICON_TYPE_Q2
+      - ICON_TYPE_STARS
+      - ICON_TYPE_PIN
+      - ICON_TYPE_STAR_NETWORK
+      - ICON_TYPE_LUMIN
+      - ICON_TYPE_MAIL
+      - ICON_TYPE_PRINTER
+      - ICON_TYPE_NYCE_NETWORK
+      - ICON_TYPE_SMILE_FACE
+      - ICON_TYPE_ARROW_REVERSE_LEFT
+      - ICON_TYPE_CHECK_CIRCLE
+      - ICON_TYPE_DASH
+      - ICON_TYPE_ACCEL_NETWORK
+      - ICON_TYPE_RESET
+      - ICON_TYPE_ALKAMI
+      - ICON_TYPE_SUNCOAST
+      - ICON_TYPE_ALLPOINT_NETWORK
+      - ICON_TYPE_DOTS_GRID
+      - ICON_TYPE_CARD_SEARCH
+      - ICON_TYPE_INFO
+      default: ICON_TYPE_UNKNOWN
+      title: buf:lint:ignore ENUM_VALUE_PREFIX
+    v1Operator:
+      type: string
+      enum:
+      - AND
+      - OR
+      - EQUAL
+      default: AND
+    commonPreArbInfoVisaType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_CREATE
+      - TYPE_RESPOND
+      default: TYPE_UNKNOWN
+    eventsUploadWsud:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        wsud:
+          $ref: '#/components/schemas/commonFile'
+        achReturnDate:
+          type: string
+          format: int64
+    eventsRecordRepresentmentResolutionType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_ACCEPTED
+      - TYPE_REJECTED
+      default: TYPE_UNKNOWN
+    eventsStartChargeback:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/commonAmount'
+        reason:
+          $ref: '#/components/schemas/commonChargebackReason'
+        service:
+          $ref: '#/components/schemas/commonChargebackService'
+        isResubmission:
+          type: boolean
+        sharedForm:
+          type: object
+    eventsRecordArbResponse:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        resolution:
+          $ref: '#/components/schemas/eventsRecordArbResponseResolution'
+    TextInputinputFormat:
+      type: string
+      enum:
+      - TEXT_INPUT_FORMAT_UNKNOWN
+      - TEXT_INPUT_FORMAT_TEXT
+      - TEXT_INPUT_FORMAT_DATE
+      - TEXT_INPUT_FORMAT_INT
+      - TEXT_INPUT_FORMAT_CURRENCY
+      - TEXT_INPUT_FORMAT_TIME
+      - TEXT_INPUT_FORMAT_DIGITS
+      default: TEXT_INPUT_FORMAT_UNKNOWN
+      title: 'buf:lint:ignore ENUM_VALUE_PREFIX
+
+        buf:lint:ignore ENUM_PASCAL_CASE'
+    eventsUpdateColorLabel:
+      type: object
+      properties:
+        colorLabel:
+          $ref: '#/components/schemas/commonColorLabel'
+        applyToAll:
+          type: boolean
+    sharedRadioGroupSize:
+      type: string
+      enum:
+      - SIZE_BASE
+      - SIZE_SM
+      - SIZE_LG
+      default: SIZE_BASE
+      title: '- SIZE_BASE: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    eventsRecordOdfiResponseResolution:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/eventsRecordOdfiResponseResolutionType'
+    AcceptedAccountTakeover:
+      type: object
+      properties:
+        mldkTicketId:
+          type: string
+    eventsAddComment:
+      type: object
+      properties:
+        comment:
+          type: string
+    ResolutionDeniedOther:
+      type: object
+      properties:
+        reason:
+          type: string
+    v1DisputesConfig:
+      type: object
+      properties:
+        hiddenTypes:
+          type: string
+        hiddenNames:
+          type: string
+        hiddenNamesByAccount:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/v1TransactionNamesMatch'
+        disabledTypes:
+          type: string
+        disabledNames:
+          type: string
+        disabledNamesByAccount:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/v1TransactionNamesMatch'
+        exactNameMatch:
+          type: boolean
+        maxDaysSinceTxn:
+          type: string
+          format: int64
+        minDaysSinceTxn:
+          type: string
+          format: int64
+        transactionTypeMatches:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/v1TransactionTypeMatch'
+        hideInflowTxns:
+          type: boolean
+        transactionMerchants:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/v1TransactionMerchant'
+        abuserDisputeCountThreshold:
+          type: string
+          format: int64
+        abuserDisputedAmountThreshold:
+          type: string
+          format: int64
+        abuserLookbackDays:
+          type: integer
+          format: int32
+        maxTxnsToDispute:
+          type: integer
+          format: int32
+    AnswerIntakeQuestionnaireAnswer:
+      type: object
+      properties:
+        questionUuid:
+          type: string
+        type:
+          $ref: '#/components/schemas/AnswerIntakeQuestionnaireAnswerType'
+        radioGroupAnswer:
+          $ref: '#/components/schemas/AnswerradioGroup'
+        checkboxGroupAnswer:
+          $ref: '#/components/schemas/AnswercheckboxGroup'
+        textInputAnswer:
+          $ref: '#/components/schemas/AnswertextInput'
+        dropdownAnswer:
+          $ref: '#/components/schemas/Answerdropdown'
+    ResolutionReversalType:
+      type: string
+      enum:
+      - REVERSAL_TYPE_UNKNOWN
+      - REVERSAL_TYPE_IMMEDIATE
+      - REVERSAL_TYPE_SCHEDULED_DEFAULT
+      - REVERSAL_TYPE_SCHEDULED_CUSTOM
+      default: REVERSAL_TYPE_UNKNOWN
+    eventsAssignAgent:
+      type: object
+      properties:
+        agent:
+          $ref: '#/components/schemas/commonUser'
+    eventsUpdateAmount:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/commonAmount'
+        type:
+          $ref: '#/components/schemas/eventsUpdateAmountType'
+    eventsRecordPreArbResponse:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        resolution:
+          $ref: '#/components/schemas/eventsRecordPreArbResponseResolution'
+    eventsResetNetworkDetails:
+      type: object
+    sharedButtonType:
+      type: string
+      enum:
+      - BUTTON_TYPE_PRIMARY
+      - BUTTON_TYPE_SECONDARY
+      - BUTTON_TYPE_WARNING
+      - BUTTON_TYPE_ERROR
+      - BUTTON_TYPE_SUCCESS
+      - BUTTON_TYPE_INHERIT
+      - BUTTON_TYPE_DARK
+      - BUTTON_TYPE_LIGHT
+      default: BUTTON_TYPE_PRIMARY
+      description: '- BUTTON_TYPE_PRIMARY: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+      title: buf:lint:ignore ENUM_VALUE_PREFIX
+    eventsCreateDispute:
+      type: object
+      properties:
+        orgUuid:
+          type: string
+        transactionDetails:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/commonTransactionDetail'
+        customer:
+          $ref: '#/components/schemas/commonCustomer'
+    eventsUpdateSECCode:
+      type: object
+      properties:
+        secCode:
+          type: string
+    actionsDisputeEventActionProtocolVersion:
+      type: string
+      enum:
+      - DISPUTE_EVENT_ACTION_PROTOCOL_VERSION_UNKNOWN
+      - DISPUTE_EVENT_ACTION_PROTOCOL_VERSION_V1
+      default: DISPUTE_EVENT_ACTION_PROTOCOL_VERSION_UNKNOWN
+    eventsApproveWsudReview:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+    commonMastercardPreArbReason:
+      type: string
+      enum:
+      - MASTERCARD_PRE_ARB_REASON_UNKNOWN
+      - MASTERCARD_PRE_ARB_REASON_AUTH_INVALID_SECOND_PRESENTMENT
+      - MASTERCARD_PRE_ARB_REASON_AUTH_DOCUMENT_FOR_SECOND_PRESENTMENT_ILLEGIBLE
+      - MASTERCARD_PRE_ARB_REASON_AUTH_SECOND_PRESENTMENT_DOCUMENT_NOT_RECEIVED
+      - MASTERCARD_PRE_ARB_REASON_AUTH_ARD_DOES_NOT_MATCH_OR_INVALID
+      - MASTERCARD_PRE_ARB_REASON_CARDHOLDER_REASSERTS_THEIR_CLAIM
+      - MASTERCARD_PRE_ARB_REASON_CARDHOLDER_DISPUTE_INVALID_SECOND_PRESENTMENT
+      - MASTERCARD_PRE_ARB_REASON_CARDHOLDER_DOCUMENT_FOR_SECOND_PRESENTMENT_ILLEGIBLE
+      - MASTERCARD_PRE_ARB_REASON_CARDHOLDER_SECOND_PRESENTMENT_DOCUMENT_NOT_RECEIVED
+      - MASTERCARD_PRE_ARB_REASON_CARDHOLDER_ARD_DOES_NOT_MATCH_OR_INVALID
+      - MASTERCARD_PRE_ARB_REASON_CARDHOLDER_CHANGE_OF_REASON
+      - MASTERCARD_PRE_ARB_REASON_POI_TRANSACTION_AMOUNT_DIFFERS
+      - MASTERCARD_PRE_ARB_REASON_POI_ATM_DISPUTES
+      - MASTERCARD_PRE_ARB_REASON_POI_ATM_DISPUTE_REQUIRED_DOCUMENT_NOT_RECEIVED
+      - MASTERCARD_PRE_ARB_REASON_POI_INVALID_SECOND_PRESENTMENT
+      - MASTERCARD_PRE_ARB_REASON_POI_DOCUMENT_FOR_SECOND_PRESENTMENT_ILLEGIBLE
+      - MASTERCARD_PRE_ARB_REASON_POI_SECOND_PRESENTMENT_DOCUMENT_NOT_RECEIVED
+      - MASTERCARD_PRE_ARB_REASON_POI_ARD_DOES_NOT_MATCH_OR_INVALID
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_NO_CARDHOLDER_AUTHORIZATION_INVALID_SECOND_PRESENTMENT
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_NO_CARDHOLDER_AUTHORIZATION_DOCUMENT_FOR_SECOND_PRESENTMENT_ILLEGIBLE
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_NO_CARDHOLDER_AUTHORIZATION_SECOND_PRESENTMENT_DOCUMENT_NOT_RECEIVED
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_NO_CARDHOLDER_AUTHORIZATION_ARD_DOES_NOT_MATCH_OR_INVALID
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_NO_CARDHOLDER_AUTHORIZATION_COMPELLING_EVIDENCE
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_NO_CARDHOLDER_AUTHORIZATION_ADDENDUM_DISPUTES
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_NO_CARDHOLDER_AUTHORIZATION_ADDRESS_VERIFICATION_SERVICE
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_NO_CARDHOLDER_AUTHORIZATION_GUARANTEED_RESERVATION_SHOW
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_NO_CARDHOLDER_AUTHORIZATION_NEW_MERCHANT_LOCATION
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_QUESTIONABLE_MERCHANT_ACTIVITY_INVALID_SECOND_PRESENTMENT
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_QUESTIONABLE_MERCHANT_ACTIVITY_DOCUMENT_FOR_SECOND_PRESENTMENT_ILLEGIBLE
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_QUESTIONABLE_MERCHANT_ACTIVITY_SECOND_PRESENTMENT_DOCUMENT_NOT_RECEIVED
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_QUESTIONABLE_MERCHANT_ACTIVITY_ARD_DOES_NOT_MATCH_OR_INVALID
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_CHIP_LIABILITY_SHIFT_INVALID_SECOND_PRESENTMENT
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_CHIP_LIABILITY_SHIFT_DOCUMENT_FOR_SECOND_PRESENTMENT_ILLEGIBLE
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_CHIP_LIABILITY_SHIFT_SECOND_PRESENTMENT_DOCUMENT_NOT_RECEIVED
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_CHIP_LIABILITY_SHIFT_ARD_DOES_NOT_MATCH_OR_INVALID
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_CHIP_LIABILITY_SHIFT_LOST_OR_STOLEN_INVALID_SECOND_PRESENTMENT
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_CHIP_LIABILITY_SHIFT_LOST_OR_STOLEN_DOCUMENT_FOR_SECOND_PRESENTMENT_ILLEGIBLE
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_CHIP_LIABILITY_SHIFT_LOST_OR_STOLEN_SECOND_PRESENTMENT_DOCUMENT_NOT_RECEIVED
+      - MASTERCARD_PRE_ARB_REASON_FRAUD_CHIP_LIABILITY_SHIFT_LOST_OR_STOLEN_ARD_DOES_NOT_MATCH_OR_INVALID
+      default: MASTERCARD_PRE_ARB_REASON_UNKNOWN
+      title: "- MASTERCARD_PRE_ARB_REASON_AUTH_INVALID_SECOND_PRESENTMENT: Authorization Reasons\n - MASTERCARD_PRE_ARB_REASON_CARDHOLDER_REASSERTS_THEIR_CLAIM: Cardholder Dispute\n - MASTERCARD_PRE_ARB_REASON_POI_TRANSACTION_AMOUNT_DIFFERS: Point of Interaction Error\n - MASTERCARD_PRE_ARB_REASON_FRAUD_NO_CARDHOLDER_AUTHORIZATION_INVALID_SECOND_PRESENTMENT: Fraud\nNo Cardholder Authorization\n - MASTERCARD_PRE_ARB_REASON_FRAUD_QUESTIONABLE_MERCHANT_ACTIVITY_INVALID_SECOND_PRESENTMENT: Questionable Merchant Activity\n - MASTERCARD_PRE_ARB_REASON_FRAUD_CHIP_LIABILITY_SHIFT_INVALID_SECOND_PRESENTMENT: Chip Liability Shift\n - MASTERCARD_PRE_ARB_REASON_FRAUD_CHIP_LIABILITY_SHIFT_LOST_OR_STOLEN_INVALID_SECOND_PRESENTMENT: Chip Liability Shift Lost or Stolen"
+    eventsUpdatePAR:
+      type: object
+      properties:
+        par:
+          type: string
+    sharedCheckboxGroup:
+      type: object
+      properties:
+        checkboxItem:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/CheckboxGroupCheckboxItem'
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        checkboxGroupName:
+          type: string
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        size:
+          $ref: '#/components/schemas/sharedCheckboxGroupSize'
+        selectedKeyValues:
+          type: array
+          items:
+            type: string
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+    commonChargebackService:
+      type: string
+      enum:
+      - CHARGEBACK_SERVICE_UNKNOWN
+      - CHARGEBACK_SERVICE_DEFAULT
+      - CHARGEBACK_SERVICE_VERIFI
+      default: CHARGEBACK_SERVICE_UNKNOWN
+    DropdownDropdownData:
+      type: object
+      properties:
+        keyValue:
+          type: string
+        displayValue:
+          type: string
+        subContent:
+          $ref: '#/components/schemas/sharedDropdown'
+        isDisabled:
+          type: boolean
+        extension:
+          type: object
+          additionalProperties:
+            type: string
+        actionButton:
+          $ref: '#/components/schemas/sharedDropdownActionButton'
+        badge:
+          $ref: '#/components/schemas/sharedBadge'
+    actionsGetMcomDetailsAction:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+        transactionUuid:
+          type: string
+    sharedComponentAlignmentType:
+      type: string
+      enum:
+      - COMPONENT_ALIGNMENT_TYPE_UNKNOWN
+      - COMPONENT_ALIGNMENT_TYPE_VERTICAL
+      - COMPONENT_ALIGNMENT_TYPE_HORIZONTAL
+      default: COMPONENT_ALIGNMENT_TYPE_UNKNOWN
+    commonChargebackReason:
+      type: object
+      properties:
+        network:
+          $ref: '#/components/schemas/commonNetworkType'
+        visa:
+          $ref: '#/components/schemas/commonVisaChargebackReason'
+        mastercard:
+          $ref: '#/components/schemas/commonMastercardReason'
+    eventsMakeAgenticPreArbRecommendation:
+      type: object
+      properties:
+        text:
+          type: string
+          description: 'Deprecated: superseded by the per-network sub-messages below.'
+        visa:
+          $ref: '#/components/schemas/eventsVisaPreArbRecommendation'
+        mastercard:
+          $ref: '#/components/schemas/eventsMastercardPreArbRecommendation'
+    SelectMenuSelectMenuData:
+      type: object
+      properties:
+        key:
+          type: string
+        title:
+          $ref: '#/components/schemas/sharedStyledTextWithIconKey'
+    eventsRecordLetterSent:
+      type: object
+      properties:
+        dateSent:
+          type: string
+          format: int64
+    commonPreArbInfoVisa:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/commonPreArbInfoVisaType'
+        questionnaire:
+          type: object
+    commonTransactionProvisionalCreditInfoStatus:
+      type: string
+      enum:
+      - STATUS_UNKNOWN
+      - STATUS_PENDING
+      - STATUS_ISSUED
+      - STATUS_REVERSED
+      - STATUS_ISSUED_AS_APPEASEMENT
+      default: STATUS_UNKNOWN
+    eventsUpdateCard:
+      type: object
+      properties:
+        cardLastDigits:
+          type: string
+    eventsUpdateProvisionalCreditLockStatus:
+      type: object
+    eventsRemoveFile:
+      type: object
+      properties:
+        fileUuid:
+          type: string
+    eventsRecordAffidavitReceivedDirect:
+      type: object
+      properties:
+        received:
+          type: boolean
+        dateReceived:
+          type: string
+          format: int64
+    sharedDropdownCommonAction:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/sharedDropdownCommonActionType'
+        callback:
+          $ref: '#/components/schemas/actionsCallbackAction'
+        common:
+          $ref: '#/components/schemas/actionsAction'
+    eventsRecordLateReturnDecision:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        approved:
+          type: boolean
+        dateDecided:
+          type: string
+          format: int64
+    eventsUpdatePendingTxn:
+      type: object
+      properties:
+        newTransactionUuid:
+          type: string
+    eventsUpdateAudience:
+      type: object
+      properties:
+        commentUuid:
+          type: string
+        audience:
+          type: integer
+          format: int32
+    eventsRecordFinalDecisionResolutionType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_ACCEPTED
+      - TYPE_REJECTED
+      - TYPE_CANCELED
+      default: TYPE_UNKNOWN
+    v1AccountsConfig:
+      type: object
+      properties:
+        allowedProducts:
+          type: string
+        allowedProductTypes:
+          type: string
+        allowedNames:
+          type: string
+        allowedAccesses:
+          type: string
+        hiddenProducts:
+          type: string
+        hiddenProductTypes:
+          type: string
+        hiddenNames:
+          type: string
+        hiddenAccesses:
+          type: string
+    RadioGroupRadioItemAppend:
+      type: object
+      properties:
+        label:
+          type: string
+        type:
+          $ref: '#/components/schemas/RadioGroupRadioItemAppendType'
+        alignment:
+          $ref: '#/components/schemas/RadioItemAppendAlignment'
+    RadioListitemAppendType:
+      type: string
+      enum:
+      - TYPE_WARNING
+      default: TYPE_WARNING
+      title: '- TYPE_WARNING: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    DeniedAuthorizedTransactionType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_CARD_IN_POSSESSION
+      - TYPE_TOKEN_PIN_USED
+      - TYPE_MATCH_IP_ADDRESS
+      - TYPE_CARD_PIN_SHARED
+      - TYPE_CARD_IN_POSSESSION_CHIP_AND_PIN
+      - TYPE_TOKEN_ONLY
+      - TYPE_MATCHING_MEMBER_INFO
+      - TYPE_DELIVERED_TO_MEMBER_ADDRESS
+      - TYPE_DISPENSARY_MERCHANT
+      default: TYPE_UNKNOWN
+    sharedCheckboxGroupSize:
+      type: string
+      enum:
+      - SIZE_BASE
+      - SIZE_SM
+      - SIZE_LG
+      default: SIZE_BASE
+      title: '- SIZE_BASE: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+    commonMastercardReasonType:
+      type: string
+      enum:
+      - MASTERCARD_REASON_TYPE_UNKNOWN
+      - MASTERCARD_REASON_TYPE_NO_CARDHOLDER_AUTHORIZATION
+      - MASTERCARD_REASON_TYPE_QUESTIONABLE_MERCHANT_ACTIVITY
+      - MASTERCARD_REASON_TYPE_CHIP_LIABILITY_SHIFT
+      - MASTERCARD_REASON_TYPE_CHIP_LIABILITY_SHIFT_LOST_OR_STOLEN
+      - MASTERCARD_REASON_TYPE_QUESTIONABLE_MERCHANT_ACTIVITY_COERSION
+      - MASTERCARD_REASON_TYPE_REQUIRED_AUTH_NOT_OBTAINED
+      - MASTERCARD_REASON_TYPE_MULTIPLE_AUTHORIZATION_REQUESTS
+      - MASTERCARD_REASON_TYPE_EXPIRED_CHARGEBACK_PROTECTION_PERIOD
+      - MASTERCARD_REASON_TYPE_CAT3_DEVICE
+      - MASTERCARD_REASON_TYPE_TRANSIT_FIRST_RIDE_RISK
+      - MASTERCARD_REASON_TYPE_LATE_PRESENTMENT
+      - MASTERCARD_REASON_TYPE_CARDHOLDER_DEBITED_MORE_THAN_ONCE
+      - MASTERCARD_REASON_TYPE_TRANSACTION_AMOUNT_DIFFERS
+      - MASTERCARD_REASON_TYPE_CURRENCY_ERRORS
+      - MASTERCARD_REASON_TYPE_INSTALLMENT_BILLING_DISPUTE
+      - MASTERCARD_REASON_TYPE_DOMESTIC_CHARGEBACK_DISPUTE
+      - MASTERCARD_REASON_TYPE_ATM_DISPUTES
+      - MASTERCARD_REASON_TYPE_CHARGES_FOR_LOSSES
+      - MASTERCARD_REASON_TYPE_MERCHANT_CREDIT_CORRECTING_ERROR
+      - MASTERCARD_REASON_TYPE_IMPROPER_MERCHANT_SURCHARGE
+      - MASTERCARD_REASON_TYPE_UNREASONABLE_AMOUNT
+      - MASTERCARD_REASON_TYPE_GOODS_AND_SERVICES_NOT_AS_DESCRIBED
+      - MASTERCARD_REASON_TYPE_GOODS_SERVICES_NOT_RECEIVED
+      - MASTERCARD_REASON_TYPE_CREDIT_NOT_PROCESSED
+      - MASTERCARD_REASON_TYPE_RECURRING_TRANSACTION
+      - MASTERCARD_REASON_TYPE_CARDHOLDER_DISPUTE_OF_A_RECURRING_TRANSACTION
+      - MASTERCARD_REASON_TYPE_CREDIT_POSTED_AS_PURCHASE
+      - MASTERCARD_REASON_TYPE_NO_SHOW_HOTEL
+      - MASTERCARD_REASON_TYPE_FAILED_TRAVEL_MERCHANT_INTRA_EEA
+      - MASTERCARD_REASON_TYPE_TRAVEL_ENTERTAINMENT_NOT_PROVIDED
+      - MASTERCARD_REASON_TYPE_DIGITAL_GOODS_LESS_THAN_25
+      - MASTERCARD_REASON_TYPE_TRAVEL_ENTERTAINMENT_CREDIT_NOT_PROCESSED
+      - MASTERCARD_REASON_TYPE_COUNTERFEIT_GOODS
+      - MASTERCARD_REASON_TYPE_ADDENDUM_DISPUTE
+      - MASTERCARD_REASON_TYPE_TRANSACTION_DID_NOT_COMPLETE
+      - MASTERCARD_REASON_TYPE_TIMESHARES
+      default: MASTERCARD_REASON_TYPE_UNKNOWN
+    v1Copies:
+      type: object
+      properties:
+        disputesBlockerText:
+          type: string
+        unauthBlockerText:
+          type: string
+        introductoryText:
+          type: string
+          title: html text that will come up as first screen
+        unauthClaimText:
+          type: string
+          title: text for an extra card in unauth disputes successful submission modal
+        extraSections:
+          type: array
+          items:
+            type: string
+          title: text for extra sections in successful submission modal, goes after unauth claim text
+    eventsUpdateTransactionDate:
+      type: object
+      properties:
+        newTimestamp:
+          type: string
+          format: int64
+        previousTimestamp:
+          type: string
+          format: int64
+      description: 'UpdateTransactionDate carries a dev-user override of a transaction''s
+
+        timestamp, used to bring simulator test data inside network filing windows.'
+    actionsDisputeEventActionV1:
+      type: object
+      properties:
+        eventRequest:
+          $ref: '#/components/schemas/eventsDisputeEvent'
+    eventsRecordWsudReceivedDirect:
+      type: object
+      properties:
+        transactionUuid:
+          type: string
+        received:
+          type: boolean
+        dateReceived:
+          type: string
+          format: int64
+    commonDisputeReason:
+      type: string
+      enum:
+      - DISPUTE_REASON_UNKNOWN
+      - DISPUTE_REASON_AUTHORIZATION
+      - DISPUTE_REASON_MERCHANT_ISSUE
+      - DISPUTE_REASON_ATM_ISSUE
+      - DISPUTE_REASON_ACH_ISSUE
+      - DISPUTE_REASON_FRAUD
+      - DISPUTE_REASON_TRANSFER_ISSUE
+      - DISPUTE_REASON_MERCHANT_ISSUE_GOODS_OR_SERVICES_NOT_RECEIVED
+      - DISPUTE_REASON_MERCHANT_ISSUE_GOODS_OR_SERVICES_NOT_AS_DESCRIBED
+      - DISPUTE_REASON_MERCHANT_ISSUE_RETURNED
+      - DISPUTE_REASON_MERCHANT_ISSUE_CANCELED_SUBSCRIPTION
+      - DISPUTE_REASON_MERCHANT_ISSUE_REFUND_NOT_RECEIVED
+      - DISPUTE_REASON_MERCHANT_ISSUE_CHARGED_INCORRECT_AMOUNT
+      - DISPUTE_REASON_MERCHANT_ISSUE_PAID_BY_OTHER_MEANS
+      - DISPUTE_REASON_TRANSFER_ISSUE_NOT_RECEIVED
+      - DISPUTE_REASON_TRANSFER_ISSUE_INCORRECT_RECIPIENT
+      - DISPUTE_REASON_TRANSFER_ISSUE_INCORRECT_AMOUNT
+      - DISPUTE_REASON_TRANSFER_ISSUE_DUPLICATE_CHARGE
+      - DISPUTE_REASON_ATM_ISSUE_PARTIAL_CASH
+      - DISPUTE_REASON_ATM_ISSUE_CASH_NOT_DISPENSED
+      - DISPUTE_REASON_ATM_ISSUE_CASH_NOT_DEPOSITED
+      - DISPUTE_REASON_IN_STORE_CASH_NOT_DEPOSITED
+      - DISPUTE_REASON_MERCHANT_ISSUE_DUPLICATE_CHARGE
+      - DISPUTE_REASON_ATM_ISSUE_DEPOSIT_NOT_POSTED
+      - DISPUTE_REASON_ACH_INSUFFICIENT_FUNDS
+      - DISPUTE_REASON_ACH_ACCOUNT_CLOSED
+      - DISPUTE_REASON_ACH_NO_ACCOUNT
+      - DISPUTE_REASON_ACH_INVALID_ACCOUNT_NUMBER
+      - DISPUTE_REASON_ACH_UNAUTHORIZED_DEBIT
+      - DISPUTE_REASON_ACH_RETURNED_PER_ODFI_REQUEST
+      - DISPUTE_REASON_ACH_AUTHORIZATION_REVOKED
+      - DISPUTE_REASON_ACH_PAYMENT_STOPPED
+      - DISPUTE_REASON_ACH_UNCOLLECTED_FUNDS
+      - DISPUTE_REASON_ACH_CUSTOMER_ADVISES_UNAUTHORIZED
+      - DISPUTE_REASON_ACH_NOT_IN_ACCORDANCE
+      - DISPUTE_REASON_ACH_BRANCH_SOLD
+      - DISPUTE_REASON_ACH_REP_PAYEE_DECEASED
+      - DISPUTE_REASON_ACH_BENEFICIARY_DECEASED
+      - DISPUTE_REASON_ACH_ACCOUNT_FROZEN
+      - DISPUTE_REASON_ACH_NON_TRANSACTION_ACCOUNT
+      - DISPUTE_REASON_ACH_AUTHORIZATION_DATE
+      - DISPUTE_REASON_ACH_AUTHORIZATION_AMOUNT
+      - DISPUTE_REASON_ACH_DOCUMENTS_PRESENTED
+      - DISPUTE_REASON_CHECK_ISSUE
+      - DISPUTE_REASON_CHECK_ISSUE_FORGED_DRAWED
+      - DISPUTE_REASON_CHECK_ISSUE_ENDORSEMENT_FORGED
+      - DISPUTE_REASON_CHECK_ISSUE_PAYEE_NAME_ALTERED
+      - DISPUTE_REASON_CHECK_ISSUE_NOT_ENDORSED_BY_PAYEE
+      - DISPUTE_REASON_CHECK_ISSUE_ALTERED_AMOUNT
+      - DISPUTE_REASON_CHECK_ISSUE_COUNTERFEIT_CHECK
+      - DISPUTE_REASON_CHECK_ISSUE_UNAUTHORIZED_DRAFT
+      - DISPUTE_REASON_ACH_CREDIT_ISSUE
+      - DISPUTE_REASON_ACH_UNPROMPTED_DEBIT
+      - DISPUTE_REASON_ACH_INCORRECT_AMOUNT
+      - DISPUTE_REASON_ACH_INCORRECT_DATE
+      - DISPUTE_REASON_ACH_REVOKED
+      - DISPUTE_REASON_ACH_DEBIT_MORE_THAN_ONCE
+      - DISPUTE_REASON_ACH_INCOMPLETE_TRANSACTION
+      - DISPUTE_REASON_ACH_IMPROPER_CHECK_PROCESSED
+      - DISPUTE_REASON_ACH_ISSUE_GOODS_OR_SERVICES
+      - DISPUTE_REASON_TRANSFER_ISSUE_FAILED_CANCELLATION
+      - DISPUTE_REASON_CHECK_DEBIT_UNAUTHORIZED
+      - DISPUTE_REASON_CHECK_DEBIT_ALTERED
+      - DISPUTE_REASON_CHECK_DEBIT_FORGED_DRAWER
+      - DISPUTE_REASON_CHECK_DEBIT_FORGED_MISSING_ENDORSEMENT
+      - DISPUTE_REASON_CHECK_DEBIT_COUNTERFEIT
+      - DISPUTE_REASON_CHECK_DEBIT_RDC_DUPLICATE
+      - DISPUTE_REASON_CHECK_DEPOSIT_NOT_CREDITED_WRONG_AMOUNT
+      - DISPUTE_REASON_CHECK_DEPOSIT_FORGED_MISSING_ENDORSEMENT
+      - DISPUTE_REASON_CHECK_DEPOSIT_ALTERATION
+      - DISPUTE_REASON_CHECK_DEPOSIT_RDC_DUPLICATE
+      - DISPUTE_REASON_MERCHANT_ISSUE_SERVICES_CANCELLED
+      default: DISPUTE_REASON_UNKNOWN
+      description: "R01\n - DISPUTE_REASON_ACH_ACCOUNT_CLOSED: R02\n - DISPUTE_REASON_ACH_NO_ACCOUNT: R03\n - DISPUTE_REASON_ACH_INVALID_ACCOUNT_NUMBER: R04\n - DISPUTE_REASON_ACH_UNAUTHORIZED_DEBIT: R05 — deprecated, use DISPUTE_REASON_ACH_ISSUE\n - DISPUTE_REASON_ACH_RETURNED_PER_ODFI_REQUEST: R06\n - DISPUTE_REASON_ACH_AUTHORIZATION_REVOKED: R07 — deprecated, use DISPUTE_REASON_ACH_REVOKED\n - DISPUTE_REASON_ACH_PAYMENT_STOPPED: R08\n - DISPUTE_REASON_ACH_UNCOLLECTED_FUNDS: R09\n - DISPUTE_REASON_ACH_CUSTOMER_ADVISES_UNAUTHORIZED: R10 — deprecated, use DISPUTE_REASON_ACH_ISSUE\n - DISPUTE_REASON_ACH_NOT_IN_ACCORDANCE: R11 — deprecated, use DISPUTE_REASON_ACH_REVOKED\n - DISPUTE_REASON_ACH_BRANCH_SOLD: R12\n - DISPUTE_REASON_ACH_REP_PAYEE_DECEASED: R14\n - DISPUTE_REASON_ACH_BENEFICIARY_DECEASED: R15\n - DISPUTE_REASON_ACH_ACCOUNT_FROZEN: R16\n - DISPUTE_REASON_ACH_NON_TRANSACTION_ACCOUNT: R20\n - DISPUTE_REASON_ACH_AUTHORIZATION_DATE: R11 — deprecated, use DISPUTE_REASON_ACH_INCORRECT_DATE\n - DISPUTE_REASON_ACH_AUTHORIZATION_AMOUNT: R11 — deprecated, use DISPUTE_REASON_ACH_INCORRECT_AMOUNT\n - DISPUTE_REASON_ACH_DOCUMENTS_PRESENTED: R37\n - DISPUTE_REASON_ACH_UNPROMPTED_DEBIT: ACH 2.0 canonical reasons — consolidate multiple legacy R-code reasons into a single intake reason.\n - DISPUTE_REASON_CHECK_DEBIT_UNAUTHORIZED: Check 2.0 canonical reasons"
+      title: "- DISPUTE_REASON_FRAUD: deprecated\n - DISPUTE_REASON_ACH_INSUFFICIENT_FUNDS: ACH-specific additions (legacy R-code reasons)"
+    commonNetworkType:
+      type: string
+      enum:
+      - NETWORK_TYPE_UNKNOWN
+      - NETWORK_TYPE_VISA
+      - NETWORK_TYPE_MASTERCARD
+      - NETWORK_TYPE_AMEX
+      - NETWORK_TYPE_INTERLINK
+      - NETWORK_TYPE_PULSE
+      - NETWORK_TYPE_DISCOVER
+      - NETWORK_TYPE_ALLPOINT
+      - NETWORK_TYPE_STAR
+      - NETWORK_TYPE_CARDTRONIC
+      - NETWORK_TYPE_NYCE
+      default: NETWORK_TYPE_UNKNOWN
+    sharedBadge:
+      type: object
+      properties:
+        text:
+          $ref: '#/components/schemas/sharedStyledText'
+        type:
+          $ref: '#/components/schemas/sharedBadgeType'
+        icon:
+          $ref: '#/components/schemas/sharedIcon'
+        selectMenu:
+          $ref: '#/components/schemas/sharedSelectMenu'
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        iconAlignment:
+          $ref: '#/components/schemas/sharedBadgeIconAlignment'
+    eventsUpdateAmountType:
+      type: string
+      enum:
+      - UNKNOWN
+      - FEE
+      - AMOUNT
+      - DISPUTED
+      default: UNKNOWN
+      description: '- UNKNOWN: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
+      title: buf:lint:ignore ENUM_VALUE_PREFIX
+    DynamicComponentvalidationType:
+      type: string
+      enum:
+      - TYPE_UNKNOWN
+      - TYPE_REQUIRED
+      - TYPE_MIN_LENGTH
+      - TYPE_MAX_LENGTH
+      - TYPE_MIN_VALUE
+      - TYPE_MAX_VALUE
+      - TYPE_PATTERN
+      - TYPE_CUSTOM
+      - TYPE_EMAIL
+      - TYPE_URL
+      - TYPE_DATE
+      - TYPE_SHOULD_UNREGISTER
+      - TYPE_OP_LT
+      - TYPE_OP_LTE
+      - TYPE_OP_GT
+      - TYPE_OP_GTE
+      default: TYPE_UNKNOWN
+      description: " - TYPE_MIN_LENGTH: Deprecated: use WithMinLengthValidation instead\n - TYPE_MAX_LENGTH: Deprecated: implement similar custom validation\n - TYPE_OP_LT: Operator validations compare the field's value against the threshold packed\ninto custom_value. The wrapped Any payload (e.g. Int64Value, DoubleValue)\ndetermines how the FE parses both sides of the comparison."
+    v1CurrencyConfig:
+      type: object
+      properties:
+        defaultCurrency:
+          type: string
+        supportedCurrencies:
+          type: array
+          items:
+            type: string
+    eventsFileCheckReturnDirect:
+      type: object
+      properties:
+        dateSubmitted:
+          type: string
+          format: int64
+        failed:
+          type: boolean
+    sharedStyledText:
+      type: object
+      properties:
+        textValue:
+          type: string
+          title: buf:lint:ignore FIELD_LOWER_SNAKE_CASE
+        color:
+          $ref: '#/components/schemas/sharedTextColor'
+        size:
+          $ref: '#/components/schemas/sharedSize'
+        weight:
+          $ref: '#/components/schemas/sharedWeight'
+        decoration:
+          $ref: '#/components/schemas/sharedDecoration'
+        whiteSpace:
+          $ref: '#/components/schemas/sharedWhiteSpace'
+        parseAsHtml:
+          type: boolean
+        isPrivate:
+          type: boolean
+      title: if size, color and weight are not set, default to normal
+    eventsDisputeEventMetadata:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+        transactionUuid:
+          type: string
+          title: 'Deprecated: use TransactionFilter.transaction_uuid'
+        triggerRunType:
+          $ref: '#/components/schemas/eventsTriggerRunType'
+        isStrict:
+          type: boolean
+          title: If enabled then more strict validations will fail the event
+        communicationUuid:
+          type: string
+        eventUuid:
+          type: string
+        automationUuid:
+          type: string
+        jobUuid:
+          type: string
+        jobDisputeUuid:
+          type: string
+        orgUuid:
+          type: string
+    actionsGetParModalAction:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+        transactionUuid:
+          type: string
+    commonFile:
+      type: object
+      properties:
+        name:
+          type: string
+        data:
+          type: string
+          format: byte
+        uuid:
+          type: string
+        url:
+          type: string
+        size:
+          type: string
+        bucket:
+          type: string
+          description: 'Storage reference fields — populated when the file has already been uploaded.
+
+            Required for server-side download/replay of previously-stored files.'
+        objectId:
+          type: string
+        internalName:
+          type: string
+    eventsRecordMailedCommunication:
+      type: object
+      properties:
+        eventUuid:
+          type: string
+        communicationType:
+          type: string
+  securitySchemes:
+    api_key:
+      type: apiKey
+      description: 'Bearer token, constructed as base64(org_uuid:secret). Casap provides org_uuid and a static secret during partner onboarding; send as `Authorization: Bearer <token>`.'
+      name: Authorization
+      in: header

@@ -1,18 +1,17 @@
 openapi: 3.2.0
 info:
   title: Casap Disputes API
-  version: 0.1.0
-servers:
-- url: http://api.casaphq.com
+  description: 'Public API for dispute creation and management. Recommended flow: List Accounts -> List Disputable Transactions -> Eligibility Check -> Get Dispute Reasons -> Get Questionnaire -> Create Dispute -> Upload Files (optional). List Member Disputes and Get Dispute Status power the member''s dispute screens.'
+  version: '1.0'
 security:
 - api_key: []
-  user_uuid: []
 tags:
 - name: Disputes
 paths:
   /v1/dispute/status/{disputeUuid}:
     get:
-      summary: Get dispute status
+      summary: Get Dispute Status
+      description: 'Returns full detail for a single dispute: current status, a human-readable status message, resolution deadline, and a chronological timeline of events (most recent first). Use this to power the dispute detail/status screen.'
       operationId: Disputes_GetDisputeStatus
       responses:
         '200':
@@ -20,7 +19,40 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetDisputeStatusResponse'
+                $ref: '#/components/schemas/v1GetDisputeStatusResponse'
+              example:
+                dispute:
+                  uuid: 67cdd4a7-b8c9-4d0e-a1b2-c3d4e5f6a7b8
+                  shortId: D-67cdd4
+                  status: DISPUTE_STATUS_OPEN
+                  reason: DISPUTE_REASON_UNAUTH
+                  disputeReason:
+                    reason: DISPUTE_REASON_UNAUTH
+                    displayMessage: Unauth
+                  resolutionDeadline: 1719550028
+                  customer:
+                    uuid: 09e01299-e3a7-46c3-af16-a8316c30619e
+                    name: John Doe
+                    email: john.doe@example.com
+                    phone: 123-456-7890
+                statusMessage: Your claim is in progress. You received $132.88
+                timeline:
+                - eventType: TIMELINE_EVENT_TYPE_PROVISIONAL_CREDIT
+                  message: You received provisional credit
+                  subMessage: ''
+                  timestamp: 1740441600
+                  transactions:
+                  - uuid: tx-001
+                    merchant: TRANS/Kindle Unltd 888-802-3080 WA
+                    amount:
+                      amountInCents: 13189
+                      currency: USD
+                    settledTimestamp: 1737590400
+                - eventType: TIMELINE_EVENT_TYPE_CREATED
+                  message: You disputed a transaction
+                  subMessage: ''
+                  timestamp: 1740441600
+                  transactions: []
         default:
           description: An unexpected error response.
           content:
@@ -28,16 +60,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
       parameters:
-      - schema:
-          type: string
-        name: disputeUuid
+      - name: disputeUuid
         in: path
         required: true
+        schema:
+          type: string
       tags:
       - Disputes
+      x-partner: true
   /v1/disputes:
     get:
-      summary: List disputes
       operationId: Disputes_GetDisputes
       responses:
         '200':
@@ -45,7 +77,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetDisputesResponse'
+                $ref: '#/components/schemas/v1GetDisputesResponse'
         default:
           description: An unexpected error response.
           content:
@@ -53,32 +85,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
       parameters:
-      - schema:
+      - name: size
+        in: query
+        required: false
+        schema:
           type: integer
           format: int32
-        name: size
+      - name: page
         in: query
         required: false
-      - schema:
+        schema:
           type: integer
           format: int32
-        name: page
+      - name: customerUuid
         in: query
         required: false
-      - schema:
+        schema:
           type: string
-        name: customerUuid
+      - name: shortId
         in: query
         required: false
-      - schema:
+        schema:
           type: string
-        name: shortId
-        in: query
-        required: false
       tags:
       - Disputes
+      summary: Disputes get disputes
+      x-summary-source: derived
     post:
-      summary: Create a dispute
+      summary: Create Dispute
+      description: Files the dispute. Send the transactionId values from List Disputable Transactions in transaction_ids, the customer info, the selected dispute reason, and the questionnaire answers as question_uuid/answer pairs. Returns a DisputeSummary with the dispute's uuid (needed for Upload Files), shortId, resolutionDeadline, and any initial actions (e.g. issue provisional credit). Provide exactly one of transaction_ids or transaction_details; full transaction_details bodies remain supported for existing integrations.
       operationId: Disputes_Create
       responses:
         '200':
@@ -86,7 +121,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateDisputeResponse'
+                $ref: '#/components/schemas/v1CreateDisputeResponse'
         default:
           description: An unexpected error response.
           content:
@@ -95,23 +130,23 @@ paths:
                 $ref: '#/components/schemas/googlerpcStatus'
       tags:
       - Disputes
+      x-partner: true
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateDisputeRequest'
+              $ref: '#/components/schemas/v1CreateDisputeRequest'
         required: true
-  /v1/disputes/{disputeUuid}/files:
-    post:
-      summary: Upload a file
-      operationId: Disputes_UploadFile
+  /v1/disputes/check-abuser:
+    get:
+      operationId: Disputes_CheckDisputeAbuser
       responses:
         '200':
           description: A successful response.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UploadFileResponse'
+                $ref: '#/components/schemas/v1CheckDisputeAbuserResponse'
         default:
           description: An unexpected error response.
           content:
@@ -119,14 +154,481 @@ paths:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
       parameters:
-      - schema:
+      - name: orgUuid
+        in: query
+        required: false
+        schema:
           type: string
-        name: disputeUuid
+      - name: externalIds
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - Disputes
+      summary: Disputes check dispute abuser
+      x-summary-source: derived
+  /v1/disputes/disputable-transactions:
+    get:
+      summary: List Disputable Transactions
+      description: Returns the member's recent transactions that can be disputed; ineligible ones (too old, wrong status, already disputed) are filtered out. Each entry carries its payment rail (the full transaction type) and two flags, disputable and disputeInProgress, that tell your UI whether the member can select it. Send the returned transactionId values, unchanged, to the Eligibility Check and Create Dispute.
+      operationId: Disputes_ListDisputableTransactions
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListDisputableTransactionsResponse'
+              example:
+                transactions:
+                - transactionId: tx-001
+                  merchant: Amazon
+                  amount:
+                    amountInCents: 4266
+                    currency: USD
+                  date: 1749427200
+                  rail: TRANSACTION_TYPE_DEBIT_CARD
+                  disputable: true
+                  disputeInProgress: false
+                - transactionId: tx-002
+                  merchant: Netflix
+                  amount:
+                    amountInCents: 1599
+                    currency: USD
+                  date: 1749427200
+                  rail: TRANSACTION_TYPE_ACH
+                  disputable: true
+                  disputeInProgress: false
+                - transactionId: tx-003
+                  merchant: Spotify
+                  amount:
+                    amountInCents: 999
+                    currency: USD
+                  date: 1749340800
+                  rail: TRANSACTION_TYPE_DEBIT_CARD
+                  disputable: true
+                  disputeInProgress: true
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+      parameters:
+      - name: customerUuid
+        description: 'customer_uuid is the member identifier returned by ListAccounts. The
+
+          encrypted tax-id form is not accepted here.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: accountUuid
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: accountType
+        description: 'account_type is the account''s account_type, from its matching ListAccounts
+
+          entry. Optional; passing it makes the lookup faster.'
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - ACCOUNT_TYPE_UNKNOWN
+          - ACCOUNT_TYPE_DEBIT
+          - ACCOUNT_TYPE_CREDIT
+          default: ACCOUNT_TYPE_UNKNOWN
+      tags:
+      - Disputes
+      x-partner: true
+  /v1/disputes/eligibility:
+    get:
+      summary: Eligibility Check
+      description: Required step between transaction selection and the reasons screen. Checks that each selected transaction is eligible — including the org's own disputability rules — and that the selection uses a single payment rail and a single card. On failure, returns one structured error per failed rule with a machine-readable code and a member-facing message, so the member can adjust their selection without leaving the flow. See "Eligibility error codes" in the Disputes API (Self-Service) introduction for the full list and recommended UI handling.
+      operationId: Disputes_CheckDisputeEligibility
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CheckDisputeEligibilityResponse'
+              example:
+                eligible: false
+                errors:
+                - code: RAIL_MISMATCH
+                  message: Please select transactions of the same type. You cannot mix ACH and Debit transactions in a single dispute.
+                  transactionIds:
+                  - tx-001
+                  - tx-002
+                - code: TRANSACTION_ALREADY_DISPUTED
+                  message: This transaction is already part of an open dispute.
+                  transactionIds:
+                  - tx-003
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+      parameters:
+      - name: customerUuid
+        description: 'customer_uuid is the member identifier returned by ListAccounts. The
+
+          encrypted tax-id form is not accepted here.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: accountUuid
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: transactionIds
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: transactionDates
+        description: 'Optional lookup hint: transaction_dates[i] is the approximate date of
+
+          transaction_ids[i], matched +/-1 day; only the date portion is used.
+
+          Providing it speeds the lookup; omitting it or getting it wrong never
+
+          changes the result. May be shorter than transaction_ids; missing entries
+
+          fall back to an unscoped lookup.'
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: date-time
+      tags:
+      - Disputes
+      x-partner: true
+  /v1/disputes/list:
+    get:
+      summary: List Member Disputes
+      description: 'Returns a paginated list of disputes for a given customer. Each entry includes the dispute short ID, total disputed amount, and open/closed status. Does not include transaction-level detail — use Get Dispute Status for that. Default: 10 most recent disputes; maximum: 30 per request. Only disputes created in the last six months are returned, newest first. The window is based on creation date, so an older dispute is not listed even if it is still open.'
+      operationId: Disputes_ListMemberDisputes
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListMemberDisputesResponse'
+              example:
+                disputes:
+                - disputeUuid: 67cdd4a7-b8c9-4d0e-a1b2-c3d4e5f6a7b8
+                  shortId: D-67cdd4
+                  disputedAmount:
+                    amountInCents: 11838
+                    currency: USD
+                  status: DISPUTE_STATUS_OPEN
+                  createdAt: 1716958028
+                - disputeUuid: 404e55b2-c3d4-4e5f-b6a7-d8e9f0a1b2c3
+                  shortId: D-404e55
+                  disputedAmount:
+                    amountInCents: 12284
+                    currency: USD
+                  status: DISPUTE_STATUS_CLOSED
+                  createdAt: 1716871628
+                nextPageToken: ''
+                totalCount: 2
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+      parameters:
+      - name: customerUuid
+        description: required; the member identifier returned by ListAccounts (the encrypted tax-id form is not accepted here)
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: pageSize
+        description: default 10, max 30; larger values are capped rather than rejected
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: pageToken
+        description: opaque cursor returned as next_page_token by a prior call; empty for the first page
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: statusFilter
+        description: 'Optional status filter. DISPUTE_STATUS_UNKNOWN (the default) returns all
+
+          disputes; OPEN or CLOSED restrict the result accordingly.'
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - DISPUTE_STATUS_UNKNOWN
+          - DISPUTE_STATUS_OPEN
+          - DISPUTE_STATUS_CLOSED
+          default: DISPUTE_STATUS_UNKNOWN
+      tags:
+      - Disputes
+      x-partner: true
+  /v1/disputes/questionnaire:
+    get:
+      summary: Get Questionnaire
+      description: Returns the intake questionnaire for the selected dispute reason and transaction context. Each question includes a unique questionUuid, the input type to render, and allowed answer options. The member's questionnaire answers determine the specific sub-reason. Submit question_uuid/answer pairs in Create Dispute.
+      operationId: Disputes_GetQuestionnaire
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetQuestionnaireResponse'
+              example:
+                questions:
+                - questionUuid: a1b2c3d4-0001-4000-8000-000000000001
+                  questionText: Did you authorize this transaction?
+                  inputType: INPUT_TYPE_RADIO
+                  options:
+                  - value: 'yes'
+                    displayText: 'Yes'
+                  - value: 'no'
+                    displayText: 'No'
+                  required: true
+                - questionUuid: a1b2c3d4-0001-4000-8000-000000000003
+                  questionText: When did you first notice the unauthorized transaction?
+                  inputType: INPUT_TYPE_DATE
+                  options: []
+                  required: true
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+      parameters:
+      - name: reason
+        description: " - DISPUTE_REASON_ACH_ISSUE: Unauthorized ACH debit. Other ACH problems use the more specific\nDISPUTE_REASON_ACH_* values.\n - DISPUTE_REASON_ACH_CREDIT_ISSUE: Dispute about an ACH credit (incoming or outgoing credit entry), as\nopposed to the ACH_ISSUE_* family, which covers consumer debit disputes."
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - DISPUTE_REASON_UNKNOWN
+          - DISPUTE_REASON_UNAUTH
+          - DISPUTE_REASON_MERCHANT_ISSUE
+          - DISPUTE_REASON_ATM_ISSUE
+          - DISPUTE_REASON_ACH_ISSUE
+          - DISPUTE_REASON_TRANSFER_ISSUE
+          - DISPUTE_REASON_ATM_ISSUE_CASH_NOT_DISPENSED
+          - DISPUTE_REASON_MERCHANT_ISSUE_GOODS_OR_SERVICES_NOT_RECEIVED
+          - DISPUTE_REASON_MERCHANT_ISSUE_GOODS_OR_SERVICES_NOT_AS_DESCRIBED
+          - DISPUTE_REASON_MERCHANT_ISSUE_RETURNED
+          - DISPUTE_REASON_MERCHANT_ISSUE_CANCELED_SUBSCRIPTION
+          - DISPUTE_REASON_MERCHANT_ISSUE_REFUND_NOT_RECEIVED
+          - DISPUTE_REASON_MERCHANT_ISSUE_CHARGED_INCORRECT_AMOUNT
+          - DISPUTE_REASON_MERCHANT_ISSUE_PAID_BY_OTHER_MEANS
+          - DISPUTE_REASON_TRANSFER_ISSUE_NOT_RECEIVED
+          - DISPUTE_REASON_TRANSFER_ISSUE_INCORRECT_RECIPIENT
+          - DISPUTE_REASON_TRANSFER_ISSUE_INCORRECT_AMOUNT
+          - DISPUTE_REASON_TRANSFER_ISSUE_DUPLICATE_CHARGE
+          - DISPUTE_REASON_ATM_ISSUE_PARTIAL_CASH
+          - DISPUTE_REASON_MERCHANT_ISSUE_DUPLICATE_CHARGE
+          - DISPUTE_REASON_ATM_ISSUE_CASH_NOT_DEPOSITED
+          - DISPUTE_REASON_TRANSFER_ISSUE_FAILED_CANCELLATION
+          - DISPUTE_REASON_ACH_ISSUE_REVOKED
+          - DISPUTE_REASON_ACH_ISSUE_GOODS_OR_SERVICES
+          - DISPUTE_REASON_ACH_ISSUE_INCOMPLETE_TRANSACTION
+          - DISPUTE_REASON_ACH_ISSUE_IMPROPER_CHECK_PROCESSED
+          - DISPUTE_REASON_ACH_ISSUE_INCORRECT_AMOUNT
+          - DISPUTE_REASON_ACH_ISSUE_INCORRECT_DATE
+          - DISPUTE_REASON_ACH_ISSUE_DEBITED_MORE_THAN_ONCE
+          - DISPUTE_REASON_ACH_ISSUE_UNPROMPTED_DEBIT
+          - DISPUTE_REASON_ATM_ISSUE_DEPOSIT_NOT_POSTED
+          - DISPUTE_REASON_IN_STORE_CASH_NOT_DEPOSITED
+          - DISPUTE_REASON_CHECK_ISSUE
+          - DISPUTE_REASON_CHECK_ISSUE_FORGED_DRAWER
+          - DISPUTE_REASON_CHECK_ISSUE_ENDORSEMENT_FORGED
+          - DISPUTE_REASON_CHECK_ISSUE_PAYEE_NAME_ALTERED
+          - DISPUTE_REASON_CHECK_ISSUE_NOT_ENDORSED_BY_PAYEE
+          - DISPUTE_REASON_CHECK_ISSUE_ALTERED_AMOUNT
+          - DISPUTE_REASON_CHECK_ISSUE_COUNTERFEIT_CHECK
+          - DISPUTE_REASON_CHECK_ISSUE_UNAUTHORIZED_DRAFT
+          - DISPUTE_REASON_ACH_CREDIT_ISSUE
+          - DISPUTE_REASON_CREDIT_NOT_PROCESSED
+          - DISPUTE_REASON_CANCELLED_TRANSACTION
+          - DISPUTE_REASON_MERCHANDISE_RETURNED
+          - DISPUTE_REASON_MERCHANT_ISSUE_SERVICES_CANCELLED
+          default: DISPUTE_REASON_UNKNOWN
+      - name: transactionType
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - TRANSACTION_TYPE_UNKNOWN
+          - TRANSACTION_TYPE_DEBIT_CARD
+          - TRANSACTION_TYPE_CREDIT_CARD
+          - TRANSACTION_TYPE_ATM
+          - TRANSACTION_TYPE_ACH
+          - TRANSACTION_TYPE_TRANSFER
+          - TRANSACTION_TYPE_CREDIT_ATM
+          - TRANSACTION_TYPE_CREDIT_ACH
+          - TRANSACTION_TYPE_CREDIT_TRANSFER
+          default: TRANSACTION_TYPE_UNKNOWN
+      tags:
+      - Disputes
+      x-partner: true
+  /v1/disputes/reasons:
+    get:
+      summary: Get Dispute Reasons
+      description: Returns the set of applicable parent-level dispute reason categories for the selected transactions. The member selects one of these categories; the specific sub-reason is determined downstream by the member's answers to the intake questionnaire. Call this after the Eligibility Check passes.
+      operationId: Disputes_GetDisputeReasons
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetDisputeReasonsResponse'
+              example:
+                disputeReasons:
+                - reason: DISPUTE_REASON_UNAUTH
+                  displayMessage: I did not authorize this transaction
+                - reason: DISPUTE_REASON_MERCHANT_ISSUE
+                  displayMessage: There is an issue with a merchant charge
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+      parameters:
+      - name: transactionType
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - TRANSACTION_TYPE_UNKNOWN
+          - TRANSACTION_TYPE_DEBIT_CARD
+          - TRANSACTION_TYPE_CREDIT_CARD
+          - TRANSACTION_TYPE_ATM
+          - TRANSACTION_TYPE_ACH
+          - TRANSACTION_TYPE_TRANSFER
+          - TRANSACTION_TYPE_CREDIT_ATM
+          - TRANSACTION_TYPE_CREDIT_ACH
+          - TRANSACTION_TYPE_CREDIT_TRANSFER
+          default: TRANSACTION_TYPE_UNKNOWN
+      tags:
+      - Disputes
+      x-partner: true
+  /v1/disputes/transactions:
+    get:
+      operationId: Disputes_GetDisputeTransactions
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetDisputeTransactionsResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+      parameters:
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: disputeUuid
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: customerUuid
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: accountUuid
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: orgUuid
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: externalIds
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - Disputes
+      summary: Disputes get dispute transactions
+      x-summary-source: derived
+  /v1/disputes/{disputeUuid}/files:
+    post:
+      summary: Upload Files
+      description: Attaches a supporting document to an existing dispute. Optional; requires the dispute uuid returned by Create Dispute, so it can only run after creation. Returns the file_uuid of the stored file.
+      operationId: Disputes_UploadFile
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1UploadFileResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+      parameters:
+      - name: disputeUuid
         description: The dispute UUID from the URL path
         in: path
         required: true
+        schema:
+          type: string
       tags:
       - Disputes
+      x-partner: true
       requestBody:
         content:
           application/json:
@@ -135,7 +637,6 @@ paths:
         required: true
   /v1/disputes/{disputeUuid}/reopen:
     post:
-      summary: Reopen a dispute
       operationId: Disputes_ReopenDispute
       responses:
         '200':
@@ -143,7 +644,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReopenDisputeResponse'
+                $ref: '#/components/schemas/v1ReopenDisputeResponse'
         default:
           description: An unexpected error response.
           content:
@@ -151,11 +652,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
       parameters:
-      - schema:
-          type: string
-        name: disputeUuid
+      - name: disputeUuid
         in: path
         required: true
+        schema:
+          type: string
       tags:
       - Disputes
       requestBody:
@@ -164,8 +665,109 @@ paths:
             schema:
               $ref: '#/components/schemas/DisputesReopenDisputeBody'
         required: true
+      summary: Disputes reopen dispute
+      x-summary-source: derived
+  /v1/transactions/arn:
+    get:
+      operationId: Disputes_GetArn
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1GetArnResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+      parameters:
+      - name: customerUuid
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: transactionUuid
+        in: query
+        required: false
+        schema:
+          type: string
+      tags:
+      - Disputes
+      summary: Disputes get arn
+      x-summary-source: derived
 components:
   schemas:
+    dtoDisputeListItem:
+      type: object
+      properties:
+        disputeUuid:
+          type: string
+        shortId:
+          type: string
+        disputedAmount:
+          $ref: '#/components/schemas/api_publicdtoAmount'
+          title: total disputed across the dispute's transactions
+        status:
+          $ref: '#/components/schemas/dtoDisputeStatus'
+          title: open or closed
+        createdAt:
+          type: string
+          format: int64
+          title: unix seconds
+      description: 'DisputeListItem is a member-facing summary row for the dispute-history list
+
+        (ListMemberDisputes). It intentionally omits transaction-level detail — use
+
+        Get Dispute Status for the full DisputeDetail.'
+    dtoDisputedTransactionStatus:
+      type: string
+      enum:
+      - DISPUTED_TRANSACTION_STATUS_UNKNOWN
+      - DISPUTED_TRANSACTION_STATUS_OPEN
+      - DISPUTED_TRANSACTION_STATUS_INVESTIGATING
+      - DISPUTED_TRANSACTION_STATUS_CHARGEBACK
+      - DISPUTED_TRANSACTION_STATUS_FINAL_DECISION
+      - DISPUTED_TRANSACTION_STATUS_CLOSED
+      default: DISPUTED_TRANSACTION_STATUS_UNKNOWN
+    CreateDisputeRequestQuestionnaireAnswer:
+      type: object
+      properties:
+        question:
+          type: string
+        answer:
+          type: string
+        questionId:
+          type: string
+          description: 'Deprecated: use question_uuid instead. Still used for the legacy
+
+            disputed-amount question keys (AMOUNT_EXPECTED, FIRST_AMOUNT,
+
+            SECOND_AMOUNT), which are not returned by GetQuestionnaire.'
+        questionUuid:
+          type: string
+          description: 'question_uuid is the stable id returned by GetQuestionnaire
+
+            (QuestionDefinition.question_uuid). Preferred over the free-text
+
+            `question`; optional for backwards compatibility.'
+    v1GetArnResponse:
+      type: object
+      properties:
+        arn:
+          type: string
+    dtoQuestionOption:
+      type: object
+      properties:
+        value:
+          type: string
+          title: value to submit in questionnaire_answers
+        displayText:
+          type: string
+          title: label to show the customer
+      description: QuestionOption is an allowed answer value for a choice-style question.
     TransactionAuditLogRecordFinalDecisionDeniedType:
       type: string
       enum:
@@ -177,7 +779,151 @@ components:
       - DENIED_TYPE_OTHER
       - DENIED_TYPE_FIRST_PARTY_FRAUD
       default: DENIED_TYPE_UNKNOWN
-    TransactionEventType:
+    googlerpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/protobufAny'
+    dtoEligibilityErrorCode:
+      type: string
+      enum:
+      - ELIGIBILITY_ERROR_CODE_UNKNOWN
+      - RAIL_MISMATCH
+      - TRANSACTION_INELIGIBLE
+      - MEMBER_INELIGIBLE
+      - TRANSACTION_NOT_FOUND
+      - TRANSACTION_NOT_SETTLED
+      - TRANSACTION_ALREADY_DISPUTED
+      - TRANSACTION_OUTSIDE_ELIGIBILITY_WINDOW
+      - CARD_MISMATCH
+      - TRANSACTION_NOT_DISPUTABLE
+      default: ELIGIBILITY_ERROR_CODE_UNKNOWN
+      description: "EligibilityErrorCode is the machine-readable reason a selection is\nineligible. Transaction-scoped codes (RAIL_MISMATCH, CARD_MISMATCH, and the\nTRANSACTION_* values) name the offending ids in transaction_ids; the member\ncan adjust their selection. MEMBER_INELIGIBLE is member-scoped:\ntransaction_ids is empty and no selection change helps. See \"Eligibility\nerror codes\" in the Disputes API (Self-Service) introduction for handling\nguidance.\n\n - RAIL_MISMATCH: The selection mixes payment rails (e.g. ACH and Debit) that cannot be\ndisputed together.\n - TRANSACTION_INELIGIBLE: Deprecated: no longer returned. Match the specific TRANSACTION_* codes\ninstead.\n - MEMBER_INELIGIBLE: The member cannot file any dispute right now (e.g. classified as a\ndispute abuser), regardless of selection.\n - TRANSACTION_NOT_FOUND: A selected id matches no transaction on the member's account (stale,\nmistyped, or superseded).\n - TRANSACTION_NOT_SETTLED: A selected transaction has not settled yet; it can be disputed once it\ndoes.\n - TRANSACTION_ALREADY_DISPUTED: A selected transaction is already part of an open dispute.\n - TRANSACTION_OUTSIDE_ELIGIBILITY_WINDOW: A selected transaction is older than the org's configured window for\nself-service disputes.\n - CARD_MISMATCH: The selection spans more than one card.\n - TRANSACTION_NOT_DISPUTABLE: A selected transaction is excluded by the org's disputability rules\n(e.g. a transaction type the org does not allow to be disputed online)."
+    dtoAddress:
+      type: object
+      properties:
+        line1:
+          type: string
+        line2:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+    v1ListMemberDisputesResponse:
+      type: object
+      properties:
+        disputes:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoDisputeListItem'
+        nextPageToken:
+          type: string
+          title: empty when there are no further pages
+        totalCount:
+          type: integer
+          format: int32
+          title: total disputes matching the scope/filter, across all pages
+    api_publicdtoAction:
+      type: string
+      enum:
+      - ACTION_NONE
+      - ACTION_ISSUE_PROVISIONAL_CREDIT
+      - ACTION_ISSUE_FINAL_CREDIT
+      - ACTION_REVERSE_PROVISIONAL_CREDIT
+      - ACTION_REPLACE_CARD
+      default: ACTION_NONE
+    dtoQuestionDefinition:
+      type: object
+      properties:
+        questionUuid:
+          type: string
+          title: stable id; pass back in Create
+        questionText:
+          type: string
+        inputType:
+          $ref: '#/components/schemas/dtoInputType'
+        options:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoQuestionOption'
+          title: present for RADIO/DROPDOWN/CHECKBOX; empty for TEXT/DATE
+        required:
+          type: boolean
+          description: 'required is true for questions shown unconditionally; answer them on every
+
+            submission. Conditional follow-ups have required = false: answer them when
+
+            one of their conditions is met.'
+        conditions:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoQuestionCondition'
+          description: 'conditions lists the parent answers that reveal this follow-up question;
+
+            show it when ANY condition is satisfied. Empty for questions shown
+
+            unconditionally.'
+      description: 'QuestionDefinition is a single intake question to present to the customer.
+
+        The questionnaire is a conditional tree flattened into an ordered list: each
+
+        question_uuid appears exactly once, and a question with a non-empty
+
+        conditions list is a follow-up that should only be shown once one of its
+
+        conditions is satisfied.'
+    api_publicdtoCustomer:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        accountUuid:
+          type: string
+        address:
+          $ref: '#/components/schemas/dtoAddress'
+        externalIds:
+          type: object
+          additionalProperties:
+            type: string
+    v1UploadFileResponse:
+      type: object
+      properties:
+        fileUuid:
+          type: string
+          title: The identifier assigned to the stored file
+    dtoDisputeReasonOption:
+      type: object
+      properties:
+        reason:
+          $ref: '#/components/schemas/api_publicdtoDisputeReason'
+        displayMessage:
+          type: string
+      description: 'DisputeReasonOption is an applicable dispute reason for a given set of
+
+        transactions, paired with default customer-facing display language.'
+    dtoTransactionEventType:
       type: string
       enum:
       - TRANSACTION_EVENT_TYPE_UNKNOWN
@@ -201,7 +947,248 @@ components:
       - TRANSACTION_EVENT_TYPE_RECORD_ODFI_RESPONSE
       - TRANSACTION_EVENT_TYPE_CHECK_CHARGEBACK
       - TRANSACTION_EVENT_TYPE_SUBMIT_FRAUD_REPORT
+      - TRANSACTION_EVENT_TYPE_REQUEST_MORE_INFO
       default: TRANSACTION_EVENT_TYPE_UNKNOWN
+    v1GetDisputeStatusResponse:
+      type: object
+      properties:
+        dispute:
+          $ref: '#/components/schemas/dtoDisputeSummary'
+        statusMessage:
+          type: string
+          description: 'status_message is a human-readable summary of the dispute''s current state,
+
+            for display on the member-facing dispute detail screen.'
+        timeline:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoTimelineEvent'
+          description: timeline is the member-facing event history, most recent first.
+    dtoInputType:
+      type: string
+      enum:
+      - INPUT_TYPE_UNKNOWN
+      - INPUT_TYPE_RADIO
+      - INPUT_TYPE_DROPDOWN
+      - INPUT_TYPE_CHECKBOX
+      - INPUT_TYPE_TEXT
+      - INPUT_TYPE_DATE
+      default: INPUT_TYPE_UNKNOWN
+      description: InputType is the UI input control a questionnaire question should render.
+    api_publicdtoTransactionDetail:
+      type: object
+      properties:
+        uuid:
+          type: string
+        settledTimestamp:
+          type: string
+          format: int64
+        authorizedTimestamp:
+          type: string
+          format: int64
+        amount:
+          $ref: '#/components/schemas/api_publicdtoAmount'
+        merchant:
+          type: string
+        status:
+          $ref: '#/components/schemas/dtoTransactionStatus'
+        type:
+          $ref: '#/components/schemas/api_publicdtoTransactionType'
+        network:
+          $ref: '#/components/schemas/dtoTransactionNetwork'
+        arn:
+          type: string
+        location:
+          type: string
+        cardId:
+          type: string
+        visaTransactionId:
+          type: string
+        transactionSettledAmount:
+          $ref: '#/components/schemas/api_publicdtoAmount'
+        typeCode:
+          type: string
+        ica:
+          type: string
+        cardType:
+          $ref: '#/components/schemas/dtoCardType'
+        rrn:
+          type: string
+    v1CheckDisputeEligibilityResponse:
+      type: object
+      properties:
+        eligible:
+          type: boolean
+        errors:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoEligibilityError'
+      description: 'CheckDisputeEligibilityResponse reports whether the member may file the
+
+        dispute. eligible is true only when errors is empty. Each error carries a
+
+        machine-readable code, a member-facing message, and — for transaction-scoped
+
+        codes — the offending transaction ids. A selection can fail several rules at
+
+        once; errors then has one entry per rule.'
+    dtoTransactionAuditLogIssueProvisionalCredit:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/api_publicdtoAmount'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/api_publicdtoAction'
+    dtoRequiredAction:
+      type: string
+      enum:
+      - REQUIRED_ACTION_NONE
+      - REQUIRED_ACTION_PROVIDE_MORE_INFO
+      default: REQUIRED_ACTION_NONE
+      description: 'RequiredAction is something Casap currently needs from the member on a
+
+        transaction. New values are added here as new situations need to be
+
+        surfaced explicitly, instead of one purpose-built boolean per situation.'
+    api_publicdtoTransactionType:
+      type: string
+      enum:
+      - TRANSACTION_TYPE_UNKNOWN
+      - TRANSACTION_TYPE_DEBIT_CARD
+      - TRANSACTION_TYPE_CREDIT_CARD
+      - TRANSACTION_TYPE_ATM
+      - TRANSACTION_TYPE_ACH
+      - TRANSACTION_TYPE_TRANSFER
+      - TRANSACTION_TYPE_CREDIT_ATM
+      - TRANSACTION_TYPE_CREDIT_ACH
+      - TRANSACTION_TYPE_CREDIT_TRANSFER
+      default: TRANSACTION_TYPE_UNKNOWN
+    dtoTransaction:
+      type: object
+      properties:
+        uuid:
+          type: string
+        disputeUuid:
+          type: string
+    v1ReopenDisputeResponse:
+      type: object
+      properties:
+        dispute:
+          $ref: '#/components/schemas/dtoDisputeSummary'
+    dtoDisputeAuditLogCreateDispute:
+      type: object
+      properties:
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/api_publicdtoAction'
+    v1CreateDisputeResponse:
+      type: object
+      properties:
+        dispute:
+          $ref: '#/components/schemas/dtoDisputeSummary'
+    dtoAttachedFile:
+      type: object
+      properties:
+        fileUuid:
+          type: string
+        filename:
+          type: string
+        contentType:
+          type: string
+        uploadedAt:
+          type: string
+          format: int64
+          title: unix seconds
+        size:
+          type: string
+          format: int64
+          title: bytes
+      description: AttachedFile is a member-uploaded file attached to a dispute.
+    TransactionAuditLogRecordFinalDecisionCanceledType:
+      type: string
+      enum:
+      - CANCELED_TYPE_UNKNOWN
+      - CANCELED_TYPE_CUSTOMER_REQUESTED
+      - CANCELED_TYPE_MERCHANT_CREDITED
+      - CANCELED_TYPE_AGENT_ERROR
+      - CANCELED_TYPE_OTHER
+      default: CANCELED_TYPE_UNKNOWN
+    TransactionAuditLogRecordFinalDecisionDenied:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionDeniedType'
+    dtoTimelineEvent:
+      type: object
+      properties:
+        eventType:
+          $ref: '#/components/schemas/dtoTimelineEventType'
+        message:
+          type: string
+        subMessage:
+          type: string
+        timestamp:
+          type: string
+          format: int64
+        transactions:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoTimelineTransaction'
+      description: 'TimelineEvent is one entry in the member-facing dispute timeline: a
+
+        human-readable milestone with an optional detail sub-message, its timestamp,
+
+        and the transaction(s) it relates to (empty for dispute-level events).'
+    dtoDisputeSummary:
+      type: object
+      properties:
+        uuid:
+          type: string
+        customer:
+          $ref: '#/components/schemas/api_publicdtoCustomer'
+        resolutionDeadline:
+          type: string
+          format: int64
+        agent:
+          $ref: '#/components/schemas/dtoAgent'
+        status:
+          $ref: '#/components/schemas/dtoDisputeStatus'
+        transactions:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoDisputedTransaction'
+        auditLog:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoDisputeAuditLog'
+        shortId:
+          type: string
+        reason:
+          $ref: '#/components/schemas/api_publicdtoDisputeReason'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/api_publicdtoAction'
+        files:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoAttachedFile'
+        disputeReason:
+          $ref: '#/components/schemas/dtoDisputeReasonOption'
+          description: 'dispute_reason pairs reason with its customer-facing display message,
+
+            matching the shape GetDisputeReasons returns. reason is kept as-is for
+
+            existing integrators.'
     TransactionAuditLogRecordFinalDecisionAcceptedType:
       type: string
       enum:
@@ -213,39 +1200,79 @@ components:
       - ACCEPTED_TYPE_WSUD_ACCEPTED
       - ACCEPTED_TYPE_OTHER
       default: ACCEPTED_TYPE_UNKNOWN
-    Address:
-      type: object
-      properties:
-        line1:
-          type: string
-        line2:
-          type: string
-        city:
-          type: string
-        state:
-          type: string
-        postalCode:
-          type: string
-        country:
-          type: string
-    TransactionAuditLogRecordFinalDecisionCanceled:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionCanceledType'
-    DisputeAuditLog:
+    dtoDisputeAuditLog:
       type: object
       properties:
         timestamp:
           type: string
           format: int64
         eventType:
-          $ref: '#/components/schemas/DisputeEventType'
+          $ref: '#/components/schemas/api_publicdtoDisputeEventType'
         agentEmail:
           type: string
         createDispute:
-          $ref: '#/components/schemas/DisputeAuditLogCreateDispute'
-    Amount:
+          $ref: '#/components/schemas/dtoDisputeAuditLogCreateDispute'
+    dtoQuestionCondition:
+      type: object
+      properties:
+        parentQuestionUuid:
+          type: string
+          description: 'parent_question_uuid is the question_uuid of the question whose answer
+
+            gates the follow-up. The server guarantees it is never empty and always
+
+            references a question in the same response.'
+        parentAnswerValues:
+          type: array
+          items:
+            type: string
+          description: 'parent_answer_values are the parent QuestionOption.value entries that
+
+            reveal the follow-up; any one of them satisfies the condition. The server
+
+            guarantees at least one non-empty value.'
+      description: 'QuestionCondition is one way a conditional follow-up question is revealed:
+
+        the answer to the question identified by parent_question_uuid is one of
+
+        parent_answer_values.'
+    dtoTimelineTransaction:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: 'Matches DisputedTransaction.uuid on the same dispute; use it to attach a
+
+            timeline entry to a transaction.'
+        merchant:
+          type: string
+        amount:
+          $ref: '#/components/schemas/api_publicdtoAmount'
+        settledTimestamp:
+          type: string
+          format: int64
+      description: 'TimelineTransaction is a disputed transaction referenced by a timeline event,
+
+        hydrated with the member-facing detail needed to render the entry.'
+    api_publicdtoDisputeEventType:
+      type: string
+      enum:
+      - DISPUTE_EVENT_TYPE_UNKNOWN
+      - DISPUTE_EVENT_TYPE_CREATE
+      - DISPUTE_EVENT_TYPE_ASSIGN_AGENT
+      - DISPUTE_EVENT_TYPE_ADD_COMMENT
+      - DISPUTE_EVENT_TYPE_UNASSIGN_AGENT
+      - DISPUTE_EVENT_TYPE_UPLOAD_PAN_TOKEN
+      - DISPUTE_EVENT_TYPE_UPDATE_PRIORITY
+      - DISPUTE_EVENT_TYPE_REOPEN
+      - DISPUTE_EVENT_TYPE_REPLACE_CARD
+      - DISPUTE_EVENT_TYPE_UPLOAD_WSUD
+      - DISPUTE_EVENT_TYPE_RECORD_ODFI_RESPONSE
+      - DISPUTE_EVENT_TYPE_UPDATE_DISPUTE_REASON
+      - DISPUTE_EVENT_TYPE_UPLOAD_FILE
+      - DISPUTE_EVENT_TYPE_COMMUNICATION
+      default: DISPUTE_EVENT_TYPE_UNKNOWN
+    api_publicdtoAmount:
       type: object
       properties:
         amountInCents:
@@ -253,76 +1280,288 @@ components:
           format: int32
         currency:
           type: string
-    TransactionAuditLogRecordFinalDecisionAcceptedMerchantCredited:
-      type: object
-      properties:
-        amount:
-          $ref: '#/components/schemas/Amount'
-        date:
-          type: string
-          format: int64
-    DisputesUploadFileBody:
-      type: object
-      properties:
-        fileContent:
-          type: string
-          title: The file content as raw bytes
-          contentEncoding: base64
-        filename:
-          type: string
-          title: 'Optional: original filename'
-        contentType:
-          type: string
-          title: 'Optional: MIME type of the file'
-    TransactionAuditLogRecordFinalDecisionAccepted:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionAcceptedType'
-        merchantCredited:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionAcceptedMerchantCredited'
-    Customer:
-      type: object
-      properties:
-        uuid:
-          type: string
-        name:
-          type: string
-        email:
-          type: string
-        phone:
-          type: string
-        accountUuid:
-          type: string
-        address:
-          $ref: '#/components/schemas/Address'
-        externalIds:
-          type: object
-          additionalProperties:
-            type: string
+    dtoTimelineEventType:
+      type: string
+      enum:
+      - TIMELINE_EVENT_TYPE_UNKNOWN
+      - TIMELINE_EVENT_TYPE_CREATED
+      - TIMELINE_EVENT_TYPE_INVESTIGATING
+      - TIMELINE_EVENT_TYPE_PROVISIONAL_CREDIT
+      - TIMELINE_EVENT_TYPE_CHARGEBACK
+      - TIMELINE_EVENT_TYPE_MERCHANT_CONTACT
+      - TIMELINE_EVENT_TYPE_FINAL_DECISION
+      - TIMELINE_EVENT_TYPE_CLOSED
+      - TIMELINE_EVENT_TYPE_INFORMATION_REQUESTED
+      - TIMELINE_EVENT_TYPE_EVIDENCE_SUBMITTED
+      default: TIMELINE_EVENT_TYPE_UNKNOWN
+      description: "TimelineEventType is the lifecycle stage a timeline entry represents. Only\nmember-facing events appear on the timeline.\n\n - TIMELINE_EVENT_TYPE_INFORMATION_REQUESTED: Casap asked the member for documents or information. Requests directed at\nthe financial institution are not shown.\n - TIMELINE_EVENT_TYPE_EVIDENCE_SUBMITTED: The member uploaded evidence. Files uploaded by an agent are not shown."
     protobufAny:
       type: object
       properties:
         '@type':
           type: string
+          description: 'Identifies the type of the serialized Protobuf message with a URI reference
+
+            consisting of a prefix ending in a slash and the fully-qualified type name.
+
+
+            Example: type.googleapis.com/google.protobuf.StringValue
+
+
+            This string must contain at least one `/` character, and the content after
+
+            the last `/` must be the fully-qualified name of the type in canonical
+
+            form, without a leading dot. Do not write a scheme on these URI references
+
+            so that clients do not attempt to contact them.
+
+
+            The prefix is arbitrary and Protobuf implementations are expected to
+
+            simply strip off everything up to and including the last `/` to identify
+
+            the type. `type.googleapis.com/` is a common default prefix that some
+
+            legacy implementations require. This prefix does not indicate the origin of
+
+            the type, and URIs containing it are not expected to respond to any
+
+            requests.
+
+
+            All type URL strings must be legal URI references with the additional
+
+            restriction (for the text format) that the content of the reference
+
+            must consist only of alphanumeric characters, percent-encoded escapes, and
+
+            characters in the following set (not including the outer backticks):
+
+            `/-.~_!$&()*+,;=`. Despite our allowing percent encodings, implementations
+
+            should not unescape them to prevent confusion with existing parsers. For
+
+            example, `type.googleapis.com%2FFoo` should be rejected.
+
+
+            In the original design of `Any`, the possibility of launching a type
+
+            resolution service at these type URLs was considered but Protobuf never
+
+            implemented one and considers contacting these URLs to be problematic and
+
+            a potential security issue. Do not attempt to contact type URLs.'
       additionalProperties: {}
-    CardType:
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nIn its binary encoding, an `Any` is an ordinary message; but in other wire\nforms like JSON, it has a special encoding. The format of the type URL is\ndescribed on the `type_url` field.\n\nProtobuf APIs provide utilities to interact with `Any` values:\n\n- A 'pack' operation accepts a message and constructs a generic `Any` wrapper\n  around it.\n- An 'unpack' operation reads the content of an `Any` message, either into an\n  existing message or a new one. Unpack operations must check the type of the\n  value they unpack against the declared `type_url`.\n- An 'is' operation decides whether an `Any` contains a message of the given\n  type, i.e. whether it can 'unpack' that type.\n\nThe JSON format representation of an `Any` follows one of these cases:\n\n- For types without special-cased JSON encodings, the JSON format\n  representation of the `Any` is the same as that of the message, with an\n  additional `@type` field which contains the type URL.\n- For types with special-cased JSON encodings (typically called 'well-known'\n  types, listed in https://protobuf.dev/programming-guides/json/#any), the\n  JSON format representation has a key `@type` which contains the type URL\n  and a key `value` which contains the JSON-serialized value.\n\nThe text format representation of an `Any` is like a message with one field\nwhose name is the type URL in brackets. For example, an `Any` containing a\n`foo.Bar` message may be written `[type.googleapis.com/foo.Bar] { a: 2 }`."
+    dtoFinalDecisionType:
+      type: string
+      enum:
+      - RECORD_FINAL_DECISION_TYPE_UNKNOWN
+      - RECORD_FINAL_DECISION_TYPE_ACCEPTED
+      - RECORD_FINAL_DECISION_TYPE_DENIED
+      - RECORD_FINAL_DECISION_TYPE_CANCELED
+      default: RECORD_FINAL_DECISION_TYPE_UNKNOWN
+    DisputesReopenDisputeBody:
+      type: object
+      properties:
+        transactionUuids:
+          type: array
+          items:
+            type: string
+    dtoEligibilityError:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/dtoEligibilityErrorCode'
+        message:
+          type: string
+        transactionIds:
+          type: array
+          items:
+            type: string
+      description: 'EligibilityError describes one reason a dispute selection is ineligible.
+
+        transaction_ids identifies the offending transactions when the error is
+
+        transaction-scoped; it is empty for member-scoped errors.'
+    dtoCardType:
       type: string
       enum:
       - CARD_TYPE_UNKNOWN
       - CARD_TYPE_PHYSICAL
       - CARD_TYPE_VIRTUAL
       default: CARD_TYPE_UNKNOWN
-    UploadFileResponse:
+    v1ListDisputableTransactionsResponse:
       type: object
-    DisputeStatus:
+      properties:
+        transactions:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoDisputableTransaction'
+      description: 'ListDisputableTransactionsResponse returns the customer''s transactions, each
+
+        annotated with whether it can currently be disputed.'
+    dtoTransactionAuditLog:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: int64
+        eventType:
+          $ref: '#/components/schemas/dtoTransactionEventType'
+        agentEmail:
+          type: string
+        issueProvisionalCredit:
+          $ref: '#/components/schemas/dtoTransactionAuditLogIssueProvisionalCredit'
+        recordFinalDecision:
+          $ref: '#/components/schemas/dtoTransactionAuditLogRecordFinalDecision'
+    dtoTransactionStatus:
+      type: string
+      enum:
+      - TRANSACTION_STATUS_UNKNOWN
+      - TRANSACTION_STATUS_PENDING
+      - TRANSACTION_STATUS_SETTLED
+      default: TRANSACTION_STATUS_UNKNOWN
+    v1GetDisputeReasonsResponse:
+      type: object
+      properties:
+        disputeReasons:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoDisputeReasonOption'
+      description: 'GetDisputeReasonsResponse lists the dispute reasons applicable to the
+
+        requested transaction(s), each with default customer-facing display language.'
+    DisputesUploadFileBody:
+      type: object
+      properties:
+        fileContent:
+          type: string
+          format: byte
+          title: The file content as raw bytes
+        filename:
+          type: string
+          title: 'Optional: original filename'
+        contentType:
+          type: string
+          title: 'Optional: MIME type of the file'
+    dtoTransactionAuditLogRecordFinalDecision:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionType'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/api_publicdtoAction'
+        accepted:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionAccepted'
+        denied:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionDenied'
+        canceled:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionCanceled'
+    v1CheckDisputeAbuserResponse:
+      type: object
+      properties:
+        isAbuser:
+          type: boolean
+        uniqueDisputeCount:
+          type: string
+          format: int64
+        totalDisputedAmount:
+          type: string
+          format: int64
+        lookbackDays:
+          type: integer
+          format: int32
+    TransactionAuditLogRecordFinalDecisionAcceptedMerchantCredited:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/api_publicdtoAmount'
+        date:
+          type: string
+          format: int64
+    dtoDisputeStatus:
       type: string
       enum:
       - DISPUTE_STATUS_UNKNOWN
       - DISPUTE_STATUS_OPEN
       - DISPUTE_STATUS_CLOSED
       default: DISPUTE_STATUS_UNKNOWN
-    DisputeReason:
+    TransactionAuditLogRecordFinalDecisionType:
+      type: string
+      enum:
+      - RECORD_FINAL_DECISION_TYPE_UNKNOWN
+      - RECORD_FINAL_DECISION_TYPE_ACCEPTED
+      - RECORD_FINAL_DECISION_TYPE_DENIED
+      - RECORD_FINAL_DECISION_TYPE_CANCELED
+      default: RECORD_FINAL_DECISION_TYPE_UNKNOWN
+    v1GetQuestionnaireResponse:
+      type: object
+      properties:
+        questions:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoQuestionDefinition'
+    dtoDisputedTransaction:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: 'The transaction identifier: the id supplied at Create or, when Casap
+
+            looked the transaction up server-side, the id it resolved to. An id that
+
+            is omitted or repeated within one request is replaced with a generated
+
+            one. Use it to join disputes back to your records;
+
+            TimelineTransaction.uuid carries the same value. Unlike the dispute uuid,
+
+            it does not change when a dispute is reopened.'
+        settledTimestamp:
+          type: string
+          format: int64
+        amount:
+          $ref: '#/components/schemas/api_publicdtoAmount'
+        merchant:
+          type: string
+        status:
+          $ref: '#/components/schemas/dtoDisputedTransactionStatus'
+        auditLog:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoTransactionAuditLog'
+        transactionStatus:
+          $ref: '#/components/schemas/dtoTransactionStatus'
+        provisionalCreditAmount:
+          $ref: '#/components/schemas/api_publicdtoAmount'
+        finalCreditAmount:
+          $ref: '#/components/schemas/api_publicdtoAmount'
+        reverseCreditAmount:
+          $ref: '#/components/schemas/api_publicdtoAmount'
+        transactionFinalStatus:
+          $ref: '#/components/schemas/dtoFinalDecisionType'
+        requiredActions:
+          type: array
+          items:
+            $ref: '#/components/schemas/dtoRequiredAction'
+          description: 'What Casap currently needs from the member for this transaction, as of
+
+            this snapshot. Unlike DisputeSummary.actions (a cumulative history of
+
+            actions triggered over the dispute''s life), an empty list here means
+
+            nothing is currently outstanding, and a value drops out once it''s
+
+            resolved or the transaction closes.'
+    api_publicdtoDisputeReason:
       type: string
       enum:
       - DISPUTE_REASON_UNKNOWN
@@ -347,112 +1586,90 @@ components:
       - DISPUTE_REASON_MERCHANT_ISSUE_DUPLICATE_CHARGE
       - DISPUTE_REASON_ATM_ISSUE_CASH_NOT_DEPOSITED
       - DISPUTE_REASON_TRANSFER_ISSUE_FAILED_CANCELLATION
+      - DISPUTE_REASON_ACH_ISSUE_REVOKED
+      - DISPUTE_REASON_ACH_ISSUE_GOODS_OR_SERVICES
+      - DISPUTE_REASON_ACH_ISSUE_INCOMPLETE_TRANSACTION
+      - DISPUTE_REASON_ACH_ISSUE_IMPROPER_CHECK_PROCESSED
+      - DISPUTE_REASON_ACH_ISSUE_INCORRECT_AMOUNT
+      - DISPUTE_REASON_ACH_ISSUE_INCORRECT_DATE
+      - DISPUTE_REASON_ACH_ISSUE_DEBITED_MORE_THAN_ONCE
+      - DISPUTE_REASON_ACH_ISSUE_UNPROMPTED_DEBIT
+      - DISPUTE_REASON_ATM_ISSUE_DEPOSIT_NOT_POSTED
+      - DISPUTE_REASON_IN_STORE_CASH_NOT_DEPOSITED
+      - DISPUTE_REASON_CHECK_ISSUE
+      - DISPUTE_REASON_CHECK_ISSUE_FORGED_DRAWER
+      - DISPUTE_REASON_CHECK_ISSUE_ENDORSEMENT_FORGED
+      - DISPUTE_REASON_CHECK_ISSUE_PAYEE_NAME_ALTERED
+      - DISPUTE_REASON_CHECK_ISSUE_NOT_ENDORSED_BY_PAYEE
+      - DISPUTE_REASON_CHECK_ISSUE_ALTERED_AMOUNT
+      - DISPUTE_REASON_CHECK_ISSUE_COUNTERFEIT_CHECK
+      - DISPUTE_REASON_CHECK_ISSUE_UNAUTHORIZED_DRAFT
+      - DISPUTE_REASON_ACH_CREDIT_ISSUE
+      - DISPUTE_REASON_CREDIT_NOT_PROCESSED
+      - DISPUTE_REASON_CANCELLED_TRANSACTION
+      - DISPUTE_REASON_MERCHANDISE_RETURNED
+      - DISPUTE_REASON_MERCHANT_ISSUE_SERVICES_CANCELLED
       default: DISPUTE_REASON_UNKNOWN
-      title: "- DISPUTE_REASON_MERCHANT_ISSUE: deprecated\n - DISPUTE_REASON_ATM_ISSUE: deprecated\n - DISPUTE_REASON_TRANSFER_ISSUE: deprecated"
-    TransactionStatus:
-      type: string
-      enum:
-      - TRANSACTION_STATUS_UNKNOWN
-      - TRANSACTION_STATUS_PENDING
-      - TRANSACTION_STATUS_SETTLED
-      default: TRANSACTION_STATUS_UNKNOWN
-    GetDisputeStatusResponse:
-      type: object
-      properties:
-        dispute:
-          $ref: '#/components/schemas/DisputeSummary'
-    TransactionAuditLogRecordFinalDecisionDenied:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionDeniedType'
-    DisputeSummary:
+      description: "DisputeReason is the dispute reason category. GetDisputeReasons returns the\napplicable parent categories; the specific sub-reason is resolved\nserver-side from the questionnaire answers at Create time, so callers only\never submit a parent reason. Legacy reason values are normalized to this set\nbefore they reach the API, so these are the only values integrators see.\n\n - DISPUTE_REASON_ACH_ISSUE: Unauthorized ACH debit. Other ACH problems use the more specific\nDISPUTE_REASON_ACH_* values.\n - DISPUTE_REASON_ACH_CREDIT_ISSUE: Dispute about an ACH credit (incoming or outgoing credit entry), as\nopposed to the ACH_ISSUE_* family, which covers consumer debit disputes."
+    dtoAgent:
       type: object
       properties:
         uuid:
           type: string
-        customer:
-          $ref: '#/components/schemas/Customer'
-        resolutionDeadline:
+        name:
           type: string
-          format: int64
-        agent:
-          $ref: '#/components/schemas/Agent'
-        status:
-          $ref: '#/components/schemas/DisputeStatus'
-        transactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/DisputedTransaction'
-        auditLog:
-          type: array
-          items:
-            $ref: '#/components/schemas/DisputeAuditLog'
-        shortId:
+        email:
           type: string
-        reason:
-          $ref: '#/components/schemas/DisputeReason'
-    FinalDecisionType:
+        phone:
+          type: string
+    dtoTransactionNetwork:
       type: string
       enum:
-      - RECORD_FINAL_DECISION_TYPE_UNKNOWN
-      - RECORD_FINAL_DECISION_TYPE_ACCEPTED
-      - RECORD_FINAL_DECISION_TYPE_DENIED
-      - RECORD_FINAL_DECISION_TYPE_CANCELED
-      default: RECORD_FINAL_DECISION_TYPE_UNKNOWN
-    TransactionDetail:
-      type: object
-      properties:
-        uuid:
-          type: string
-        settledTimestamp:
-          type: string
-          format: int64
-        authorizedTimestamp:
-          type: string
-          format: int64
-        amount:
-          $ref: '#/components/schemas/Amount'
-        merchant:
-          type: string
-        status:
-          $ref: '#/components/schemas/TransactionStatus'
-        type:
-          $ref: '#/components/schemas/TransactionType'
-        network:
-          $ref: '#/components/schemas/TransactionNetwork'
-        arn:
-          type: string
-        location:
-          type: string
-        cardId:
-          type: string
-        visaTransactionId:
-          type: string
-        transactionSettledAmount:
-          $ref: '#/components/schemas/Amount'
-        typeCode:
-          type: string
-        ica:
-          type: string
-        cardType:
-          $ref: '#/components/schemas/CardType'
-    TransactionAuditLogRecordFinalDecisionCanceledType:
-      type: string
-      enum:
-      - CANCELED_TYPE_UNKNOWN
-      - CANCELED_TYPE_CUSTOMER_REQUESTED
-      - CANCELED_TYPE_MERCHANT_CREDITED
-      - CANCELED_TYPE_AGENT_ERROR
-      - CANCELED_TYPE_OTHER
-      default: CANCELED_TYPE_UNKNOWN
-    GetDisputesResponse:
+      - TRANSACTION_NETWORK_UNKNOWN
+      - TRANSACTION_NETWORK_VISA
+      - TRANSACTION_NETWORK_MASTERCARD
+      - TRANSACTION_NETWORK_AMEX
+      - TRANSACTION_NETWORK_DISCOVER
+      - TRANSACTION_NETWORK_PULSE
+      - TRANSACTION_NETWORK_STAR
+      - TRANSACTION_NETWORK_MAESTRO
+      - TRANSACTION_NETWORK_ALLPOINT
+      - TRANSACTION_NETWORK_ACCEL
+      default: TRANSACTION_NETWORK_UNKNOWN
+    v1GetDisputeTransactionsResponse:
       type: object
       properties:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/DisputeSummary'
+            type: object
+            $ref: '#/components/schemas/dtoTransaction'
+        totalItems:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        totalInPage:
+          type: integer
+          format: int32
+    TransactionAuditLogRecordFinalDecisionAccepted:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionAcceptedType'
+        merchantCredited:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionAcceptedMerchantCredited'
+        partialMerchantCreditMadeWhole:
+          type: boolean
+    v1GetDisputesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoDisputeSummary'
         totalItems:
           type: integer
           format: int32
@@ -465,149 +1682,40 @@ components:
         currentPage:
           type: integer
           format: int32
-    TransactionType:
-      type: string
-      enum:
-      - TRANSACTION_TYPE_UNKNOWN
-      - TRANSACTION_TYPE_DEBIT_CARD
-      - TRANSACTION_TYPE_CREDIT_CARD
-      - TRANSACTION_TYPE_ATM
-      - TRANSACTION_TYPE_ACH
-      - TRANSACTION_TYPE_TRANSFER
-      - TRANSACTION_TYPE_CREDIT_ATM
-      - TRANSACTION_TYPE_CREDIT_ACH
-      - TRANSACTION_TYPE_CREDIT_TRANSFER
-      default: TRANSACTION_TYPE_UNKNOWN
-    TransactionAuditLogRecordFinalDecisionType:
-      type: string
-      enum:
-      - RECORD_FINAL_DECISION_TYPE_UNKNOWN
-      - RECORD_FINAL_DECISION_TYPE_ACCEPTED
-      - RECORD_FINAL_DECISION_TYPE_DENIED
-      - RECORD_FINAL_DECISION_TYPE_CANCELED
-      default: RECORD_FINAL_DECISION_TYPE_UNKNOWN
-    googlerpcStatus:
+    dtoDisputableTransaction:
       type: object
       properties:
-        code:
-          type: integer
-          format: int32
-        message:
+        transactionId:
           type: string
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/protobufAny'
-    DisputedTransactionStatus:
-      type: string
-      enum:
-      - DISPUTED_TRANSACTION_STATUS_UNKNOWN
-      - DISPUTED_TRANSACTION_STATUS_OPEN
-      - DISPUTED_TRANSACTION_STATUS_INVESTIGATING
-      - DISPUTED_TRANSACTION_STATUS_CHARGEBACK
-      - DISPUTED_TRANSACTION_STATUS_FINAL_DECISION
-      - DISPUTED_TRANSACTION_STATUS_CLOSED
-      default: DISPUTED_TRANSACTION_STATUS_UNKNOWN
-    CreateDisputeRequestQuestionnaireAnswer:
-      type: object
-      properties:
-        question:
+        merchant:
           type: string
-        answer:
-          type: string
-        questionId:
-          type: string
-    TransactionAuditLogRecordFinalDecision:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionType'
-        actions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Action'
-        accepted:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionAccepted'
-        denied:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionDenied'
-        canceled:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionCanceled'
-    Action:
-      type: string
-      enum:
-      - ACTION_NONE
-      - ACTION_ISSUE_PROVISIONAL_CREDIT
-      - ACTION_ISSUE_FINAL_CREDIT
-      - ACTION_REVERSE_PROVISIONAL_CREDIT
-      - ACTION_REPLACE_CARD
-      default: ACTION_NONE
-    ReopenDisputeResponse:
-      type: object
-      properties:
-        dispute:
-          $ref: '#/components/schemas/DisputeSummary'
-    DisputeEventType:
-      type: string
-      enum:
-      - DISPUTE_EVENT_TYPE_UNKNOWN
-      - DISPUTE_EVENT_TYPE_CREATE
-      - DISPUTE_EVENT_TYPE_ASSIGN_AGENT
-      - DISPUTE_EVENT_TYPE_ADD_COMMENT
-      - DISPUTE_EVENT_TYPE_UNASSIGN_AGENT
-      - DISPUTE_EVENT_TYPE_UPLOAD_PAN_TOKEN
-      - DISPUTE_EVENT_TYPE_UPDATE_PRIORITY
-      - DISPUTE_EVENT_TYPE_REOPEN
-      - DISPUTE_EVENT_TYPE_REPLACE_CARD
-      - DISPUTE_EVENT_TYPE_UPLOAD_WSUD
-      - DISPUTE_EVENT_TYPE_RECORD_ODFI_RESPONSE
-      - DISPUTE_EVENT_TYPE_UPDATE_DISPUTE_REASON
-      - DISPUTE_EVENT_TYPE_UPLOAD_FILE
-      - DISPUTE_EVENT_TYPE_COMMUNICATION
-      default: DISPUTE_EVENT_TYPE_UNKNOWN
-    CreateDisputeResponse:
-      type: object
-      properties:
-        dispute:
-          $ref: '#/components/schemas/DisputeSummary'
-    TransactionNetwork:
-      type: string
-      enum:
-      - TRANSACTION_NETWORK_UNKNOWN
-      - TRANSACTION_NETWORK_VISA
-      - TRANSACTION_NETWORK_MASTERCARD
-      - TRANSACTION_NETWORK_AMEX
-      default: TRANSACTION_NETWORK_UNKNOWN
-    TransactionAuditLog:
-      type: object
-      properties:
-        timestamp:
+        amount:
+          $ref: '#/components/schemas/api_publicdtoAmount'
+        date:
           type: string
           format: int64
-        eventType:
-          $ref: '#/components/schemas/TransactionEventType'
-        agentEmail:
+        rail:
+          $ref: '#/components/schemas/api_publicdtoTransactionType'
+          description: 'rail is the transaction''s full TransactionType, not a grouping. Use it to
+
+            tell rails apart: transactions on different rails cannot be disputed
+
+            together.'
+        disputable:
+          type: boolean
+        disputeInProgress:
+          type: boolean
+        cardLast4:
           type: string
-        issueProvisionalCredit:
-          $ref: '#/components/schemas/TransactionAuditLogIssueProvisionalCredit'
-        recordFinalDecision:
-          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecision'
-    TransactionAuditLogIssueProvisionalCredit:
-      type: object
-      properties:
-        amount:
-          $ref: '#/components/schemas/Amount'
-        actions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Action'
-    DisputeAuditLogCreateDispute:
-      type: object
-      properties:
-        actions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Action'
-    CreateDisputeRequest:
+          description: 'card_last4 is the last 4 digits of the card used, when the transaction is
+
+            card-based and a card record is available. Empty otherwise (e.g. ACH).'
+      description: 'DisputableTransaction is a customer transaction annotated with whether it can
+
+        currently be disputed. It is returned by the "List Disputable Transactions"
+
+        endpoint.'
+    v1CreateDisputeRequest:
       type: object
       properties:
         orgUuid:
@@ -615,68 +1723,41 @@ components:
         transactionDetails:
           type: array
           items:
-            $ref: '#/components/schemas/TransactionDetail'
+            type: object
+            $ref: '#/components/schemas/api_publicdtoTransactionDetail'
+          description: 'Legacy: full caller-supplied transaction data, still supported for
+
+            existing integrations. New integrations should use transaction_ids.
+
+            Provide exactly one of the two.'
         customer:
-          $ref: '#/components/schemas/Customer'
+          $ref: '#/components/schemas/api_publicdtoCustomer'
         reason:
-          $ref: '#/components/schemas/DisputeReason'
+          $ref: '#/components/schemas/api_publicdtoDisputeReason'
         questionnaireAnswers:
           type: array
           items:
+            type: object
             $ref: '#/components/schemas/CreateDisputeRequestQuestionnaireAnswer'
-    Agent:
-      type: object
-      properties:
-        uuid:
-          type: string
-        name:
-          type: string
-        email:
-          type: string
-        phone:
-          type: string
-    DisputedTransaction:
-      type: object
-      properties:
-        uuid:
-          type: string
-        settledTimestamp:
-          type: string
-          format: int64
-        amount:
-          $ref: '#/components/schemas/Amount'
-        merchant:
-          type: string
-        status:
-          $ref: '#/components/schemas/DisputedTransactionStatus'
-        auditLog:
-          type: array
-          items:
-            $ref: '#/components/schemas/TransactionAuditLog'
-        transactionStatus:
-          $ref: '#/components/schemas/TransactionStatus'
-        provisionalCreditAmount:
-          $ref: '#/components/schemas/Amount'
-        finalCreditAmount:
-          $ref: '#/components/schemas/Amount'
-        reverseCreditAmount:
-          $ref: '#/components/schemas/Amount'
-        transactionFinalStatus:
-          $ref: '#/components/schemas/FinalDecisionType'
-    DisputesReopenDisputeBody:
-      type: object
-      properties:
-        transactionUuids:
+        transactionIds:
           type: array
           items:
             type: string
+          description: 'transaction_ids selects the transactions to dispute by id, using the
+
+            transaction_id values returned by ListDisputableTransactions. Ids that
+
+            fail the eligibility rules (unknown, already disputed, mixed rails) are
+
+            rejected. Mutually exclusive with transaction_details.'
+    TransactionAuditLogRecordFinalDecisionCanceled:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TransactionAuditLogRecordFinalDecisionCanceledType'
   securitySchemes:
     api_key:
       type: apiKey
+      description: 'Bearer token, constructed as base64(org_uuid:secret). Casap provides org_uuid and a static secret during partner onboarding; send as `Authorization: Bearer <token>`.'
       name: Authorization
       in: header
-    user_uuid:
-      type: apiKey
-      name: x-user-uuid
-      in: header
-x-ext-urls: {}

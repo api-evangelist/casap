@@ -4,19 +4,20 @@
     "_original/casap-openapi.json"
   ],
   "outputs": [
+    "casap-accounts-api-openapi.yml",
     "casap-auth-api-openapi.yml",
-    "casap-disputes-api-openapi.yml"
+    "casap-disputes-api-openapi.yml",
+    "casap-intakes-api-openapi.yml",
+    "casap-organizations-api-openapi.yml"
   ],
   "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
     "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
-    "casap-openapi.json: upgraded openapi 3.1.1 -> OpenAPI 3.2.0",
-    "apis.yml register: already-registered"
+    "casap-openapi.json: upgraded swagger 2.0 -> OpenAPI 3.2.0",
+    "casap-openapi.json: declared missing tag: Accounts",
+    "apis.yml register: written (+3 apis, 5 total)"
   ],
-  "skipped": [
-    "casap-auth-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "casap-disputes-api-openapi.yml: previously refined output, superseded by openapi/_original/"
-  ]
+  "skipped": []
 }

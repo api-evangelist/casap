@@ -1,0 +1,12 @@
+{
+ "url": "https://api.casaphq.com/v2/api-docs",
+ "final": "https://api.casaphq.com/v2/api-docs",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 242732,
+ "sha256": "a9529e8be98b5e6e8e1b139171af1fa6e9ab94607a22a35e9c772fc5ef9f29b8",
+ "fetched_at": "2026-10-19",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "re-archived: the provider's current document replaced a stale archive (roadmap#793); the old files are in openapi/_superseded/2026-10-19-stale"
+}

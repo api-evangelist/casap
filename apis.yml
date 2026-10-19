@@ -99,6 +99,36 @@ apis:
     url: https://docs.casaphq.com
   - type: APIReference
     url: https://docs.casaphq.com/casap-api
+- aid: casap:casap-accounts-api
+  name: Casap Accounts API
+  description: The Accounts API from Casap — 1 operation(s) for accounts.
+  humanURL: https://docs.casaphq.com
+  baseURL: https://api.casaphq.com
+  tags:
+  - Accounts
+  properties:
+  - type: OpenAPI
+    url: openapi/casap-accounts-api-openapi.yml
+- aid: casap:casap-intakes-api
+  name: Casap Intakes API
+  description: The Intakes API from Casap — 1 operation(s) for intakes.
+  humanURL: https://docs.casaphq.com
+  baseURL: https://api.casaphq.com
+  tags:
+  - Intakes
+  properties:
+  - type: OpenAPI
+    url: openapi/casap-intakes-api-openapi.yml
+- aid: casap:casap-organizations-api
+  name: Casap Organizations API
+  description: The Organizations API from Casap — 3 operation(s) for organizations.
+  humanURL: https://docs.casaphq.com
+  baseURL: https://api.casaphq.com
+  tags:
+  - Organizations
+  properties:
+  - type: OpenAPI
+    url: openapi/casap-organizations-api-openapi.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

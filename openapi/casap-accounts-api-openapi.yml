@@ -1,0 +1,239 @@
+openapi: 3.2.0
+info:
+  title: Casap Accounts API
+  description: 'Public API for dispute creation and management. Recommended flow: List Accounts -> List Disputable Transactions -> Eligibility Check -> Get Dispute Reasons -> Get Questionnaire -> Create Dispute -> Upload Files (optional). List Member Disputes and Get Dispute Status power the member''s dispute screens.'
+  version: '1.0'
+security:
+- api_key: []
+tags:
+- name: Accounts
+paths:
+  /v1/accounts:
+    get:
+      summary: List Accounts
+      description: Returns the accounts the member holds. Each entry carries an accountUuid to send back, unchanged, as the account_uuid on List Disputable Transactions and the Eligibility Check. Use description as the display label in an account picker. account_type filters to one or more account types (repeat the query param); omit it to receive every type. Jointly held accounts are included, with holderType describing the ownership; no other holder's details are ever returned. This is the only endpoint whose customer_uuid also accepts the member's encrypted tax id — see "Encrypting the tax id" in the Disputes API (Self-Service) introduction.
+      operationId: Disputes_ListAccounts
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1ListAccountsResponse'
+              example:
+                accounts:
+                - accountUuid: '1986120001'
+                  customerUuid: 09e01299-e3a7-46c3-af16-a8316c30619e
+                  memberId: '198612'
+                  shareId: '0001'
+                  description: Regular Savings
+                  holderType: Primary
+                  accountType: ACCOUNT_TYPE_DEBIT
+                  openedAt: 1554076800
+                - accountUuid: '1986120010'
+                  customerUuid: 09e01299-e3a7-46c3-af16-a8316c30619e
+                  memberId: '198612'
+                  shareId: '0010'
+                  description: Free Checking
+                  holderType: Joint
+                  accountType: ACCOUNT_TYPE_DEBIT
+                  openedAt: 1618531200
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+      parameters:
+      - name: customerUuid
+        description: 'customer_uuid accepts either form of the member identifier: one Casap
+
+          already issued (returned as-is), or the member''s tax id encrypted with the
+
+          org''s Casap-issued public key (RSA-OAEP with SHA-256 as both the OAEP and
+
+          MGF1 digest; base64-encode, then percent-encode). See "Encrypting the tax
+
+          id" in the Disputes API (Self-Service) introduction for common pitfalls.
+
+          Every other RPC''s customer_uuid only accepts the identifier this endpoint
+
+          resolves to.'
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: accountType
+        description: 'account_type narrows the result to one or more of the listed account
+
+          types (e.g. debit only, or debit and credit explicitly). Leave empty to
+
+          receive every type.'
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - ACCOUNT_TYPE_UNKNOWN
+            - ACCOUNT_TYPE_DEBIT
+            - ACCOUNT_TYPE_CREDIT
+      tags:
+      - Accounts
+      x-partner: true
+components:
+  schemas:
+    dtoAccountType:
+      type: string
+      enum:
+      - ACCOUNT_TYPE_UNKNOWN
+      - ACCOUNT_TYPE_DEBIT
+      - ACCOUNT_TYPE_CREDIT
+      default: ACCOUNT_TYPE_UNKNOWN
+      description: 'AccountType splits accounts the way the core banking systems do: deposit and
+
+        share accounts, whose transactions are debit, versus credit card and loan
+
+        accounts, whose transactions are credit.'
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: 'Identifies the type of the serialized Protobuf message with a URI reference
+
+            consisting of a prefix ending in a slash and the fully-qualified type name.
+
+
+            Example: type.googleapis.com/google.protobuf.StringValue
+
+
+            This string must contain at least one `/` character, and the content after
+
+            the last `/` must be the fully-qualified name of the type in canonical
+
+            form, without a leading dot. Do not write a scheme on these URI references
+
+            so that clients do not attempt to contact them.
+
+
+            The prefix is arbitrary and Protobuf implementations are expected to
+
+            simply strip off everything up to and including the last `/` to identify
+
+            the type. `type.googleapis.com/` is a common default prefix that some
+
+            legacy implementations require. This prefix does not indicate the origin of
+
+            the type, and URIs containing it are not expected to respond to any
+
+            requests.
+
+
+            All type URL strings must be legal URI references with the additional
+
+            restriction (for the text format) that the content of the reference
+
+            must consist only of alphanumeric characters, percent-encoded escapes, and
+
+            characters in the following set (not including the outer backticks):
+
+            `/-.~_!$&()*+,;=`. Despite our allowing percent encodings, implementations
+
+            should not unescape them to prevent confusion with existing parsers. For
+
+            example, `type.googleapis.com%2FFoo` should be rejected.
+
+
+            In the original design of `Any`, the possibility of launching a type
+
+            resolution service at these type URLs was considered but Protobuf never
+
+            implemented one and considers contacting these URLs to be problematic and
+
+            a potential security issue. Do not attempt to contact type URLs.'
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nIn its binary encoding, an `Any` is an ordinary message; but in other wire\nforms like JSON, it has a special encoding. The format of the type URL is\ndescribed on the `type_url` field.\n\nProtobuf APIs provide utilities to interact with `Any` values:\n\n- A 'pack' operation accepts a message and constructs a generic `Any` wrapper\n  around it.\n- An 'unpack' operation reads the content of an `Any` message, either into an\n  existing message or a new one. Unpack operations must check the type of the\n  value they unpack against the declared `type_url`.\n- An 'is' operation decides whether an `Any` contains a message of the given\n  type, i.e. whether it can 'unpack' that type.\n\nThe JSON format representation of an `Any` follows one of these cases:\n\n- For types without special-cased JSON encodings, the JSON format\n  representation of the `Any` is the same as that of the message, with an\n  additional `@type` field which contains the type URL.\n- For types with special-cased JSON encodings (typically called 'well-known'\n  types, listed in https://protobuf.dev/programming-guides/json/#any), the\n  JSON format representation has a key `@type` which contains the type URL\n  and a key `value` which contains the JSON-serialized value.\n\nThe text format representation of an `Any` is like a message with one field\nwhose name is the type URL in brackets. For example, an `Any` containing a\n`foo.Bar` message may be written `[type.googleapis.com/foo.Bar] { a: 2 }`."
+    googlerpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/protobufAny'
+    dtoMemberAccount:
+      type: object
+      properties:
+        accountUuid:
+          type: string
+          description: 'account_uuid is the identifier every other endpoint expects. Despite the
+
+            name it is not a UUID: it is the member id followed by the zero-padded
+
+            share id (member_id + share_id below). Echo it back verbatim rather than
+
+            reconstructing it.'
+        customerUuid:
+          type: string
+          description: 'customer_uuid is the canonical member identifier this account resolved to,
+
+            suitable for the customer_uuid argument on the other endpoints.'
+        memberId:
+          type: string
+          description: 'member_id is the member/CIF number: the leading component of account_uuid.'
+        shareId:
+          type: string
+          description: 'share_id is the account''s id within the member (share or loan), zero-padded
+
+            to 4 digits: the trailing component of account_uuid.'
+        description:
+          type: string
+          description: 'description is the account''s core description, falling back to its
+
+            nickname. Suitable as the display label in an account picker.'
+        holderType:
+          type: string
+          description: 'holder_type is this member''s ownership of the account, e.g. "Primary",
+
+            "Joint", or "Beneficiary". Not a closed set: some core banking systems pass
+
+            their own relationship text through verbatim, so new values can appear
+
+            without notice.'
+        accountType:
+          $ref: '#/components/schemas/dtoAccountType'
+        openedAt:
+          type: string
+          format: int64
+          description: 'opened_at is the epoch timestamp the account was opened, 0 when the core
+
+            does not report a parseable open date.'
+      description: 'MemberAccount is a single account a member holds, as returned by "List
+
+        Accounts".'
+    v1ListAccountsResponse:
+      type: object
+      properties:
+        accounts:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/dtoMemberAccount'
+      description: 'ListAccountsResponse returns every account the member holds that the org
+
+        exposes, each with the account_uuid the rest of the flow expects.'
+  securitySchemes:
+    api_key:
+      type: apiKey
+      description: 'Bearer token, constructed as base64(org_uuid:secret). Casap provides org_uuid and a static secret during partner onboarding; send as `Authorization: Bearer <token>`.'
+      name: Authorization
+      in: header

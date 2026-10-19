@@ -1,0 +1,309 @@
+openapi: 3.2.0
+info:
+  title: Casap Intakes API
+  description: 'Public API for dispute creation and management. Recommended flow: List Accounts -> List Disputable Transactions -> Eligibility Check -> Get Dispute Reasons -> Get Questionnaire -> Create Dispute -> Upload Files (optional). List Member Disputes and Get Dispute Status power the member''s dispute screens.'
+  version: '1.0'
+security:
+- api_key: []
+tags:
+- name: Intakes
+paths:
+  /v1/intakes:
+    post:
+      operationId: Intakes_CreateIntakeCase
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1CreateIntakeCaseResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+      tags:
+      - Intakes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1CreateIntakeCaseRequest'
+        required: true
+      summary: Intakes create intake case
+      x-summary-source: derived
+components:
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: 'Identifies the type of the serialized Protobuf message with a URI reference
+
+            consisting of a prefix ending in a slash and the fully-qualified type name.
+
+
+            Example: type.googleapis.com/google.protobuf.StringValue
+
+
+            This string must contain at least one `/` character, and the content after
+
+            the last `/` must be the fully-qualified name of the type in canonical
+
+            form, without a leading dot. Do not write a scheme on these URI references
+
+            so that clients do not attempt to contact them.
+
+
+            The prefix is arbitrary and Protobuf implementations are expected to
+
+            simply strip off everything up to and including the last `/` to identify
+
+            the type. `type.googleapis.com/` is a common default prefix that some
+
+            legacy implementations require. This prefix does not indicate the origin of
+
+            the type, and URIs containing it are not expected to respond to any
+
+            requests.
+
+
+            All type URL strings must be legal URI references with the additional
+
+            restriction (for the text format) that the content of the reference
+
+            must consist only of alphanumeric characters, percent-encoded escapes, and
+
+            characters in the following set (not including the outer backticks):
+
+            `/-.~_!$&()*+,;=`. Despite our allowing percent encodings, implementations
+
+            should not unescape them to prevent confusion with existing parsers. For
+
+            example, `type.googleapis.com%2FFoo` should be rejected.
+
+
+            In the original design of `Any`, the possibility of launching a type
+
+            resolution service at these type URLs was considered but Protobuf never
+
+            implemented one and considers contacting these URLs to be problematic and
+
+            a potential security issue. Do not attempt to contact type URLs.'
+      additionalProperties: {}
+      description: "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nIn its binary encoding, an `Any` is an ordinary message; but in other wire\nforms like JSON, it has a special encoding. The format of the type URL is\ndescribed on the `type_url` field.\n\nProtobuf APIs provide utilities to interact with `Any` values:\n\n- A 'pack' operation accepts a message and constructs a generic `Any` wrapper\n  around it.\n- An 'unpack' operation reads the content of an `Any` message, either into an\n  existing message or a new one. Unpack operations must check the type of the\n  value they unpack against the declared `type_url`.\n- An 'is' operation decides whether an `Any` contains a message of the given\n  type, i.e. whether it can 'unpack' that type.\n\nThe JSON format representation of an `Any` follows one of these cases:\n\n- For types without special-cased JSON encodings, the JSON format\n  representation of the `Any` is the same as that of the message, with an\n  additional `@type` field which contains the type URL.\n- For types with special-cased JSON encodings (typically called 'well-known'\n  types, listed in https://protobuf.dev/programming-guides/json/#any), the\n  JSON format representation has a key `@type` which contains the type URL\n  and a key `value` which contains the JSON-serialized value.\n\nThe text format representation of an `Any` is like a message with one field\nwhose name is the type URL in brackets. For example, an `Any` containing a\n`foo.Bar` message may be written `[type.googleapis.com/foo.Bar] { a: 2 }`."
+    v1CreateIntakeCaseRequest:
+      type: object
+      properties:
+        orgUuid:
+          type: string
+        customer:
+          $ref: '#/components/schemas/api_publicdtoCustomer'
+        transactions:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/api_publicdtoTransactionDetail'
+        disputeReason:
+          $ref: '#/components/schemas/api_publicdtoDisputeReason'
+        transactionId:
+          type: string
+    googlerpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/protobufAny'
+    dtoCardType:
+      type: string
+      enum:
+      - CARD_TYPE_UNKNOWN
+      - CARD_TYPE_PHYSICAL
+      - CARD_TYPE_VIRTUAL
+      default: CARD_TYPE_UNKNOWN
+    api_publicdtoTransactionType:
+      type: string
+      enum:
+      - TRANSACTION_TYPE_UNKNOWN
+      - TRANSACTION_TYPE_DEBIT_CARD
+      - TRANSACTION_TYPE_CREDIT_CARD
+      - TRANSACTION_TYPE_ATM
+      - TRANSACTION_TYPE_ACH
+      - TRANSACTION_TYPE_TRANSFER
+      - TRANSACTION_TYPE_CREDIT_ATM
+      - TRANSACTION_TYPE_CREDIT_ACH
+      - TRANSACTION_TYPE_CREDIT_TRANSFER
+      default: TRANSACTION_TYPE_UNKNOWN
+    dtoTransactionStatus:
+      type: string
+      enum:
+      - TRANSACTION_STATUS_UNKNOWN
+      - TRANSACTION_STATUS_PENDING
+      - TRANSACTION_STATUS_SETTLED
+      default: TRANSACTION_STATUS_UNKNOWN
+    api_publicdtoDisputeReason:
+      type: string
+      enum:
+      - DISPUTE_REASON_UNKNOWN
+      - DISPUTE_REASON_UNAUTH
+      - DISPUTE_REASON_MERCHANT_ISSUE
+      - DISPUTE_REASON_ATM_ISSUE
+      - DISPUTE_REASON_ACH_ISSUE
+      - DISPUTE_REASON_TRANSFER_ISSUE
+      - DISPUTE_REASON_ATM_ISSUE_CASH_NOT_DISPENSED
+      - DISPUTE_REASON_MERCHANT_ISSUE_GOODS_OR_SERVICES_NOT_RECEIVED
+      - DISPUTE_REASON_MERCHANT_ISSUE_GOODS_OR_SERVICES_NOT_AS_DESCRIBED
+      - DISPUTE_REASON_MERCHANT_ISSUE_RETURNED
+      - DISPUTE_REASON_MERCHANT_ISSUE_CANCELED_SUBSCRIPTION
+      - DISPUTE_REASON_MERCHANT_ISSUE_REFUND_NOT_RECEIVED
+      - DISPUTE_REASON_MERCHANT_ISSUE_CHARGED_INCORRECT_AMOUNT
+      - DISPUTE_REASON_MERCHANT_ISSUE_PAID_BY_OTHER_MEANS
+      - DISPUTE_REASON_TRANSFER_ISSUE_NOT_RECEIVED
+      - DISPUTE_REASON_TRANSFER_ISSUE_INCORRECT_RECIPIENT
+      - DISPUTE_REASON_TRANSFER_ISSUE_INCORRECT_AMOUNT
+      - DISPUTE_REASON_TRANSFER_ISSUE_DUPLICATE_CHARGE
+      - DISPUTE_REASON_ATM_ISSUE_PARTIAL_CASH
+      - DISPUTE_REASON_MERCHANT_ISSUE_DUPLICATE_CHARGE
+      - DISPUTE_REASON_ATM_ISSUE_CASH_NOT_DEPOSITED
+      - DISPUTE_REASON_TRANSFER_ISSUE_FAILED_CANCELLATION
+      - DISPUTE_REASON_ACH_ISSUE_REVOKED
+      - DISPUTE_REASON_ACH_ISSUE_GOODS_OR_SERVICES
+      - DISPUTE_REASON_ACH_ISSUE_INCOMPLETE_TRANSACTION
+      - DISPUTE_REASON_ACH_ISSUE_IMPROPER_CHECK_PROCESSED
+      - DISPUTE_REASON_ACH_ISSUE_INCORRECT_AMOUNT
+      - DISPUTE_REASON_ACH_ISSUE_INCORRECT_DATE
+      - DISPUTE_REASON_ACH_ISSUE_DEBITED_MORE_THAN_ONCE
+      - DISPUTE_REASON_ACH_ISSUE_UNPROMPTED_DEBIT
+      - DISPUTE_REASON_ATM_ISSUE_DEPOSIT_NOT_POSTED
+      - DISPUTE_REASON_IN_STORE_CASH_NOT_DEPOSITED
+      - DISPUTE_REASON_CHECK_ISSUE
+      - DISPUTE_REASON_CHECK_ISSUE_FORGED_DRAWER
+      - DISPUTE_REASON_CHECK_ISSUE_ENDORSEMENT_FORGED
+      - DISPUTE_REASON_CHECK_ISSUE_PAYEE_NAME_ALTERED
+      - DISPUTE_REASON_CHECK_ISSUE_NOT_ENDORSED_BY_PAYEE
+      - DISPUTE_REASON_CHECK_ISSUE_ALTERED_AMOUNT
+      - DISPUTE_REASON_CHECK_ISSUE_COUNTERFEIT_CHECK
+      - DISPUTE_REASON_CHECK_ISSUE_UNAUTHORIZED_DRAFT
+      - DISPUTE_REASON_ACH_CREDIT_ISSUE
+      - DISPUTE_REASON_CREDIT_NOT_PROCESSED
+      - DISPUTE_REASON_CANCELLED_TRANSACTION
+      - DISPUTE_REASON_MERCHANDISE_RETURNED
+      - DISPUTE_REASON_MERCHANT_ISSUE_SERVICES_CANCELLED
+      default: DISPUTE_REASON_UNKNOWN
+      description: "DisputeReason is the dispute reason category. GetDisputeReasons returns the\napplicable parent categories; the specific sub-reason is resolved\nserver-side from the questionnaire answers at Create time, so callers only\never submit a parent reason. Legacy reason values are normalized to this set\nbefore they reach the API, so these are the only values integrators see.\n\n - DISPUTE_REASON_ACH_ISSUE: Unauthorized ACH debit. Other ACH problems use the more specific\nDISPUTE_REASON_ACH_* values.\n - DISPUTE_REASON_ACH_CREDIT_ISSUE: Dispute about an ACH credit (incoming or outgoing credit entry), as\nopposed to the ACH_ISSUE_* family, which covers consumer debit disputes."
+    dtoAddress:
+      type: object
+      properties:
+        line1:
+          type: string
+        line2:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+    dtoTransactionNetwork:
+      type: string
+      enum:
+      - TRANSACTION_NETWORK_UNKNOWN
+      - TRANSACTION_NETWORK_VISA
+      - TRANSACTION_NETWORK_MASTERCARD
+      - TRANSACTION_NETWORK_AMEX
+      - TRANSACTION_NETWORK_DISCOVER
+      - TRANSACTION_NETWORK_PULSE
+      - TRANSACTION_NETWORK_STAR
+      - TRANSACTION_NETWORK_MAESTRO
+      - TRANSACTION_NETWORK_ALLPOINT
+      - TRANSACTION_NETWORK_ACCEL
+      default: TRANSACTION_NETWORK_UNKNOWN
+    api_publicdtoCustomer:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        accountUuid:
+          type: string
+        address:
+          $ref: '#/components/schemas/dtoAddress'
+        externalIds:
+          type: object
+          additionalProperties:
+            type: string
+    api_publicdtoAmount:
+      type: object
+      properties:
+        amountInCents:
+          type: integer
+          format: int32
+        currency:
+          type: string
+    v1CreateIntakeCaseResponse:
+      type: object
+      properties:
+        intakeCaseId:
+          type: string
+    api_publicdtoTransactionDetail:
+      type: object
+      properties:
+        uuid:
+          type: string
+        settledTimestamp:
+          type: string
+          format: int64
+        authorizedTimestamp:
+          type: string
+          format: int64
+        amount:
+          $ref: '#/components/schemas/api_publicdtoAmount'
+        merchant:
+          type: string
+        status:
+          $ref: '#/components/schemas/dtoTransactionStatus'
+        type:
+          $ref: '#/components/schemas/api_publicdtoTransactionType'
+        network:
+          $ref: '#/components/schemas/dtoTransactionNetwork'
+        arn:
+          type: string
+        location:
+          type: string
+        cardId:
+          type: string
+        visaTransactionId:
+          type: string
+        transactionSettledAmount:
+          $ref: '#/components/schemas/api_publicdtoAmount'
+        typeCode:
+          type: string
+        ica:
+          type: string
+        cardType:
+          $ref: '#/components/schemas/dtoCardType'
+        rrn:
+          type: string
+  securitySchemes:
+    api_key:
+      type: apiKey
+      description: 'Bearer token, constructed as base64(org_uuid:secret). Casap provides org_uuid and a static secret during partner onboarding; send as `Authorization: Bearer <token>`.'
+      name: Authorization
+      in: header
