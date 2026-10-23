@@ -123,3 +123,9 @@ components:
       description: 'Bearer token, constructed as base64(org_uuid:secret). Casap provides org_uuid and a static secret during partner onboarding; send as `Authorization: Bearer <token>`.'
       name: Authorization
       in: header
+x-provenance:
+  method: harvested
+  publisher: Casap
+  source: https://api.casaphq.com/v2/api-docs
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
