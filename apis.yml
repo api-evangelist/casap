@@ -105,6 +105,8 @@ apis:
   humanURL: https://docs.casaphq.com
   baseURL: https://api.casaphq.com
   tags:
+  - Account
+  tags_raw:
   - Accounts
   properties:
   - type: OpenAPI
@@ -125,6 +127,8 @@ apis:
   humanURL: https://docs.casaphq.com
   baseURL: https://api.casaphq.com
   tags:
+  - Organization
+  tags_raw:
   - Organizations
   properties:
   - type: OpenAPI
