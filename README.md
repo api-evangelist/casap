@@ -64,6 +64,121 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Casap is a company surfaced as a portfolio company of emergence-capital, lightspeed-venture-partners and added to the API Evangelist network as a stub for enrichment. Sector: fintech. This profile is a lead awaiting the enrichment pipeline.
+Casap is an award-winning agentic-AI dispute automation platform for banks, credit unions, and fintechs. It automates payment dispute (chargeback) intake, investigation, and resolution end to end, reducing operational cost and manual work while improving regulatory compliance and consumer satisfaction. The Casap REST API lets financial institutions programmatically create disputes, check dispute status, upload evidence files, and reopen disputes, backed by a hosted disputes dashboard, PCI-DSS and SOC 2 (AICPA) controls, and integrations with card networks (Visa, Mastercard) and core banking systems (Symitar/Jack Henry, STAR). Casap won Best of Show at FinovateFall 2025.
 
-Backed by: emergence-capital, lightspeed-venture-partners
+**Areas:** Company · Fintech · Disputes · Chargebacks · Fraud Prevention · Payments · Banking · Dispute Resolution · AI Agents
+
+## Casap on APIs.io
+
+Everything profiled for Casap is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/casap/](https://apis.io/providers/casap/)** — or go straight to one of the APIs or properties below.
+
+### APIs (2)
+
+- [Casap Auth API](https://apis.io/apis/casap/casap-auth-api/) — The Auth API from Casap — 1 operation(s) for auth.
+- [Casap Disputes API](https://apis.io/apis/casap/casap-disputes-api/) — The Disputes API from Casap — 4 operation(s) for disputes.
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [casap](https://apis.io/servers/casap/casap/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Casap Agentic Access](https://apis.io/agentic-access/casap/casap-agentic-access/)
+
+#### Collections (2)
+
+Postman and Open Collection request collections.
+
+- [Casap Auth API](https://apis.io/collections/casap/open-casap-auth-api/)
+- [Casap Auth Disputes API](https://apis.io/collections/casap/open-casap-disputes-api/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Casap Openapi Overlay](https://apis.io/overlays/casap/casap-openapi-overlay/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Casap Authentication](https://apis.io/security/casap/casap-authentication/)
+- [Casap Domain Security](https://apis.io/security/casap/casap-domain-security/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.casaphq.com)
+- [Documentation](https://docs.casaphq.com)
+- [Getting started](https://docs.casaphq.com)
+- [API reference](https://docs.casaphq.com/casap-api)
+- [Support](https://www.casaphq.com/get-in-touch)
+- [Blog](https://www.casaphq.com/news)
+- [Compliance](https://www.casaphq.com)
+- [Terms of service](https://www.casaphq.com/terms-of-service)
+- [Privacy policy](https://www.casaphq.com/privacy-policy)
+- [Status](https://www.casaphq.com/status)
+
+## API Evangelist rating
+
+**Kin Score 38.3** — thin · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 73.2 |
+| Contract quality | 39.0 |
+| Contract governance | 4.5 |
+| Operational transparency | 15.8 |
+| Developer ergonomics | 58.9 |
+| Access clarity | 35.5 |
+
+**Agent readiness 23.6** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | derived (partial credit) |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | — |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | paginated |
+| Operation Distinctiveness | — |
+
+**Regulatory alignment 23.6** — Banking & Open Finance
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/casap/](https://apis.io/providers/casap/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Casap: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/casap/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
